@@ -1,0 +1,2 @@
+/
+/workspace/skill/demo_clean_skill/SKILL.md

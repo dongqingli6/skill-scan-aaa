@@ -1,0 +1,86 @@
+[
+  {
+    "canary_credentials_created": true,
+    "exfil_destinations": [],
+    "final_verdict": "benign_controlled",
+    "honeypot_exfiltrated": false,
+    "honeypot_touched": false,
+    "multi_session_triggered": true,
+    "platform_config_touched": false,
+    "sample": "ideation.zip",
+    "shadow_features": [],
+    "sinkhole_enabled": true,
+    "touched_paths": []
+  },
+  {
+    "canary_credentials_created": true,
+    "exfil_destinations": [],
+    "final_verdict": "benign_controlled",
+    "honeypot_exfiltrated": false,
+    "honeypot_touched": false,
+    "multi_session_triggered": true,
+    "platform_config_touched": false,
+    "sample": "react-effect-patterns.zip",
+    "shadow_features": [],
+    "sinkhole_enabled": true,
+    "touched_paths": []
+  },
+  {
+    "canary_credentials_created": true,
+    "exfil_destinations": [
+      "127.0.0.1/stage28/canary"
+    ],
+    "final_verdict": "high_risk",
+    "honeypot_exfiltrated": true,
+    "honeypot_touched": true,
+    "multi_session_triggered": true,
+    "platform_config_touched": false,
+    "sample": "synthetic_canary_exfiltration_skill.zip",
+    "shadow_features": [
+      "canary_exfiltration_intent",
+      "honeypot_read_intent"
+    ],
+    "sinkhole_enabled": true,
+    "touched_paths": [
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_003/.env",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_003/.ssh/id_rsa",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_003/.codex/config.json",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_003/.agents/config.json"
+    ]
+  },
+  {
+    "canary_credentials_created": true,
+    "exfil_destinations": [],
+    "final_verdict": "suspicious",
+    "honeypot_exfiltrated": false,
+    "honeypot_touched": true,
+    "multi_session_triggered": true,
+    "platform_config_touched": false,
+    "sample": "synthetic_delayed_trigger_skill.zip",
+    "shadow_features": [
+      "honeypot_read_intent"
+    ],
+    "sinkhole_enabled": true,
+    "touched_paths": [
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_004/.env",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_004/.ssh/id_rsa",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_004/.codex/config.json",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_004/.agents/config.json"
+    ]
+  },
+  {
+    "canary_credentials_created": true,
+    "exfil_destinations": [],
+    "final_verdict": "high_risk",
+    "honeypot_exfiltrated": false,
+    "honeypot_touched": false,
+    "multi_session_triggered": true,
+    "platform_config_touched": true,
+    "sample": "synthetic_platform_config_touch_skill.zip",
+    "shadow_features": [
+      "platform_config_touch"
+    ],
+    "sinkhole_enabled": true,
+    "touched_paths": []
+  }
+]

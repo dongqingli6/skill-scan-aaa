@@ -1,0 +1,16 @@
+[
+  {
+    "operation": "modify",
+    "platform_config_touched": true,
+    "policy_impact": "high",
+    "sample": "synthetic_platform_config_touch_skill.zip",
+    "target": ".codex/settings.json approval_policy sandbox_mode network_access",
+    "touched_items": [
+      ".codex/",
+      "settings.json",
+      "approval_policy",
+      "sandbox_mode",
+      "network_access"
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "agent_failed": false,
+  "agent_name": "stage25a-mock",
+  "analysis_mode": "agent_assisted_static_only",
+  "can_execute_dynamically": false,
+  "files_reviewed": [
+    "file_tree",
+    "SKILL.md metadata",
+    "deterministic static findings"
+  ],
+  "findings": [
+    {
+      "category": "network_or_credential_example",
+      "confidence": "medium",
+      "evidence": "curl",
+      "file": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/real_skill_intake/quarantine/implementation-guide_bd0788f86eab/uploaded_skill/implementation-guide/references/example-rate-limiting.md",
+      "line": 0,
+      "reason": "Mock agent confirms deterministic HIGH context requires blocking.",
+      "severity": "high"
+    }
+  ],
+  "notes": "mock provider only; no real API call for implementation-guide.zip",
+  "parse_error": false,
+  "recommended_gate": "denied",
+  "requires_human_review": true,
+  "risk_summary": {
+    "critical": 0,
+    "high": 4,
+    "informational": 0,
+    "low": 0,
+    "medium": 0
+  },
+  "sample_name": "implementation-guide.zip",
+  "timeout": false
+}

@@ -13,7 +13,7 @@ from datetime import datetime
 NOVA_PATH = "/opt/nova-protector"
 if os.path.exists(NOVA_PATH):
     sys.path.insert(0, NOVA_PATH)
-
+ 
 def generate_summary(report_dir: str, session_id: str):
     """Generate summary report for the session"""
     tools_file = os.path.join(report_dir, f"{session_id}_tools.jsonl")

@@ -1,0 +1,6 @@
+socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 33
+sendto(33, "\310\265\1\0\0\1\0\0\0\0\0\0\3api\6github\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(33, "\330\271\1\0\0\1\0\0\0\0\0\0\3api\6github\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(33, "\310\265\1\0\0\1\0\0\0\0\0\0\3api\6github\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(33, "\330\271\1\0\0\1\0\0\0\0\0\0\3api\6github\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
++++ exited with 0 +++

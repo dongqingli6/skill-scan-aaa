@@ -1,0 +1,22 @@
+execve("/opt/codex-bundle/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex", ["/opt/codex-bundle/lib/node_modul"..., "exec", "--sandbox", "read-only", "--ignore-user-config", "--ignore-rules", "--skip-git-repo-check", "--ephemeral", "List the available safe skill fi"...], 0x1ab689c0 /* 11 vars */) = 0
+mkdir("/home/codexsafe/.codex", 0777)   = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/tmp/arg0", 0777) = -1 ENOENT (No such file or directory)
+mkdir("/home/codexsafe/.codex/tmp", 0777) = 0
+mkdir("/home/codexsafe/.codex/tmp/arg0", 0777) = 0
+chmod("/home/codexsafe/.codex/tmp/arg0", 0700) = 0
+mkdir("/home/codexsafe/.codex/tmp/arg0/codex-arg08XDLh5", 0777) = 0
+clone(child_stack=0x784baebff338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[23], tls=0x784baebffb38, child_tidptr=0x784bbbbffe20) = 23
+clone(child_stack=0x784badbfc338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[24], tls=0x784badbfcb38, child_tidptr=0x784bbbbffe20) = 24
+clone(child_stack=0x784bacbf9338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[25], tls=0x784bacbf9b38, child_tidptr=0x784bbbbffe20) = 25
+mkdir("/home/codexsafe/.codex/memories", 0777) = 0
+clone(child_stack=0x7ffd6206cf28, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 26
+clone(child_stack=0x7ffd6206cf28, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 27
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=27, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+clone(child_stack=0x784babbf6338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[28], tls=0x784babbf6b38, child_tidptr=0x784bbbbffe20) = 28
+clone(child_stack=0x784babbf6338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[30], tls=0x784babbf6b38, child_tidptr=0x784bbbbffe20) = 30
+clone(child_stack=0x784bab736338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[31], tls=0x784bab736b38, child_tidptr=0x784bbbbffe20) = 31
+clone(child_stack=0x784bab4b7338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[32], tls=0x784bab4b7b38, child_tidptr=0x784bbbbffe20) = 32
+clone(child_stack=0x784bab24b338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[33], tls=0x784bab24bb38, child_tidptr=0x784bbbbffe20) = 33
+clone(child_stack=0x784bab048338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[34], tls=0x784bab048b38, child_tidptr=0x784bbbbffe20) = 34
+--- SIGCONT {si_signo=SIGCONT, si_code=SI_USER, si_pid=1, si_uid=1000} ---
++++ killed by SIGTERM +++

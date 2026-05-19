@@ -1,0 +1,2 @@
+--- SIGCONT {si_signo=SIGCONT, si_code=SI_USER, si_pid=1, si_uid=1000} ---
++++ exited with 0 +++

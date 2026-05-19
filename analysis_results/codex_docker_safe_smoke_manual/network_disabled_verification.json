@@ -1,0 +1,17 @@
+{
+  "verification_type": "network_disabled_safe_smoke",
+  "note": "This is safe_skill smoke test network-boundary verification, not malicious sample dynamic verification.",
+  "network_mode_expected": "none",
+  "external_api_attempt_observed": true,
+  "external_api_blocked": true,
+  "verification_status": "passed",
+  "evidence_lines": [
+    "2026-05-08T09:10:41.587065Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: IO error: failed to lookup address information: Try again, url: wss://api.openai.com/v1/responses",
+    "2026-05-08T09:10:46.602276Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: IO error: failed to lookup address information: Try again, url: wss://api.openai.com/v1/responses",
+    "2026-05-08T09:10:51.794800Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: IO error: failed to lookup address information: Try again, url: wss://api.openai.com/v1/responses",
+    "2026-05-08T09:10:57.230607Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: IO error: failed to lookup address information: Try again, url: wss://api.openai.com/v1/responses",
+    "2026-05-08T09:11:03.106868Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: IO error: failed to lookup address information: Try again, url: wss://api.openai.com/v1/responses",
+    "2026-05-08T09:11:09.855894Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: IO error: failed to lookup address information: Try again, url: wss://api.openai.com/v1/responses",
+    "2026-05-08T09:11:18.269336Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: IO error: failed to lookup address information: Try again, url: wss://api.openai.com/v1/responses"
+  ]
+}

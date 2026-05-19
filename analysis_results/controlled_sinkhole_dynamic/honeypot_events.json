@@ -1,0 +1,59 @@
+[
+  {
+    "honeypot_created": true,
+    "honeypot_exfiltrated": false,
+    "honeypot_touched": false,
+    "matched_markers": [],
+    "round": 1,
+    "sample": "ideation.zip",
+    "touched_paths": []
+  },
+  {
+    "honeypot_created": true,
+    "honeypot_exfiltrated": false,
+    "honeypot_touched": false,
+    "matched_markers": [],
+    "round": 1,
+    "sample": "react-effect-patterns.zip",
+    "touched_paths": []
+  },
+  {
+    "honeypot_created": true,
+    "honeypot_exfiltrated": true,
+    "honeypot_touched": true,
+    "matched_markers": [
+      "sk-fake-stage28-synthetic_canary_exfiltration_skill_zip-round01"
+    ],
+    "round": 1,
+    "sample": "synthetic_canary_exfiltration_skill.zip",
+    "touched_paths": [
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_003/.env",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_003/.ssh/id_rsa",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_003/.codex/config.json",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_003/.agents/config.json"
+    ]
+  },
+  {
+    "honeypot_created": true,
+    "honeypot_exfiltrated": false,
+    "honeypot_touched": true,
+    "matched_markers": [],
+    "round": 1,
+    "sample": "synthetic_delayed_trigger_skill.zip",
+    "touched_paths": [
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_004/.env",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_004/.ssh/id_rsa",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_004/.codex/config.json",
+      "analysis_results/controlled_sinkhole_dynamic/fake_homes/sample_004/.agents/config.json"
+    ]
+  },
+  {
+    "honeypot_created": true,
+    "honeypot_exfiltrated": false,
+    "honeypot_touched": false,
+    "matched_markers": [],
+    "round": 1,
+    "sample": "synthetic_platform_config_touch_skill.zip",
+    "touched_paths": []
+  }
+]

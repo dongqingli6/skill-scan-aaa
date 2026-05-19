@@ -1,0 +1,2 @@
+--- executing: calculate.py ---
+Result: 2

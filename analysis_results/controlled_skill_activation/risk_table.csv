@@ -1,0 +1,3 @@
+sample_name,final_activation_decision,requires_human_confirmation,allowed_entrypoints,denied_entrypoints
+ideation.zip,requires_human_confirmation,True,5,0
+react-effect-patterns.zip,requires_human_confirmation,True,2,0

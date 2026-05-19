@@ -1,0 +1,17 @@
+{
+  "platform": "codex",
+  "mode": "static-only",
+  "total_skills": 4,
+  "total_findings": 14,
+  "by_severity": {
+    "LOW": 1,
+    "MEDIUM": 0,
+    "HIGH": 2,
+    "CRITICAL": 1
+  },
+  "by_classification": {
+    "malicious": 3,
+    "safe": 1
+  },
+  "dynamic_execution_enabled": false
+}

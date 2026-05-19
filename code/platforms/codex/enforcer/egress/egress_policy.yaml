@@ -1,0 +1,41 @@
+# Prototype only. Not enabled by default.
+# This policy requires human approval before any use in controlled-network tests.
+# Current default enforce mode remains Docker --network none.
+
+version: 1
+name: codex-safe-skill-egress-policy
+status: prototype_only
+enabled: false
+default_action: deny
+docker_network_mode_default: none
+egress_proxy_enabled: false
+human_approval_required: true
+
+allowlist:
+  enabled: false
+  mode: placeholder_only
+  domains:
+    - domain: api.openai.com
+      enabled: false
+      reason: placeholder for future audited Codex API access
+    - domain: registry.npmjs.org
+      enabled: false
+      reason: placeholder for future audited npm metadata access
+    - domain: pypi.org
+      enabled: false
+      reason: placeholder for future audited Python package metadata access
+    - domain: files.pythonhosted.org
+      enabled: false
+      reason: placeholder for future audited Python package file access
+
+requirements_before_enablement:
+  - human security review
+  - per-skill network policy
+  - DNS allowlist enforcement
+  - HTTP and HTTPS allowlist enforcement
+  - request logging
+  - rate limiting
+  - audit log retention
+  - credential leakage checks
+  - safe_skill-only controlled-network test
+  - no malicious sample execution

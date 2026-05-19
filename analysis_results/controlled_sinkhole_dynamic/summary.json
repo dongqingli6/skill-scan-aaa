@@ -1,0 +1,58 @@
+{
+  "canary_credentials_enabled": true,
+  "claude_code_executed": false,
+  "codex_executed": false,
+  "docker_executed": false,
+  "final_status": "pass",
+  "mode": "controlled_local_sinkhole_simulation",
+  "multi_session_enabled": true,
+  "network_enabled": "local_sinkhole_only",
+  "real_api_called": false,
+  "real_internet_enabled": false,
+  "real_skill_scripts_executed": false,
+  "samples": [
+    {
+      "final_verdict": "benign_controlled",
+      "honeypot_exfiltrated": false,
+      "honeypot_touched": false,
+      "multi_session_triggered": true,
+      "platform_config_touched": false,
+      "sample": "ideation.zip"
+    },
+    {
+      "final_verdict": "benign_controlled",
+      "honeypot_exfiltrated": false,
+      "honeypot_touched": false,
+      "multi_session_triggered": true,
+      "platform_config_touched": false,
+      "sample": "react-effect-patterns.zip"
+    },
+    {
+      "final_verdict": "high_risk",
+      "honeypot_exfiltrated": true,
+      "honeypot_touched": true,
+      "multi_session_triggered": true,
+      "platform_config_touched": false,
+      "sample": "synthetic_canary_exfiltration_skill.zip"
+    },
+    {
+      "final_verdict": "suspicious",
+      "honeypot_exfiltrated": false,
+      "honeypot_touched": true,
+      "multi_session_triggered": true,
+      "platform_config_touched": false,
+      "sample": "synthetic_delayed_trigger_skill.zip"
+    },
+    {
+      "final_verdict": "high_risk",
+      "honeypot_exfiltrated": false,
+      "honeypot_touched": false,
+      "multi_session_triggered": true,
+      "platform_config_touched": true,
+      "sample": "synthetic_platform_config_touch_skill.zip"
+    }
+  ],
+  "sinkhole_enabled": true,
+  "stage": "Big Stage 28 Controlled Sinkhole Network + Canary Honeypot + Multi-Session Dynamic Evidence",
+  "strace_executed": false
+}

@@ -1,0 +1,8 @@
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=60, si_uid=1000, si_status=0, si_utime=1 /* 0.01 s */, si_stime=2 /* 0.02 s */} ---
+recvfrom(40, "", 8, 0, NULL, NULL)      = 0
+clone(child_stack=0x7dd102d7c288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 88
+clone(child_stack=0x7dd102d7c288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 89
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=89, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+clone(child_stack=0x7dd102d7c288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 94
+clone(child_stack=0x7dd102d7c288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 95
++++ killed by SIGTERM +++

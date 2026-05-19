@@ -1,0 +1,36 @@
+{
+  "created_at": "2026-05-09T16:09:35.383148+00:00",
+  "dynamic_scan_status": "plan_ready",
+  "errors": [],
+  "extracted_skill_path": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/web_ui_jobs/job_20260509_160935_1ade3358/uploaded_skill",
+  "job_id": "job_20260509_160935_1ade3358",
+  "note": "",
+  "report_paths": {
+    "dynamic_plan_json": "analysis_results/web_ui_jobs/job_20260509_160935_1ade3358/dynamic_plan/dynamic_plan.json",
+    "dynamic_plan_md": "analysis_results/web_ui_jobs/job_20260509_160935_1ade3358/dynamic_plan/report.md",
+    "static_scan_report_json": "analysis_results/web_ui_jobs/job_20260509_160935_1ade3358/static_scan/static_scan_report.json",
+    "static_scan_report_md": "analysis_results/web_ui_jobs/job_20260509_160935_1ade3358/static_scan/report.md"
+  },
+  "risk_summary": {
+    "critical": 0,
+    "high": 0,
+    "informational": 0,
+    "low": 0,
+    "medium": 0
+  },
+  "safety_boundaries": [
+    "local only",
+    "network none by default",
+    "no real tokens",
+    "no real HOME credential reads",
+    "no docker socket mount",
+    "no privileged container",
+    "no host network mode",
+    "dynamic execution defaults to plan-only and fail-closed"
+  ],
+  "skill_name": "demo_clean_skill",
+  "static_scan_status": "completed",
+  "status": "dynamic_plan_ready",
+  "updated_at": "2026-05-09T16:09:37.863507+00:00",
+  "uploaded_archive": "analysis_results/web_ui_jobs/job_20260509_160935_1ade3358/archive/demo_clean_skill.zip"
+}

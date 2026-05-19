@@ -1,0 +1,99 @@
+{
+  "generated_at_utc": "2026-05-12T11:59:11.828910+00:00",
+  "total_skills": 6,
+  "total_static_findings": 31,
+  "total_chains_triggered": 2,
+  "by_verdict": {
+    "SUSPICIOUS": 4,
+    "SAFE": 1,
+    "MALICIOUS": 1
+  },
+  "by_archetype": {
+    "Agent Hijacker": 2,
+    "Benign": 1,
+    "Data Thief": 3
+  },
+  "by_sophistication_level": {
+    "Intermediate": 4,
+    "None": 1,
+    "Basic": 1
+  },
+  "chain_trigger_counts": {
+    "E2_E1": 1,
+    "ASG_PERSIST_CHAIN": 1
+  },
+  "rows": [
+    {
+      "skill_name": "agent_hijacker",
+      "composite_score": 36.28,
+      "verdict": "SUSPICIOUS",
+      "archetype": "Agent Hijacker",
+      "sophistication": "Intermediate",
+      "static_findings": 8,
+      "chains_triggered": 0,
+      "agent_tested": false,
+      "agent_refusal_score": 0.5,
+      "honeypot_leaked": false
+    },
+    {
+      "skill_name": "authority_impersonation_skill",
+      "composite_score": 33.37,
+      "verdict": "SUSPICIOUS",
+      "archetype": "Agent Hijacker",
+      "sophistication": "Intermediate",
+      "static_findings": 7,
+      "chains_triggered": 0,
+      "agent_tested": false,
+      "agent_refusal_score": 0.5,
+      "honeypot_leaked": false
+    },
+    {
+      "skill_name": "benign_weather",
+      "composite_score": 12.5,
+      "verdict": "SAFE",
+      "archetype": "Benign",
+      "sophistication": "None",
+      "static_findings": 0,
+      "chains_triggered": 0,
+      "agent_tested": false,
+      "agent_refusal_score": 0.5,
+      "honeypot_leaked": false
+    },
+    {
+      "skill_name": "data_thief",
+      "composite_score": 38.16,
+      "verdict": "SUSPICIOUS",
+      "archetype": "Data Thief",
+      "sophistication": "Intermediate",
+      "static_findings": 4,
+      "chains_triggered": 1,
+      "agent_tested": false,
+      "agent_refusal_score": 0.5,
+      "honeypot_leaked": false
+    },
+    {
+      "skill_name": "persistence_skill",
+      "composite_score": 30.38,
+      "verdict": "SUSPICIOUS",
+      "archetype": "Data Thief",
+      "sophistication": "Basic",
+      "static_findings": 2,
+      "chains_triggered": 1,
+      "agent_tested": false,
+      "agent_refusal_score": 0.5,
+      "honeypot_leaked": false
+    },
+    {
+      "skill_name": "reverse_shell_skill",
+      "composite_score": 43.26,
+      "verdict": "MALICIOUS",
+      "archetype": "Data Thief",
+      "sophistication": "Intermediate",
+      "static_findings": 10,
+      "chains_triggered": 0,
+      "agent_tested": false,
+      "agent_refusal_score": 0.5,
+      "honeypot_leaked": false
+    }
+  ]
+}

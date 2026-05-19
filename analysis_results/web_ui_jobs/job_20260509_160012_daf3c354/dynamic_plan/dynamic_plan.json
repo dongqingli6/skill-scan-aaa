@@ -1,0 +1,21 @@
+{
+  "blocked_by_policy": true,
+  "dynamic_execution_performed": false,
+  "fail_closed": true,
+  "job_id": "job_20260509_160012_daf3c354",
+  "mode": "plan-only",
+  "reason": "HIGH or CRITICAL static findings block dynamic execution",
+  "required_controls": [
+    "network none",
+    "fake HOME",
+    "fake CODEX_HOME",
+    "readonly sample mount",
+    "output rw",
+    "no docker socket",
+    "no privileged container",
+    "no host network mode",
+    "no real token",
+    "policy gate required",
+    "fail closed by default"
+  ]
+}

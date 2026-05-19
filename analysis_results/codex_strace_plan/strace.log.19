@@ -1,0 +1,18 @@
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=37, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=48, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=50, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=51, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+recvfrom(39, "", 8, 0, NULL, NULL)      = 0
+clone(child_stack=0x7dd0f9190338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[61], tls=0x7dd0f9190b38, child_tidptr=0x7dd11adffe20) = 61
+clone(child_stack=0x7dd10dddaa18, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 62
+clone(child_stack=0x7dd10dddaa18, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 64
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=64, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=84, si_uid=1000, si_status=0, si_utime=0, si_stime=2 /* 0.02 s */} ---
+clone(child_stack=0x7dd10dd9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 92
+clone(child_stack=0x7dd10dd9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 93
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=93, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+clone(child_stack=0x7dd10dd9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 98
+clone(child_stack=0x7dd10dd9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 99
+clone(child_stack=0x7dd10ddba258, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 100
+clone(child_stack=0x7dd10ddba258, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 101
++++ killed by SIGTERM +++

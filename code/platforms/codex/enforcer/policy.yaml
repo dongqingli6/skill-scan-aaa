@@ -1,0 +1,60 @@
+target_platform: codex
+default_action: deny
+allowed_skill_roots:
+  - code/platforms/codex/examples/safe_skill
+
+forbidden_skill_names:
+  - prompt_injection_skill
+  - script_risk_skill
+  - agents_pollution_sample
+
+docker_policy:
+  network_mode: none
+  privileged: false
+  cap_drop_all: true
+  no_new_privileges: true
+  read_only_rootfs: true
+  pids_limit: 256
+  memory_limit: 1g
+  cpus: "1.0"
+
+mount_policy:
+  sample_mount: read-only
+  output_mount: writable
+  codex_bundle_mount: read-only
+  host_home_mount: forbidden
+  docker_socket_mount: forbidden
+
+forbidden_paths:
+  - ~/.ssh
+  - ~/.codex
+  - ~/.agents
+  - .env
+  - /var/run/docker.sock
+
+allowed_fake_paths:
+  - /home/codexsafe
+  - /home/codexsafe/.codex
+  - /home/codexsafe/.agents
+
+forbidden_commands:
+  - docker
+  - sudo
+  - curl
+  - wget
+  - ssh
+  - scp
+  - nc
+  - ncat
+  - bash -i
+
+network_policy:
+  default: deny
+  allow_openai_api: false
+  allow_dns: false
+
+runtime_response:
+  on_high_violation: kill_container
+  on_critical_violation: kill_container
+  on_medium_violation: record_and_continue
+  on_low_violation: record

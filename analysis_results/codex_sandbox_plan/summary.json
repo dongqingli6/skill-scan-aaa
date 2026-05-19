@@ -1,0 +1,16 @@
+{
+  "platform": "codex",
+  "mode": "dynamic-plan-only",
+  "total_skills": 4,
+  "total_findings": 14,
+  "by_severity": {
+    "LOW": 0,
+    "MEDIUM": 4,
+    "HIGH": 8,
+    "CRITICAL": 2
+  },
+  "by_classification": {},
+  "dynamic_execution_requested": true,
+  "dynamic_execution_performed": false,
+  "sandbox_plan_generated": true
+}

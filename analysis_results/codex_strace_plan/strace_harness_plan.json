@@ -1,0 +1,33 @@
+{
+  "plan_only": true,
+  "strace_available_on_host": true,
+  "strace_path": "/usr/bin/strace",
+  "strace_execution_allowed": false,
+  "docker_run_allowed": false,
+  "codex_exec_allowed": false,
+  "safe_skill_only": true,
+  "network_mode": "none",
+  "command_preview": "DISABLED: future strace wrapper would run docker safe_skill smoke test here",
+  "syscall_focus": [
+    "execve",
+    "openat",
+    "connect",
+    "socket",
+    "sendto",
+    "recvfrom",
+    "unlink",
+    "rename",
+    "chmod",
+    "chown",
+    "mkdir",
+    "rmdir",
+    "clone"
+  ],
+  "output_paths": {
+    "strace_log": "analysis_results/codex_strace_plan/strace.log",
+    "strace_parse_result": "analysis_results/codex_strace_plan/strace_parse_result.json",
+    "strace_policy": "analysis_results/codex_strace_plan/strace_policy.json"
+  },
+  "safety_errors": [],
+  "safety_warnings": []
+}

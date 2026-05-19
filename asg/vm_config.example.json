@@ -1,0 +1,10 @@
+{
+  "host": "192.168.61.130",
+  "port": 22,
+  "username": "sh",
+  "password": "REPLACE_WITH_VM_PASSWORD",
+  "private_key_path": null,
+  "remote_project_root": "~/MaliciousAgentSkillsBench-main/code",
+  "remote_anthropic_api_key": "sk-LANYI-asg-REPLACE_ME",
+  "remote_anthropic_base_url": "https://lanyiapi.com"
+}

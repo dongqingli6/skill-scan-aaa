@@ -1,0 +1,162 @@
+[
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-docker-sock-access",
+    "event_type": "docker_socket_access",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "open",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "/var/run/docker.sock",
+    "timestamp": "2026-05-10T11:09:27.492193+00:00"
+  },
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-outbound-network-attempt",
+    "event_type": "outbound_network_attempt",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "connect",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "198.51.100.10:443",
+    "timestamp": "2026-05-10T11:09:27.492368+00:00"
+  },
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-sensitive-env-exposure",
+    "event_type": "real_token_exposure",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "read_env",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "OPENAI_API_KEY",
+    "timestamp": "2026-05-10T11:09:27.492385+00:00"
+  },
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-forbidden-path-read",
+    "event_type": "forbidden_path_read",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "read",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "/home/user/.ssh/id_rsa",
+    "timestamp": "2026-05-10T11:09:27.492400+00:00"
+  },
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-uploaded-script-execution",
+    "event_type": "uploaded_script_execution_attempt",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "exec",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "/workspace/skill/run_skill.sh",
+    "timestamp": "2026-05-10T11:09:27.492414+00:00"
+  },
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-privileged-request",
+    "event_type": "privileged_container_requested",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "docker_run_flag",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "--privileged",
+    "timestamp": "2026-05-10T11:09:27.492428+00:00"
+  },
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-host-network-request",
+    "event_type": "host_network_requested",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "docker_run_flag",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "--network host",
+    "timestamp": "2026-05-10T11:09:27.492443+00:00"
+  },
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-docker-pull-attempt",
+    "event_type": "docker_pull_attempt",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "image_pull",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "example/image:latest",
+    "timestamp": "2026-05-10T11:09:27.492457+00:00"
+  },
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-codex-exec-attempt",
+    "event_type": "codex_exec_attempt",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "exec",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "codex exec",
+    "timestamp": "2026-05-10T11:09:27.492470+00:00"
+  },
+  {
+    "container_name": "codex-synthetic-violation-container",
+    "dry_run": true,
+    "event_id": "synthetic-strace-attempt",
+    "event_type": "strace_attempt",
+    "evidence": {
+      "description": "Synthetic event only; no real container, network, token, or host secret was touched.",
+      "real_action_performed": false
+    },
+    "observed_action": "exec",
+    "sample_name": "synthetic_runtime_violation_sample",
+    "source": "stage24_synthetic_event_matrix",
+    "synthetic": true,
+    "target": "strace",
+    "timestamp": "2026-05-10T11:09:27.492484+00:00"
+  }
+]

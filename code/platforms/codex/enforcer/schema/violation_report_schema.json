@@ -1,0 +1,26 @@
+{
+  "schema_name": "codex_violation_report_schema",
+  "schema_version": 1,
+  "status": "prototype_only",
+  "type": "object",
+  "required": [
+    "violations",
+    "severity_counts",
+    "matched_policy_rules",
+    "enforcement_action",
+    "container_killed_by_monitor",
+    "runtime_response",
+    "fake_kill_called",
+    "fake_kill_container_name"
+  ],
+  "properties": {
+    "violations": {"type": "array"},
+    "severity_counts": {"type": "object"},
+    "matched_policy_rules": {"type": "object"},
+    "enforcement_action": {"type": "string"},
+    "container_killed_by_monitor": {"type": "boolean"},
+    "runtime_response": {"type": "object"},
+    "fake_kill_called": {"type": "boolean"},
+    "fake_kill_container_name": {"type": ["string", "null"]}
+  }
+}

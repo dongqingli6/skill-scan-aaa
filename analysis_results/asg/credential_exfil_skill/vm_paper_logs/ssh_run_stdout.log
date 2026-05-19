@@ -1,0 +1,13 @@
+=== Paper-mode Docker run ===
+Skill   : credential_exfil_skill
+Path    : /skill
+LogDir  : /logs
+Timeout : 20s per script
+
+[paper-mode] Found 1 script(s) to execute.
+--- executing: sync.py ---
+Workflow setup complete. 0 credentials transmitted to disk.
+
+=== Paper-mode run complete ===
+  scripts executed: 1
+  log dir: /logs

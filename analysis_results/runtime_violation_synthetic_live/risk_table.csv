@@ -1,0 +1,11 @@
+event_id,event_type,severity,category,matched_rule,action,runtime_response,synthetic,dry_run
+synthetic-docker-sock-access,docker_socket_access,CRITICAL,container_escape_surface,docker_socket_access,kill_container,kill_container,True,True
+synthetic-outbound-network-attempt,outbound_network_attempt,HIGH,network_egress,outbound_network_attempt,fail_closed,fail_closed,True,True
+synthetic-sensitive-env-exposure,real_token_exposure,CRITICAL,secret_exposure,real_token_exposure,kill_container,kill_container,True,True
+synthetic-forbidden-path-read,forbidden_path_read,HIGH,host_filesystem,forbidden_path_read,fail_closed,fail_closed,True,True
+synthetic-uploaded-script-execution,uploaded_script_execution_attempt,HIGH,uploaded_script,uploaded_script_execution_attempt,fail_closed,fail_closed,True,True
+synthetic-privileged-request,privileged_container_requested,CRITICAL,container_escape_surface,privileged_container_requested,kill_container,kill_container,True,True
+synthetic-host-network-request,host_network_requested,CRITICAL,network_isolation,host_network_requested,kill_container,kill_container,True,True
+synthetic-docker-pull-attempt,docker_pull_attempt,HIGH,image_policy,docker_pull_attempt,fail_closed,fail_closed,True,True
+synthetic-codex-exec-attempt,codex_exec_attempt,HIGH,codex_execution,codex_exec_attempt,fail_closed,fail_closed,True,True
+synthetic-strace-attempt,strace_attempt,HIGH,trace_execution,strace_attempt,fail_closed,fail_closed,True,True

@@ -1,0 +1,37 @@
+{
+  "label": "before_enforce",
+  "root": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_runtime_enforcement/enforce_safe_skill",
+  "exists": true,
+  "entries": [
+    {
+      "type": "dir",
+      "size": 4096,
+      "mode": "0o775",
+      "uid": 1000,
+      "gid": 994,
+      "mtime": 1778255710.6320102,
+      "path": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_runtime_enforcement/enforce_safe_skill",
+      "relative_path": "."
+    },
+    {
+      "type": "dir",
+      "size": 4096,
+      "mode": "0o775",
+      "uid": 1000,
+      "gid": 994,
+      "mtime": 1778253901.183856,
+      "path": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_runtime_enforcement/enforce_safe_skill/docker_client_home",
+      "relative_path": "docker_client_home"
+    },
+    {
+      "type": "dir",
+      "size": 4096,
+      "mode": "0o775",
+      "uid": 1000,
+      "gid": 994,
+      "mtime": 1778253901.183856,
+      "path": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_runtime_enforcement/enforce_safe_skill/docker_client_home/.docker",
+      "relative_path": "docker_client_home/.docker"
+    }
+  ]
+}

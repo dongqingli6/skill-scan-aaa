@@ -1,0 +1,133 @@
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+mkdir("/home/codexsafe/.codex/skills", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/agents", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/agents", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/assets", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/references", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/scripts", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/scripts", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/imagegen/scripts", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/agents", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/agents", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/assets", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/references", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/scripts", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/openai-docs/scripts", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator/agents", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator/agents", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator/assets", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator/references", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator/scripts", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/plugin-creator/scripts", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/agents", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/agents", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/assets", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/references", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/references", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/scripts", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/scripts", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/scripts", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-creator/scripts", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer/agents", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer/agents", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer/assets", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer/assets", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer/scripts", 0777) = 0
+mkdir("/home/codexsafe/.codex/skills/.system", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer/scripts", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer/scripts", 0777) = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/skills/.system/skill-installer/scripts", 0777) = -1 EEXIST (File exists)
+clone(child_stack=0x784baa9ea338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[35], tls=0x784baa9eab38, child_tidptr=0x784bbbbffe20) = 35
+clone(child_stack=0x784baa795338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[36], tls=0x784baa795b38, child_tidptr=0x784bbbbffe20) = 36
+clone(child_stack=0x784baa592338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[37], tls=0x784baa592b38, child_tidptr=0x784bbbbffe20) = 37
+clone(child_stack=0x784baa388338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[39], tls=0x784baa388b38, child_tidptr=0x784bbbbffe20) = 39
+clone(child_stack=0x784baebe7bc8, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 40
+clone(child_stack=0x784baebe7bc8, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 42
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=42, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+clone(child_stack=0x784baebe7a98, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 44
+clone(child_stack=0x784baebe7a98, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 45
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=45, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+clone(child_stack=0x784baebf94a8, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 46
+clone(child_stack=0x784baebf94a8, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 47
+clone(child_stack=0x784ba9f82338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[49], tls=0x784ba9f82b38, child_tidptr=0x784bbbbffe20) = 49
+mkdir("/home/codexsafe/.codex/memories", 0777) = -1 EEXIST (File exists)
+recvfrom(41, "", 8, 0, NULL, NULL)      = 0
+clone(child_stack=0x784baebdaa18, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 51
+clone(child_stack=0x784baebdaa18, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 52
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=52, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=50, si_uid=1000, si_status=0, si_utime=1 /* 0.01 s */, si_stime=1 /* 0.01 s */} ---
+recvfrom(42, "", 8, 0, NULL, NULL)      = 0
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=73, si_uid=1000, si_status=0, si_utime=0, si_stime=1 /* 0.01 s */} ---
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 77
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 78
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=78, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 79
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 80
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 81
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 82
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 83
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 84
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 85
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 86
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 87
+clone(child_stack=0x784baeb9d288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 88
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=88, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+clone(child_stack=0x784baebba258, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 89
+clone(child_stack=0x784baebba258, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 90
++++ killed by SIGTERM +++

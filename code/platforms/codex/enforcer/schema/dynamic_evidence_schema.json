@@ -1,0 +1,24 @@
+{
+  "schema_name": "codex_dynamic_evidence_schema",
+  "schema_version": 1,
+  "status": "prototype_only",
+  "type": "object",
+  "required": [
+    "docker_network_mode",
+    "filesystem_diff_summary",
+    "trace_summary",
+    "syscall_policy_summary",
+    "network_disabled_summary",
+    "final_verdict",
+    "malicious_samples_executed"
+  ],
+  "properties": {
+    "docker_network_mode": {"type": "string"},
+    "filesystem_diff_summary": {"type": "object"},
+    "trace_summary": {"type": "object"},
+    "syscall_policy_summary": {"type": "object"},
+    "network_disabled_summary": {"type": "object"},
+    "final_verdict": {"type": "string"},
+    "malicious_samples_executed": {"type": "boolean"}
+  }
+}

@@ -1,0 +1,48 @@
+mkdir("/home/codexsafe/.codex", 0777)   = -1 EEXIST (File exists)
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=38, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=41, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=46, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=47, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=51, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+mkdir("/home/codexsafe/.codex/shell_snapshots", 0777) = 0
+rename("/home/codexsafe/.codex/shell_snapshots/019e084c-db36-72a1-8926-474ade45d536.tmp-1778255715159979785", "/home/codexsafe/.codex/shell_snapshots/019e084c-db36-72a1-8926-474ade45d536.1778255715159979785.sh") = 0
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=74, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=75, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=77, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 32
+sendto(32, "\250y\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(32, "\323\r\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(32, "\250y\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(32, "\323\r\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=79, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=80, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=81, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=82, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 27
+sendto(27, "\352L\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "\377\0\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "\352L\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "\377\0\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=83, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=84, si_uid=1000, si_status=0, si_utime=0, si_stime=1 /* 0.01 s */} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=85, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=86, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 27
+sendto(27, "\353O\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "\373T\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "\353O\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "\373T\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=87, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=89, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=90, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 27
+sendto(27, ",\344\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "<\204\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, ",\344\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "<\204\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 27
+sendto(27, "\344\267\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "\366K\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "\344\267\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\1\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
+sendto(27, "\366K\1\0\0\1\0\0\0\0\0\0\3api\6openai\3com\0\0\34\0\1", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
++++ killed by SIGTERM +++

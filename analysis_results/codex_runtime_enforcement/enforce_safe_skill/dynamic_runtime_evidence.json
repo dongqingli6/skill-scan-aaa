@@ -1,0 +1,6 @@
+{
+  "docker_network_mode": "none",
+  "dynamic_execution_performed": true,
+  "malicious_samples_executed": false,
+  "real_tokens_present": false
+}

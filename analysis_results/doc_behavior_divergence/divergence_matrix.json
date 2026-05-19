@@ -1,0 +1,118 @@
+{
+  "ideation.zip": {
+    "claims": {
+      "credential": "not_declared",
+      "docker": "not_declared",
+      "execution": "declared",
+      "filesystem": "not_declared",
+      "install_setup": "not_declared",
+      "network": "not_declared"
+    },
+    "decision": "consistent",
+    "divergences": [],
+    "evidence_flags": {
+      "credential": false,
+      "docker": false,
+      "execution": false,
+      "filesystem": false,
+      "install": false,
+      "network": false,
+      "prompt_injection": false
+    },
+    "final_recommendation": "No document-behavior divergence found in existing evidence; existing risk gates still apply."
+  },
+  "implementation-guide.zip": {
+    "claims": {
+      "credential": "declared",
+      "docker": "not_declared",
+      "execution": "declared",
+      "filesystem": "declared",
+      "install_setup": "declared",
+      "network": "declared"
+    },
+    "decision": "blocked",
+    "divergences": [
+      {
+        "category": "under_disclosed_risky_behavior",
+        "reason": "SKILL.md presents writing/advice behavior while evidence shows possible command, file, or network behavior.",
+        "severity": "high"
+      }
+    ],
+    "evidence_flags": {
+      "credential": true,
+      "docker": false,
+      "execution": false,
+      "filesystem": false,
+      "install": false,
+      "network": true,
+      "prompt_injection": false
+    },
+    "final_recommendation": "HIGH / CRITICAL divergence: blocked pending human security review."
+  },
+  "logging-best-practices.zip": {
+    "claims": {
+      "credential": "declared",
+      "docker": "not_declared",
+      "execution": "declared",
+      "filesystem": "declared",
+      "install_setup": "not_declared",
+      "network": "declared"
+    },
+    "decision": "consistent",
+    "divergences": [],
+    "evidence_flags": {
+      "credential": false,
+      "docker": false,
+      "execution": false,
+      "filesystem": false,
+      "install": false,
+      "network": true,
+      "prompt_injection": false
+    },
+    "final_recommendation": "No document-behavior divergence found in existing evidence; existing risk gates still apply."
+  },
+  "react-effect-patterns.zip": {
+    "claims": {
+      "credential": "declared",
+      "docker": "not_declared",
+      "execution": "declared",
+      "filesystem": "declared",
+      "install_setup": "not_declared",
+      "network": "denied"
+    },
+    "decision": "consistent",
+    "divergences": [],
+    "evidence_flags": {
+      "credential": false,
+      "docker": false,
+      "execution": false,
+      "filesystem": false,
+      "install": false,
+      "network": false,
+      "prompt_injection": false
+    },
+    "final_recommendation": "No document-behavior divergence found in existing evidence; existing risk gates still apply."
+  },
+  "val-town-cli.zip": {
+    "claims": {
+      "credential": "not_declared",
+      "docker": "not_declared",
+      "execution": "declared",
+      "filesystem": "declared",
+      "install_setup": "not_declared",
+      "network": "declared"
+    },
+    "decision": "consistent",
+    "divergences": [],
+    "evidence_flags": {
+      "credential": false,
+      "docker": false,
+      "execution": false,
+      "filesystem": false,
+      "install": false,
+      "network": true,
+      "prompt_injection": false
+    },
+    "final_recommendation": "No document-behavior divergence found in existing evidence; existing risk gates still apply."
+  }
+}

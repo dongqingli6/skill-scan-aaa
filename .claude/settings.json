@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "PowerShell(Start-Process \"http://127.0.0.1:8765/asg#skill-reverse_shell_skill\")"
+    ]
+  }
+}

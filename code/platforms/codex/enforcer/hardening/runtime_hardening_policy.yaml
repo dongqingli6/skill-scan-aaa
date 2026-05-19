@@ -1,0 +1,50 @@
+policy_version: stage22-runtime-hardening-v1
+network:
+  default: deny
+  docker_network_mode: none
+  host_network: forbidden
+  egress_allowlist_enabled: false
+  egress_proxy_enabled: false
+  dns_allowed: false
+filesystem:
+  sample_mount: read_only
+  output_mount: writable
+  docker_socket_mount: forbidden
+  host_home_mount: forbidden
+  real_codex_home_mount: forbidden
+  real_agents_home_mount: forbidden
+  env_file_mount: forbidden
+  ssh_key_mount: forbidden
+container:
+  privileged: forbidden
+  no_new_privileges: required
+  cap_drop_all: required
+  read_only_rootfs: preferred
+  tmpfs_for_tmp: preferred
+  pids_limit: required
+  memory_limit: required
+  cpu_limit: required
+  timeout: required
+execution:
+  codex_exec: forbidden
+  strace: forbidden_by_default
+  uploaded_scripts: forbidden
+  install_commands: forbidden
+  shell_eval: forbidden
+  shell_true: forbidden
+  benign_inspection_only: required
+image:
+  allowlist_required: true
+  local_image_required: true
+  docker_pull: forbidden
+  image_inspect_before_run: required
+environment:
+  sanitized_subprocess_env: required
+  real_tokens_passed_to_container: forbidden
+  sensitive_env_names_redacted_only: required
+audit:
+  runtime_event_log_required: true
+  container_start_record_required: true
+  container_cleanup_record_required: true
+  policy_decision_record_required: true
+  final_verdict_required: true

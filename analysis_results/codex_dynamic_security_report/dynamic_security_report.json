@@ -1,0 +1,76 @@
+{
+  "target_platform": "codex",
+  "sample": "safe_skill",
+  "dynamic_execution_performed": true,
+  "malicious_samples_executed": false,
+  "docker_network_mode": "none",
+  "real_tokens_present": false,
+  "sample_mount": "read-only",
+  "output_mount": "writable",
+  "codex_bundle_mount": "read-only",
+  "filesystem_diff_summary": {
+    "source": "analysis_results/codex_docker_safe_smoke_fs_diff_manual/filesystem_diff.json",
+    "total_created": 90,
+    "total_deleted": 0,
+    "total_modified": 2,
+    "high_risk_changes": 0,
+    "critical_risk_changes": 0,
+    "risk_count": 1,
+    "risks": [
+      {
+        "path": "output/codex_docker_smoke_stderr.txt",
+        "change": "modified",
+        "severity": "LOW",
+        "reason": "output artifact in writable output directory"
+      }
+    ]
+  },
+  "strace_summary": {
+    "source": "analysis_results/codex_strace_plan/strace_parse_result.json",
+    "parsed_file_count": 91,
+    "total_lines": 1161,
+    "summary_counts": {
+      "execve": 175,
+      "openat": 567,
+      "socket": 17,
+      "connect": 4,
+      "sendto": 52,
+      "recvfrom": 2,
+      "unlink": 4,
+      "rename": 1,
+      "chmod": 1,
+      "chown": 0,
+      "mkdir": 106,
+      "rmdir": 0,
+      "clone": 88
+    },
+    "risk_summary": {
+      "LOW": 56,
+      "MEDIUM": 0,
+      "HIGH": 0,
+      "CRITICAL": 0
+    },
+    "finding_count": 56
+  },
+  "network_disabled_summary": {
+    "network_mode_expected": "none",
+    "verification_status": "passed",
+    "external_api_attempt_observed": true,
+    "external_api_blocked": true,
+    "timeout_observed": true,
+    "evidence_line_count": 7
+  },
+  "risk_summary": {
+    "LOW": 57,
+    "MEDIUM": 0,
+    "HIGH": 0,
+    "CRITICAL": 0
+  },
+  "final_verdict": "safe_skill-only dynamic harness succeeded; observed Codex network attempts were blocked by Docker --network none; no HIGH/CRITICAL filesystem or credential access evidence was observed.",
+  "sources": {
+    "network_disabled_verification": "analysis_results/codex_docker_safe_smoke_manual/network_disabled_verification.json",
+    "dynamic_evidence": "analysis_results/codex_docker_safe_smoke_manual/dynamic_evidence.json",
+    "filesystem_diff": "analysis_results/codex_docker_safe_smoke_fs_diff_manual/filesystem_diff.json",
+    "strace_parse_result": "analysis_results/codex_strace_plan/strace_parse_result.json"
+  }
+}

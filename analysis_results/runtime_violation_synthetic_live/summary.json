@@ -1,0 +1,47 @@
+{
+  "codex_executed": false,
+  "critical": 4,
+  "docker_executed": false,
+  "dry_run_kill": true,
+  "fail_closed_decisions": 6,
+  "fake_kill_callback_called": true,
+  "fake_kill_callback_calls": [
+    {
+      "container_name": "codex-synthetic-violation-container",
+      "event_id": "synthetic-docker-sock-access",
+      "fake_kill_callback": true,
+      "real_container_killed": false
+    },
+    {
+      "container_name": "codex-synthetic-violation-container",
+      "event_id": "synthetic-sensitive-env-exposure",
+      "fake_kill_callback": true,
+      "real_container_killed": false
+    },
+    {
+      "container_name": "codex-synthetic-violation-container",
+      "event_id": "synthetic-privileged-request",
+      "fake_kill_callback": true,
+      "real_container_killed": false
+    },
+    {
+      "container_name": "codex-synthetic-violation-container",
+      "event_id": "synthetic-host-network-request",
+      "fake_kill_callback": true,
+      "real_container_killed": false
+    }
+  ],
+  "final_status": "pass",
+  "high": 6,
+  "kill_decisions": 4,
+  "low": 0,
+  "medium": 0,
+  "network_enabled": false,
+  "real_container_killed": false,
+  "real_skill_executed": false,
+  "record_only_decisions": 0,
+  "stage": "Stage 24 Synthetic Runtime Violation Live Test",
+  "strace_executed": false,
+  "synthetic": true,
+  "total_events": 10
+}

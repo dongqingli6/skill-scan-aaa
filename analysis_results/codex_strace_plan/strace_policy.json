@@ -1,0 +1,49 @@
+{
+  "policy_type": "codex_safe_skill_strace_policy",
+  "allowed_read_prefixes": [
+    "/workspace",
+    "/home/codexsafe",
+    "/output",
+    "/opt/codex-bundle"
+  ],
+  "allowed_write_prefixes": [
+    "/output",
+    "/home/codexsafe/.codex"
+  ],
+  "forbidden_read_patterns": [
+    ".ssh",
+    ".env",
+    "token",
+    "credential",
+    "/home/empty",
+    "/root/.codex",
+    "/root/.agents"
+  ],
+  "forbidden_write_prefixes": [
+    "/workspace/safe_skill",
+    "/opt/codex-bundle"
+  ],
+  "forbidden_exec_patterns": [
+    "/bin/sh",
+    "/bin/bash",
+    "curl",
+    "wget",
+    "python",
+    "node -e"
+  ],
+  "forbidden_network_patterns": [
+    "connect(",
+    "api.openai.com",
+    "0.0.0.0",
+    "169.254.169.254"
+  ],
+  "severity_mapping": {
+    "external_connect": "HIGH",
+    "credential_read": "HIGH",
+    "host_private_read": "CRITICAL",
+    "workspace_write": "HIGH",
+    "codex_bundle_write": "CRITICAL",
+    "shell_exec": "HIGH"
+  },
+  "note": "Plan-only policy. No strace execution in this stage."
+}

@@ -1,0 +1,13 @@
+=== Paper-mode Docker run ===
+Skill   : reverse_shell_skill
+Path    : /skill
+LogDir  : /logs
+Timeout : 30s per script
+
+[paper-mode] Found 1 script(s) to execute.
+--- executing: calculate.py ---
+Result: 2
+
+=== Paper-mode run complete ===
+  scripts executed: 1
+  log dir: /logs

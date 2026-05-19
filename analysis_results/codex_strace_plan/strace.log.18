@@ -1,0 +1,36 @@
+execve("/opt/codex-bundle/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex", ["/opt/codex-bundle/lib/node_modul"..., "exec", "--sandbox", "read-only", "--ignore-user-config", "--ignore-rules", "--skip-git-repo-check", "--ephemeral", "List the available safe skill fi"...], 0x895f960 /* 11 vars */) = 0
+mkdir("/home/codexsafe/.codex", 0777)   = -1 EEXIST (File exists)
+mkdir("/home/codexsafe/.codex/tmp/arg0", 0777) = -1 ENOENT (No such file or directory)
+mkdir("/home/codexsafe/.codex/tmp", 0777) = 0
+mkdir("/home/codexsafe/.codex/tmp/arg0", 0777) = 0
+chmod("/home/codexsafe/.codex/tmp/arg0", 0700) = 0
+mkdir("/home/codexsafe/.codex/tmp/arg0/codex-arg0mFpb3A", 0777) = 0
+clone(child_stack=0x7dd10ddff338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[19], tls=0x7dd10ddffb38, child_tidptr=0x7dd11adffe20) = 19
+clone(child_stack=0x7dd10cdfc338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[20], tls=0x7dd10cdfcb38, child_tidptr=0x7dd11adffe20) = 20
+clone(child_stack=0x7dd10bdf9338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[21], tls=0x7dd10bdf9b38, child_tidptr=0x7dd11adffe20) = 21
+clone(child_stack=0x7dd10adf6338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[22], tls=0x7dd10adf6b38, child_tidptr=0x7dd11adffe20) = 22
+clone(child_stack=0x7dd109df3338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[23], tls=0x7dd109df3b38, child_tidptr=0x7dd11adffe20) = 23
+clone(child_stack=0x7dd108df0338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[24], tls=0x7dd108df0b38, child_tidptr=0x7dd11adffe20) = 24
+clone(child_stack=0x7dd107ded338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[25], tls=0x7dd107dedb38, child_tidptr=0x7dd11adffe20) = 25
+clone(child_stack=0x7dd106dea338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[26], tls=0x7dd106deab38, child_tidptr=0x7dd11adffe20) = 26
+clone(child_stack=0x7dd105de7338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[27], tls=0x7dd105de7b38, child_tidptr=0x7dd11adffe20) = 27
+clone(child_stack=0x7dd104de4338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[28], tls=0x7dd104de4b38, child_tidptr=0x7dd11adffe20) = 28
+clone(child_stack=0x7dd103de1338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[29], tls=0x7dd103de1b38, child_tidptr=0x7dd11adffe20) = 29
+clone(child_stack=0x7dd102dde338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[30], tls=0x7dd102ddeb38, child_tidptr=0x7dd11adffe20) = 30
+clone(child_stack=0x7dd101ddb338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[31], tls=0x7dd101ddbb38, child_tidptr=0x7dd11adffe20) = 31
+clone(child_stack=0x7dd100dd8338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[32], tls=0x7dd100dd8b38, child_tidptr=0x7dd11adffe20) = 32
+clone(child_stack=0x7dd0ffdd5338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[33], tls=0x7dd0ffdd5b38, child_tidptr=0x7dd11adffe20) = 33
+clone(child_stack=0x7dd0fedd2338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[34], tls=0x7dd0fedd2b38, child_tidptr=0x7dd11adffe20) = 34
+clone(child_stack=0x7dd0fddcd338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[35], tls=0x7dd0fddcdb38, child_tidptr=0x7dd11adffe20) = 35
+clone(child_stack=0x7dd0fcdca338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[36], tls=0x7dd0fcdcab38, child_tidptr=0x7dd11adffe20) = 36
+mkdir("/home/codexsafe/.codex/memories", 0777) = 0
+clone(child_stack=0x7ffcb16d4da8, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 37
+clone(child_stack=0x7ffcb16d4da8, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 38
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=38, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+clone(child_stack=0x7dd0fbdc7338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[39], tls=0x7dd0fbdc7b38, child_tidptr=0x7dd11adffe20) = 39
+clone(child_stack=0x7dd0fbdc7338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[41], tls=0x7dd0fbdc7b38, child_tidptr=0x7dd11adffe20) = 41
+clone(child_stack=0x7dd0fb88a338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[42], tls=0x7dd0fb88ab38, child_tidptr=0x7dd11adffe20) = 42
+clone(child_stack=0x7dd0fb5f7338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[43], tls=0x7dd0fb5f7b38, child_tidptr=0x7dd11adffe20) = 43
+clone(child_stack=0x7dd0fb39d338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[44], tls=0x7dd0fb39db38, child_tidptr=0x7dd11adffe20) = 44
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=62, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
++++ killed by SIGTERM +++

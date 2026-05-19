@@ -1,0 +1,33 @@
+{
+  "adapter": "web UI prototype static adapter",
+  "file_count": 1,
+  "findings": [
+    {
+      "message": "Docker socket reference",
+      "path": "demo_safe_skill/SKILL.md",
+      "pattern": "docker.sock",
+      "severity": "critical"
+    }
+  ],
+  "has_skill_md": true,
+  "job_id": "job_20260509_160012_daf3c354",
+  "production_equivalent": false,
+  "risk_summary": {
+    "critical": 1,
+    "high": 0,
+    "informational": 0,
+    "low": 0,
+    "medium": 0
+  },
+  "safety_boundaries": [
+    "local only",
+    "network none by default",
+    "no real tokens",
+    "no real HOME credential reads",
+    "no docker socket mount",
+    "no privileged container",
+    "no host network mode",
+    "dynamic execution defaults to plan-only and fail-closed"
+  ],
+  "skill_name": "demo_safe_skill"
+}

@@ -1,0 +1,17 @@
+FROM ubuntu:24.04
+
+ENV HOME=/home/codexsafe
+ENV CODEX_HOME=/home/codexsafe/.codex
+ENV PATH=/opt/codex-bundle/bin:/usr/local/bin:/usr/bin:/bin
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
+RUN mkdir -p /home/codexsafe/.codex /home/codexsafe/.agents/skills /workspace /output \
+    && echo 'codexsafe:x:1000:1000:Codex Safe User:/home/codexsafe:/bin/bash' >> /etc/passwd \
+    && echo 'codexsafe:x:1000:' >> /etc/group \
+    && chown -R 1000:1000 /home/codexsafe /workspace /output
+
+USER 1000:1000
+WORKDIR /workspace
+
+CMD ["/bin/bash", "-lc", "echo codex sandbox ready; echo HOME=$HOME; echo CODEX_HOME=$CODEX_HOME; echo PATH=$PATH; id"]

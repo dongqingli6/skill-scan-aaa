@@ -1,0 +1,762 @@
+{
+  "target_platform": "codex",
+  "monitor_mode": "existing_evidence",
+  "network_mode": "none",
+  "dynamic_evidence_path": "analysis_results/codex_dynamic_security_report/dynamic_security_report.json",
+  "strace_path": "analysis_results/codex_strace_plan/strace_parse_result.json",
+  "filesystem_diff_path": "analysis_results/codex_docker_safe_smoke_fs_diff_manual/filesystem_diff.json",
+  "network_path": "analysis_results/codex_docker_safe_smoke_manual/network_disabled_verification.json",
+  "blocked_network_attempts_are_blocked": true,
+  "real_network_connect_success_observed": false,
+  "real_sensitive_read_observed": false,
+  "readonly_mount_write_observed": false,
+  "violations": [
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.35",
+        "line": "sendto(29, \"\\273\\317\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7chatgpt\\3com\\0\\0\\1\\0\\1\", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 4
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.35",
+        "line": "sendto(29, \"\\313\\323\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7chatgpt\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 5
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.35",
+        "line": "sendto(29, \"\\273\\317\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7chatgpt\\3com\\0\\0\\1\\0\\1\", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 6
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.35",
+        "line": "sendto(29, \"\\313\\323\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7chatgpt\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 7
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.36",
+        "line": "sendto(25, \"i1\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 5
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.36",
+        "line": "sendto(25, \"\\222\\375\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 6
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.36",
+        "line": "sendto(25, \"i1\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 7
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.36",
+        "line": "sendto(25, \"\\222\\375\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 8
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.36",
+        "line": "sendto(25, \"hu\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 10
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.36",
+        "line": "sendto(25, \"\\271Q\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 11
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.36",
+        "line": "sendto(25, \"hu\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 12
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.36",
+        "line": "sendto(25, \"\\271Q\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 13
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.58",
+        "line": "sendto(33, \"\\310\\265\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6github\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 2
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.58",
+        "line": "sendto(33, \"\\330\\271\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6github\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 3
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.58",
+        "line": "sendto(33, \"\\310\\265\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6github\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 4
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.58",
+        "line": "sendto(33, \"\\330\\271\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6github\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 5
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(32, \"\\355\\323\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 2
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(32, \"\\374\\253\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 3
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(32, \"\\355\\323\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 4
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(32, \"\\374\\253\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 5
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\357\\327\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 7
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\376\\257\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 8
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\357\\327\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 9
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\376\\257\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 10
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"i\\373\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 12
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\223\\307\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 13
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"i\\373\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 14
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\223\\307\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 15
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \",2\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 17
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"U\\376\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 18
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \",2\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 19
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"U\\376\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 20
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\301\\347\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 22
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\321\\353\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 23
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\301\\347\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 24
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\321\\353\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 25
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\207\\242\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 27
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\230\\n\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 28
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\207\\242\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 29
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\230\\n\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 30
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\233\\334\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 32
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\252O\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 33
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\233\\334\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 34
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.59",
+        "line": "sendto(25, \"\\252O\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 35
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_UNIX",
+        "file": "analysis_results/codex_strace_plan/strace.log.60",
+        "line": "connect(3, {sa_family=AF_UNIX, sun_path=\"/var/run/nscd/socket\"}, 110) = -1 ENOENT (No such file or directory)",
+        "line_number": 35
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_UNIX",
+        "file": "analysis_results/codex_strace_plan/strace.log.60",
+        "line": "connect(3, {sa_family=AF_UNIX, sun_path=\"/var/run/nscd/socket\"}, 110) = -1 ENOENT (No such file or directory)",
+        "line_number": 37
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.61",
+        "line": "sendto(36, \"\\374\\231\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 2
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.61",
+        "line": "sendto(36, \",\\245\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 3
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.61",
+        "line": "sendto(36, \"\\374\\231\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\1\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 4
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.61",
+        "line": "sendto(36, \",\\245\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\3api\\6openai\\3com\\0\\0\\34\\0\\1\", 32, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 5
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_UNIX",
+        "file": "analysis_results/codex_strace_plan/strace.log.84",
+        "line": "connect(3, {sa_family=AF_UNIX, sun_path=\"/var/run/nscd/socket\"}, 110) = -1 ENOENT (No such file or directory)",
+        "line_number": 35
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_UNIX",
+        "file": "analysis_results/codex_strace_plan/strace.log.84",
+        "line": "connect(3, {sa_family=AF_UNIX, sun_path=\"/var/run/nscd/socket\"}, 110) = -1 ENOENT (No such file or directory)",
+        "line_number": 37
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.87",
+        "line": "sendto(29, \"Q\\n\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7chatgpt\\3com\\0\\0\\1\\0\\1\", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 2
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.87",
+        "line": "sendto(29, \"a\\326\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7chatgpt\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 3
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.87",
+        "line": "sendto(29, \"Q\\n\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7chatgpt\\3com\\0\\0\\1\\0\\1\", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 4
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "blocked_network_attempt",
+      "evidence": {
+        "severity": "LOW",
+        "category": "blocked_network_attempt",
+        "path": "AF_INET",
+        "file": "analysis_results/codex_strace_plan/strace.log.87",
+        "line": "sendto(29, \"a\\326\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7chatgpt\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"192.168.198.2\")}, 16) = -1 ENETUNREACH (Network is unreachable)",
+        "line_number": 5
+      },
+      "recommended_action": "record"
+    },
+    {
+      "severity": "LOW",
+      "category": "output_write",
+      "evidence": {
+        "path": "output/codex_docker_smoke_stderr.txt",
+        "change": "modified",
+        "severity": "LOW",
+        "reason": "output artifact in writable output directory"
+      },
+      "recommended_action": "record"
+    }
+  ],
+  "risk_summary": {
+    "INFO": 0,
+    "LOW": 57,
+    "MEDIUM": 0,
+    "HIGH": 0,
+    "CRITICAL": 0
+  },
+  "recommended_action": "record"
+}

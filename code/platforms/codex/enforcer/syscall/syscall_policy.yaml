@@ -1,0 +1,176 @@
+# Prototype only. This is not a production syscall policy.
+# Current validation is static and synthetic-log only. It does not run Docker,
+# Codex, strace, or samples.
+
+version: 1
+name: codex-safe-skill-syscall-policy
+status: prototype_only
+default_policy: deny_high_risk
+network_mode_default: none
+
+categories:
+  file_read:
+    syscalls: [open, openat, openat2, read, readlink, readlinkat, stat, lstat, newfstatat]
+  file_write:
+    syscalls: [open, openat, openat2, write, writev, unlink, unlinkat, rename, renameat, chmod, chown, mkdir, mkdirat, rmdir]
+  process_exec:
+    syscalls: [execve, execveat, clone, fork, vfork]
+  network:
+    syscalls: [socket, connect, sendto, recvfrom, sendmsg, recvmsg]
+  privilege:
+    syscalls: [setuid, setgid, setreuid, setregid, setresuid, setresgid, capset, prctl]
+  namespace:
+    syscalls: [mount, umount, umount2, pivot_root, unshare, setns, clone3]
+  kernel:
+    syscalls: [bpf, perf_event_open, init_module, finit_module, delete_module, kexec_load, reboot]
+  credential_access:
+    syscalls: [keyctl, add_key, request_key]
+  docker_escape:
+    paths: [/var/run/docker.sock]
+
+rules:
+  - id: sensitive_ssh_read
+    severity: CRITICAL
+    category: credential_access
+    match:
+      syscall: [open, openat, openat2]
+      path_glob: /home/*/.ssh/**
+      access: read
+    reason: reading SSH key material is forbidden
+
+  - id: sensitive_codex_home_read
+    severity: HIGH
+    category: credential_access
+    match:
+      syscall: [open, openat, openat2]
+      path_glob: /home/*/.codex/**
+      access: read
+      except_path_prefix: /home/codexsafe/.codex
+    reason: reading real Codex home is forbidden
+
+  - id: sensitive_agents_home_read
+    severity: HIGH
+    category: credential_access
+    match:
+      syscall: [open, openat, openat2]
+      path_glob: /home/*/.agents/**
+      access: read
+      except_path_prefix: /home/codexsafe/.agents
+    reason: reading real agents home is forbidden
+
+  - id: dotenv_read
+    severity: CRITICAL
+    category: credential_access
+    match:
+      syscall: [open, openat, openat2]
+      path_glob: /**/.env
+      access: read
+    reason: reading .env secrets is forbidden
+
+  - id: docker_socket_access
+    severity: CRITICAL
+    category: docker_escape
+    match:
+      path_exact: /var/run/docker.sock
+      access: any
+    reason: Docker socket access can escape the sandbox
+
+  - id: codex_bundle_write
+    severity: CRITICAL
+    category: file_write
+    match:
+      path_prefix: /opt/codex-bundle/
+      access: write
+    reason: writing to the read-only Codex bundle is forbidden
+
+  - id: safe_skill_write
+    severity: HIGH
+    category: file_write
+    match:
+      path_prefix: /workspace/safe_skill/
+      access: write
+    reason: writing to the mounted safe skill source is forbidden
+
+  - id: namespace_mount
+    severity: CRITICAL
+    category: namespace
+    match:
+      syscall: [mount, umount, umount2, pivot_root]
+    reason: mount namespace and root pivot syscalls are forbidden
+
+  - id: ptrace_use
+    severity: CRITICAL
+    category: privilege
+    match:
+      syscall: [ptrace]
+    reason: ptrace is forbidden in the sandbox
+
+  - id: bpf_use
+    severity: CRITICAL
+    category: kernel
+    match:
+      syscall: [bpf]
+    reason: eBPF syscall is forbidden
+
+  - id: perf_event_open_use
+    severity: HIGH
+    category: kernel
+    match:
+      syscall: [perf_event_open]
+    reason: perf_event_open is forbidden
+
+  - id: kernel_keyring_use
+    severity: HIGH
+    category: credential_access
+    match:
+      syscall: [keyctl, add_key, request_key]
+    reason: kernel keyring syscalls are forbidden
+
+  - id: module_loading
+    severity: CRITICAL
+    category: kernel
+    match:
+      syscall: [init_module, finit_module, delete_module]
+    reason: kernel module loading or unloading is forbidden
+
+  - id: non_allowlisted_network_connect
+    severity: HIGH
+    category: network
+    match:
+      syscall: [connect]
+      network: non_allowlisted
+    reason: connecting to a non-allowlisted network target is forbidden
+
+  - id: blocked_openai_network_none
+    severity: LOW
+    category: network
+    match:
+      syscall: [connect, sendto]
+      network_mode: none
+      target_contains: api.openai.com
+      result_contains: [ENETUNREACH, Network is unreachable, failed]
+    reason: api.openai.com connection failed under --network none
+
+  - id: output_write
+    severity: LOW
+    category: file_write
+    match:
+      path_prefix: /output/
+      access: write
+    reason: writing only to /output is expected
+
+  - id: safe_skill_read
+    severity: LOW
+    category: file_read
+    match:
+      path_prefix: /workspace/safe_skill/
+      access: read
+    reason: reading safe_skill input is expected
+
+  - id: codex_bundle_read
+    severity: LOW
+    category: file_read
+    match:
+      path_prefix: /opt/codex-bundle/
+      access: read
+    reason: reading Codex bundle input is expected

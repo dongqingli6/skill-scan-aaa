@@ -1,0 +1,147 @@
+# Open Source Release Manifest
+
+## Public Files Generated
+- `README.md`
+- `competition_materials/DEMO_SCRIPT.md`
+- `competition_materials/FUTURE_WORK.md`
+- `competition_materials/INNOVATION_POINTS.md`
+- `competition_materials/PROJECT_INTRO.md`
+- `competition_materials/RESULTS_SUMMARY.md`
+- `competition_materials/SAFETY_AND_ETHICS.md`
+- `competition_materials/SUBMISSION_CHECKLIST.md`
+- `competition_materials/TECHNICAL_ROUTE.md`
+- `demo/README.md`
+- `demo/demo_flow.md`
+- `demo/demo_script.md`
+- `demo/sample_outputs/README.md`
+- `demo/screenshots/README.md`
+- `docs/ARCHITECTURE.md`
+- `docs/COMPETITION_OVERVIEW.md`
+- `docs/DEMO_GUIDE.md`
+- `docs/FAQ.md`
+- `docs/LIMITATIONS.md`
+- `docs/OPEN_SOURCE_NOTES.md`
+- `docs/QUICK_START.md`
+- `docs/ROADMAP.md`
+- `docs/SAFETY_MODEL.md`
+- `docs/STAGE_OVERVIEW.md`
+- `public_artifacts/demo_screenshots_placeholder.md`
+- `public_artifacts/final_label_dataset.csv`
+- `public_artifacts/scaled_metrics.json`
+- `public_artifacts/stage27_summary.json`
+- `public_artifacts/stage28_summary.json`
+- `public_artifacts/stage29_summary.json`
+- `public_artifacts/synthetic_sample_descriptions.md`
+
+## Sensitive Files Excluded
+- `NEXT_PROMPT_TOMORROW.md`
+- `TOMORROW_HANDOFF_CODEX.md`
+- `NEXT_PROMPT_AFTER_REBOOT.md`
+- `REBOOT_HANDOFF_CODEX.md`
+- `README_CODEX_ADAPTATION.md`
+- `NEXT_HANDOFF_CODEX_RUNTIME_SECURITY.md`
+- `CODEX_RUNTIME_SECURITY_USER_GUIDE.md`
+- `code/.env.example`
+- `queues/codex_analysis_queue.jsonl`
+- `web_ui/real_skill_intake.py`
+- `analysis_results/codex_docker_safe_smoke_manual/docker_safe_smoke_manual_preview.txt`
+- `analysis_results/codex_docker_safe_smoke_manual/dynamic_evidence.json`
+- `analysis_results/codex_docker_safe_smoke_fs_diff_manual/filesystem_diff_smoke_preview.txt`
+- `analysis_results/codex_sandbox_plan/static_scan_results.json`
+- `analysis_results/codex_sandbox_plan/codex_run_queue.jsonl`
+- `analysis_results/codex_sandbox_plan/report.md`
+- `analysis_results/codex_docker_smoke_plan/docker_smoke_plan.json`
+- `analysis_results/codex_docker_smoke_plan/report.md`
+- `analysis_results/real_skill_batch_static_dashboard/recommendations.md`
+- `analysis_results/real_skill_batch_static_dashboard/risk_table.csv`
+- `analysis_results/real_skill_batch_static_dashboard/summary.json`
+- `analysis_results/real_skill_batch_static_dashboard/report.md`
+- `analysis_results/codex_strace_plan/strace_smoke_preview.txt`
+- `analysis_results/codex_strace_plan/strace_policy.json`
+- `analysis_results/codex_final_static_plus_dynamic/static_scan_results.json`
+- `analysis_results/codex_final_static_plus_dynamic/summary.json`
+- `analysis_results/codex_final_static_plus_dynamic/report.md`
+- `analysis_results/codex_final_static_plus_dynamic/agent_audit_results.jsonl`
+- `analysis_results/human_review_labeling/review_cards.json`
+- `analysis_results/human_review_labeling/final_label_dataset.json`
+- `analysis_results/codex_cli_dynamic_integration/static_scan_results.json`
+- `analysis_results/codex_cli_dynamic_integration/summary.json`
+- `analysis_results/codex_cli_dynamic_integration/report.md`
+- `analysis_results/codex_cli_dynamic_integration/agent_audit_results.jsonl`
+- `analysis_results/codex_safe_smoke_plan/smoke_test_result.json`
+- `analysis_results/codex_safe_smoke_plan/fake_home_layout.json`
+- `analysis_results/codex_safe_smoke_plan/smoke_test_plan.json`
+- `analysis_results/codex_safe_smoke_plan/report.md`
+- `analysis_results/codex_cli_test/static_scan_results.json`
+- `analysis_results/codex_cli_test/report.md`
+- `analysis_results/codex_cli_test/agent_audit_results.jsonl`
+- `analysis_results/codex_synthetic_attack_matrix/matrix_result.json`
+- `analysis_results/codex/static_scan_results.json`
+- `analysis_results/codex/agent_audit_results.jsonl`
+- `analysis_results/real_skill_dynamic_monitoring_batch/risk_table.csv`
+- `analysis_results/real_skill_dynamic_monitoring_batch/summary.json`
+- `analysis_results/real_skill_dynamic_monitoring_batch/report.md`
+- `analysis_results/real_skill_dynamic_monitoring_batch/repeatability_report.md`
+- `analysis_results/scaled_validation/synthetic_corpus/manifest.json`
+- `analysis_results/scaled_validation/synthetic_corpus/suspicious_shell_hint_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/suspicious_obfuscated_instruction_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/suspicious_network_hint_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/suspicious_broad_filesystem_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/attack_fake_ssh_key_read_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/benign_readme_helper_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/attack_fake_env_exfil_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/attack_prompt_injection_ignore_policy_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/benign_writer_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/benign_formatter_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/benign_notes_skill.zip`
+- `analysis_results/scaled_validation/synthetic_corpus/attack_docker_sock_reference_skill.zip`
+- `analysis_results/agent_static_analysis/agent_reports/implementation-guide_zip_agent_static_report.json`
+- `analysis_results/agent_static_analysis/agent_reports/implementation-guide_zip_agent_static_report.md`
+- `analysis_results/codex_runtime_enforcement/runtime_kill_path_synthetic/strace_parse_result.json`
+- `analysis_results/codex_runtime_enforcement/runtime_kill_path_synthetic/docker_command_preview.json`
+- `analysis_results/codex_runtime_enforcement/runtime_kill_path_synthetic/violation_report.json`
+- `analysis_results/codex_runtime_enforcement/runtime_kill_path_synthetic/violation_event.jsonl`
+- `analysis_results/codex_runtime_enforcement/plan_only_test/safe_skill_plan.json`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/after_snapshot.json`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/strace_parse_result.json`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/before_snapshot.json`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/container_logs.json`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/runtime_enforcement_report.json`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/docker_command_preview.json`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/violation_report.json`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/violation_event.jsonl`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/report.md`
+- `analysis_results/codex_runtime_enforcement/enforce_safe_skill/filesystem_diff.json`
+- `analysis_results/codex_runtime_enforcement/egress_policy_static/egress_plan.json`
+- `analysis_results/codex_runtime_enforcement/egress_policy_static/controlled_preview_plan.json`
+- `analysis_results/codex_runtime_enforcement/sandbox_hardening_static/hardening_plan.json`
+- `analysis_results/codex_sandbox_plan/prompt_injection_skill/fake_home_layout.json`
+- `analysis_results/codex_sandbox_plan/prompt_injection_skill/run_plan.json`
+- `analysis_results/codex_sandbox_plan/safe_skill/fake_home_layout.json`
+- `analysis_results/codex_sandbox_plan/safe_skill/run_plan.json`
+- `analysis_results/codex_sandbox_plan/bad_skill/fake_home_layout.json`
+- `analysis_results/codex_sandbox_plan/bad_skill/run_plan.json`
+- `analysis_results/codex_sandbox_plan/script_risk_skill/fake_home_layout.json`
+- `analysis_results/codex_sandbox_plan/script_risk_skill/run_plan.json`
+- `analysis_results/codex_final_static_plus_dynamic/queues/codex_analysis_queue.jsonl`
+- `analysis_results/human_review_labeling/review_cards/implementation_guide_zip.json`
+- `analysis_results/web_ui_jobs/job_20260510_052014_2315a423/job.json`
+- `analysis_results/web_ui_jobs/job_20260509_160935_1ade3358/job.json`
+- `analysis_results/web_ui_jobs/job_20260510_050725_1cd08c29/job.json`
+- `analysis_results/web_ui_jobs/job_20260510_034916_265e2a99/job.json`
+- `analysis_results/web_ui_jobs/job_20260509_160012_daf3c354/job.json`
+- `analysis_results/web_ui_jobs/job_20260510_040052_65c8f4fc/job.json`
+- `analysis_results/web_ui_jobs/job_20260510_052014_2315a423/static_scan/static_report.json`
+- `analysis_results/web_ui_jobs/job_20260510_052014_2315a423/archive/demo_clean_skill.zip`
+- `analysis_results/web_ui_jobs/job_20260510_052014_2315a423/dynamic_execution/runtime_execution_report.json`
+
+## Checklist
+- README generated
+- docs generated
+- demo materials generated
+- competition materials generated
+- public artifacts sanitized
+- safe regression status recorded
+
+## Known Limitations
+Research prototype only; not a production security system.

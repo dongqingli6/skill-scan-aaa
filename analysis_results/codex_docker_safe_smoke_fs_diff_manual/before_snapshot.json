@@ -1,0 +1,127 @@
+{
+  "label": "before",
+  "root": "/",
+  "exists": true,
+  "entries": [
+    {
+      "path": "/home/codexsafe",
+      "relative_path": "home/codexsafe",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778230887.0
+    },
+    {
+      "path": "/home/codexsafe/.agents",
+      "relative_path": "home/codexsafe/.agents",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778230887.0
+    },
+    {
+      "path": "/home/codexsafe/.agents/skills",
+      "relative_path": "home/codexsafe/.agents/skills",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778230887.0
+    },
+    {
+      "path": "/home/codexsafe/.codex",
+      "relative_path": "home/codexsafe/.codex",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778230887.0
+    },
+    {
+      "path": "/output",
+      "relative_path": "output",
+      "type": "dir",
+      "size": 4096,
+      "mode": "775",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233921.9014475
+    },
+    {
+      "path": "/output/codex_docker_smoke_stderr.txt",
+      "relative_path": "output/codex_docker_smoke_stderr.txt",
+      "type": "file",
+      "size": 0,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233921.9014475
+    },
+    {
+      "path": "/output/codex_docker_smoke_stdout.txt",
+      "relative_path": "output/codex_docker_smoke_stdout.txt",
+      "type": "file",
+      "size": 0,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233921.9014475
+    },
+    {
+      "path": "/output/docker_build_stderr.txt",
+      "relative_path": "output/docker_build_stderr.txt",
+      "type": "file",
+      "size": 1596,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233921.7024543
+    },
+    {
+      "path": "/output/docker_build_stdout.txt",
+      "relative_path": "output/docker_build_stdout.txt",
+      "type": "file",
+      "size": 0,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233920.67349
+    },
+    {
+      "path": "/output/filesystem_diff_smoke_preview.txt",
+      "relative_path": "output/filesystem_diff_smoke_preview.txt",
+      "type": "file",
+      "size": 1699,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233920.67249
+    },
+    {
+      "path": "/workspace",
+      "relative_path": "workspace",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.3574321
+    },
+    {
+      "path": "/workspace/safe_skill",
+      "relative_path": "workspace/safe_skill",
+      "type": "dir",
+      "size": 4096,
+      "mode": "775",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778202534.116139
+    }
+  ]
+}

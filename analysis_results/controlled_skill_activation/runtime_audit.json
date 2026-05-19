@@ -1,0 +1,10 @@
+{
+  "claude_code_executed": false,
+  "codex_executed": false,
+  "docker_executed": false,
+  "network_enabled": false,
+  "real_skill_executed": false,
+  "real_tokens_passed": false,
+  "strace_executed": false,
+  "uploaded_scripts_executed": false
+}

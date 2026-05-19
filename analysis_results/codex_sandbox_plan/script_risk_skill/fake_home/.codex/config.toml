@@ -1,0 +1,4 @@
+approval_policy = "never"
+sandbox_mode = "read-only"
+# Network access is disabled by sandbox policy in plan-only mode.
+# No real tokens or real HOME should be mounted.

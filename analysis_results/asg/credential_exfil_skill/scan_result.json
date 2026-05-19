@@ -1,0 +1,134 @@
+{
+  "skill_path": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\asg\\samples\\credential_exfil_skill",
+  "skill_name": "credential_exfil_skill",
+  "files_scanned": [
+    "SKILL.md",
+    "sync.py"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 9,
+  "by_severity": {
+    "CRITICAL": 3,
+    "HIGH": 3,
+    "MEDIUM": 3,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "PE3": 3,
+    "E1": 3,
+    "E3": 2,
+    "E4": 1
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 3,
+    "exfil": 3,
+    "recon": 3
+  },
+  "rule_ids_hit": [
+    "E1",
+    "E3",
+    "E4",
+    "PE3"
+  ],
+  "findings": [
+    {
+      "rule_id": "PE3",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "cred_access",
+      "file": "SKILL.md",
+      "line": 25,
+      "pattern": "~/\\.(?:ssh|aws|kube|netrc|gnupg)",
+      "matched_text": "~/.ssh",
+      "description": "Reading auth tokens or password stores from filesystem.",
+      "confidence": 0.85
+    },
+    {
+      "rule_id": "E1",
+      "severity": "HIGH",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 31,
+      "pattern": "\\battacker\\.example\\b",
+      "matched_text": "attacker.example",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85
+    },
+    {
+      "rule_id": "E3",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "recon",
+      "file": "sync.py",
+      "line": 18,
+      "pattern": "id_rsa",
+      "matched_text": "id_rsa",
+      "description": "Scanning for SSH keys, AWS credentials, or other auth files.",
+      "confidence": 0.85
+    },
+    {
+      "rule_id": "E3",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "recon",
+      "file": "sync.py",
+      "line": 21,
+      "pattern": "id_rsa",
+      "matched_text": "id_rsa",
+      "description": "Scanning for SSH keys, AWS credentials, or other auth files.",
+      "confidence": 0.85
+    },
+    {
+      "rule_id": "E4",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "recon",
+      "file": "sync.py",
+      "line": 58,
+      "pattern": "socket\\.(?:connect|gethostbyname|socket)",
+      "matched_text": "socket.gethostbyname",
+      "description": "Network socket usage or port scanning.",
+      "confidence": 0.85
+    },
+    {
+      "rule_id": "PE3",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "cred_access",
+      "file": "sync.py",
+      "line": 18,
+      "pattern": "~/\\.(?:ssh|aws|kube|netrc|gnupg)",
+      "matched_text": "~/.ssh",
+      "description": "Reading auth tokens or password stores from filesystem.",
+      "confidence": 0.85
+    },
+    {
+      "rule_id": "PE3",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "cred_access",
+      "file": "sync.py",
+      "line": 19,
+      "pattern": "~/\\.(?:ssh|aws|kube|netrc|gnupg)",
+      "matched_text": "~/.aws",
+      "description": "Reading auth tokens or password stores from filesystem.",
+      "confidence": 0.85
+    },
+    {
+      "rule_id": "E1",
+      "severity": "HIGH",
+      "kill_chain_phase": "exfil",
+      "file": "sync.py",
+      "line": 6,
+      "pattern": "\\battacker\\.example\\b",
+      "matched_text": "attacker.example",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85
+    },
+    {
+      "rule_id": "E1",
+      "severity": "HIGH",
+      "kill_chain_phase": "exfil",
+      "file": "sync.py",
+      "line": 34,
+      "pattern": "\\battacker\\.example\\b",
+      "matched_text": "attacker.example",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85
+    }
+  ]
+}

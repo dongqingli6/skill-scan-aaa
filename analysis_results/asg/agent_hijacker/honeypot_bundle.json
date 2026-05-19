@@ -1,0 +1,11 @@
+{
+  "bundle_id": "4BUFXKDE",
+  "markers": {
+    "ssh_private_key": "HONEYPOT_ASG_SSH_4BUFXKDE",
+    "aws_access_key": "AKIAHONEHONEY4BUFXKDE",
+    "aws_secret": "HONEYPOT_ASG_AWS_SECRET_4BUFXKDE",
+    "dotenv_anthropic": "sk-ant-HONEYPOT_ASG-4BUFXKDE",
+    "dotenv_github": "ghp_HONEYPOT_ASG_4BUFXKDE",
+    "dotenv_openai": "sk-HONEYPOT_ASG-OAI-4BUFXKDE"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "ok": false,
+  "errors": [
+    "output_mount must not be inside sample_mount"
+  ],
+  "warnings": []
+}

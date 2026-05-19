@@ -1,0 +1,1031 @@
+{
+  "label": "after",
+  "root": "/",
+  "exists": true,
+  "entries": [
+    {
+      "path": "/home/codexsafe",
+      "relative_path": "home/codexsafe",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778230887.0
+    },
+    {
+      "path": "/home/codexsafe/.agents",
+      "relative_path": "home/codexsafe/.agents",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778230887.0
+    },
+    {
+      "path": "/home/codexsafe/.agents/skills",
+      "relative_path": "home/codexsafe/.agents/skills",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778230887.0
+    },
+    {
+      "path": "/home/codexsafe/.codex",
+      "relative_path": "home/codexsafe/.codex",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233927.8862505
+    },
+    {
+      "path": "/home/codexsafe/.codex/.tmp",
+      "relative_path": "home/codexsafe/.codex/.tmp",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233932.900097
+    },
+    {
+      "path": "/home/codexsafe/.codex/installation_id",
+      "relative_path": "home/codexsafe/.codex/installation_id",
+      "type": "file",
+      "size": 36,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8464155
+    },
+    {
+      "path": "/home/codexsafe/.codex/logs_2.sqlite",
+      "relative_path": "home/codexsafe/.codex/logs_2.sqlite",
+      "type": "file",
+      "size": 49152,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8224163
+    },
+    {
+      "path": "/home/codexsafe/.codex/logs_2.sqlite-shm",
+      "relative_path": "home/codexsafe/.codex/logs_2.sqlite-shm",
+      "type": "file",
+      "size": 32768,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.7974172
+    },
+    {
+      "path": "/home/codexsafe/.codex/logs_2.sqlite-wal",
+      "relative_path": "home/codexsafe/.codex/logs_2.sqlite-wal",
+      "type": "file",
+      "size": 119512,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8164165
+    },
+    {
+      "path": "/home/codexsafe/.codex/memories",
+      "relative_path": "home/codexsafe/.codex/memories",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.6784213
+    },
+    {
+      "path": "/home/codexsafe/.codex/shell_snapshots",
+      "relative_path": "home/codexsafe/.codex/shell_snapshots",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233923.1714046
+    },
+    {
+      "path": "/home/codexsafe/.codex/shell_snapshots/019e0700-55fc-73e0-91fc-c0373614e796.1778233923073741601.sh",
+      "relative_path": "home/codexsafe/.codex/shell_snapshots/019e0700-55fc-73e0-91fc-c0373614e796.1778233923073741601.sh",
+      "type": "file",
+      "size": 652,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233923.156405
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills",
+      "relative_path": "home/codexsafe/.codex/skills",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8534153
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system",
+      "relative_path": "home/codexsafe/.codex/skills/.system",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/.codex-system-skills.marker",
+      "relative_path": "home/codexsafe/.codex/skills/.system/.codex-system-skills.marker",
+      "type": "file",
+      "size": 17,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8574152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/LICENSE.txt",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/LICENSE.txt",
+      "type": "file",
+      "size": 10776,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8544152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/SKILL.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/SKILL.md",
+      "type": "file",
+      "size": 24003,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8544152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/agents",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/agents",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8544152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/agents/openai.yaml",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/agents/openai.yaml",
+      "type": "file",
+      "size": 275,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8544152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/assets",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/assets",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.855415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/assets/imagegen-small.svg",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/assets/imagegen-small.svg",
+      "type": "file",
+      "size": 2889,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.855415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/assets/imagegen.png",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/assets/imagegen.png",
+      "type": "file",
+      "size": 1711,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.855415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/references",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/references",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.856415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/references/cli.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/references/cli.md",
+      "type": "file",
+      "size": 10188,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.855415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/references/codex-network.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/references/codex-network.md",
+      "type": "file",
+      "size": 1779,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.856415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/references/image-api.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/references/image-api.md",
+      "type": "file",
+      "size": 6079,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.856415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/references/prompting.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/references/prompting.md",
+      "type": "file",
+      "size": 9896,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.856415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/references/sample-prompts.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/references/sample-prompts.md",
+      "type": "file",
+      "size": 19239,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8574152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/scripts",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/scripts",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8574152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/scripts/image_gen.py",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/scripts/image_gen.py",
+      "type": "file",
+      "size": 34271,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8574152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py",
+      "relative_path": "home/codexsafe/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py",
+      "type": "file",
+      "size": 13836,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8574152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.859415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/LICENSE.txt",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/LICENSE.txt",
+      "type": "file",
+      "size": 10776,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8574152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/SKILL.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/SKILL.md",
+      "type": "file",
+      "size": 7315,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8574152
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/agents",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/agents",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8584151
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/agents/openai.yaml",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/agents/openai.yaml",
+      "type": "file",
+      "size": 543,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8584151
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/assets",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/assets",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8584151
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/assets/openai-small.svg",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/assets/openai-small.svg",
+      "type": "file",
+      "size": 1091,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8584151
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/assets/openai.png",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/assets/openai.png",
+      "type": "file",
+      "size": 1429,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8584151
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/references",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/references",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.859415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/references/latest-model.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/references/latest-model.md",
+      "type": "file",
+      "size": 2028,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8584151
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/references/prompting-guide.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/references/prompting-guide.md",
+      "type": "file",
+      "size": 14338,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.859415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/references/upgrade-guide.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/references/upgrade-guide.md",
+      "type": "file",
+      "size": 11308,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.859415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/scripts",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/scripts",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.859415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/openai-docs/scripts/resolve-latest-model-info.js",
+      "relative_path": "home/codexsafe/.codex/skills/.system/openai-docs/scripts/resolve-latest-model-info.js",
+      "type": "file",
+      "size": 3463,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.859415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.860415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/SKILL.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/SKILL.md",
+      "type": "file",
+      "size": 6382,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.859415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/agents",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/agents",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.859415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/agents/openai.yaml",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/agents/openai.yaml",
+      "type": "file",
+      "size": 343,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.859415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/assets",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/assets",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.860415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/assets/plugin-creator-small.svg",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/assets/plugin-creator-small.svg",
+      "type": "file",
+      "size": 1319,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.860415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/assets/plugin-creator.png",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/assets/plugin-creator.png",
+      "type": "file",
+      "size": 1563,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.860415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/references",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/references",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.860415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/references/plugin-json-spec.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/references/plugin-json-spec.md",
+      "type": "file",
+      "size": 7152,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.860415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/scripts",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/scripts",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.861415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/plugin-creator/scripts/create_basic_plugin.py",
+      "relative_path": "home/codexsafe/.codex/skills/.system/plugin-creator/scripts/create_basic_plugin.py",
+      "type": "file",
+      "size": 10457,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.861415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/SKILL.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/SKILL.md",
+      "type": "file",
+      "size": 22047,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.861415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/agents",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/agents",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/agents/openai.yaml",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/agents/openai.yaml",
+      "type": "file",
+      "size": 183,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/assets",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/assets",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/assets/skill-creator-small.svg",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/assets/skill-creator-small.svg",
+      "type": "file",
+      "size": 1319,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/assets/skill-creator.png",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/assets/skill-creator.png",
+      "type": "file",
+      "size": 1563,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/license.txt",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/license.txt",
+      "type": "file",
+      "size": 11358,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/references",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/references",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/references/openai_yaml.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/references/openai_yaml.md",
+      "type": "file",
+      "size": 2356,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/scripts",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/scripts",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/scripts/generate_openai_yaml.py",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/scripts/generate_openai_yaml.py",
+      "type": "file",
+      "size": 6619,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/scripts/init_skill.py",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/scripts/init_skill.py",
+      "type": "file",
+      "size": 14602,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+      "type": "file",
+      "size": 3293,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/LICENSE.txt",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/LICENSE.txt",
+      "type": "file",
+      "size": 11358,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/SKILL.md",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/SKILL.md",
+      "type": "file",
+      "size": 3366,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/agents",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/agents",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/agents/openai.yaml",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/agents/openai.yaml",
+      "type": "file",
+      "size": 221,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8624148
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/assets",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/assets",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/assets/skill-installer-small.svg",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/assets/skill-installer-small.svg",
+      "type": "file",
+      "size": 923,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/assets/skill-installer.png",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/assets/skill-installer.png",
+      "type": "file",
+      "size": 1086,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/scripts",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/scripts",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/scripts/github_utils.py",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/scripts/github_utils.py",
+      "type": "file",
+      "size": 659,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py",
+      "type": "file",
+      "size": 10096,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/skills/.system/skill-installer/scripts/list-skills.py",
+      "relative_path": "home/codexsafe/.codex/skills/.system/skill-installer/scripts/list-skills.py",
+      "type": "file",
+      "size": 2967,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.863415
+    },
+    {
+      "path": "/home/codexsafe/.codex/state_5.sqlite",
+      "relative_path": "home/codexsafe/.codex/state_5.sqlite",
+      "type": "file",
+      "size": 4096,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.71542
+    },
+    {
+      "path": "/home/codexsafe/.codex/state_5.sqlite-shm",
+      "relative_path": "home/codexsafe/.codex/state_5.sqlite-shm",
+      "type": "file",
+      "size": 32768,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.7214198
+    },
+    {
+      "path": "/home/codexsafe/.codex/state_5.sqlite-wal",
+      "relative_path": "home/codexsafe/.codex/state_5.sqlite-wal",
+      "type": "file",
+      "size": 955872,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.8424156
+    },
+    {
+      "path": "/home/codexsafe/.codex/tmp",
+      "relative_path": "home/codexsafe/.codex/tmp",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.651422
+    },
+    {
+      "path": "/home/codexsafe/.codex/tmp/arg0",
+      "relative_path": "home/codexsafe/.codex/tmp/arg0",
+      "type": "dir",
+      "size": 4096,
+      "mode": "700",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.6524222
+    },
+    {
+      "path": "/home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk",
+      "relative_path": "home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.6524222
+    },
+    {
+      "path": "/home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/.lock",
+      "relative_path": "home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/.lock",
+      "type": "file",
+      "size": 0,
+      "mode": "644",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.6524222
+    },
+    {
+      "path": "/home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/apply_patch",
+      "relative_path": "home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/apply_patch",
+      "type": "symlink",
+      "size": 130,
+      "mode": "777",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.6524222,
+      "symlink_target": "/opt/codex-bundle/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex"
+    },
+    {
+      "path": "/home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/applypatch",
+      "relative_path": "home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/applypatch",
+      "type": "symlink",
+      "size": 130,
+      "mode": "777",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.6524222,
+      "symlink_target": "/opt/codex-bundle/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex"
+    },
+    {
+      "path": "/home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/codex-execve-wrapper",
+      "relative_path": "home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/codex-execve-wrapper",
+      "type": "symlink",
+      "size": 130,
+      "mode": "777",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.6524222,
+      "symlink_target": "/opt/codex-bundle/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex"
+    },
+    {
+      "path": "/home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/codex-linux-sandbox",
+      "relative_path": "home/codexsafe/.codex/tmp/arg0/codex-arg0KUITBk/codex-linux-sandbox",
+      "type": "symlink",
+      "size": 130,
+      "mode": "777",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.6524222,
+      "symlink_target": "/opt/codex-bundle/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex"
+    },
+    {
+      "path": "/output",
+      "relative_path": "output",
+      "type": "dir",
+      "size": 4096,
+      "mode": "775",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233921.9014475
+    },
+    {
+      "path": "/output/codex_docker_smoke_stderr.txt",
+      "relative_path": "output/codex_docker_smoke_stderr.txt",
+      "type": "file",
+      "size": 2217,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233964.6253388
+    },
+    {
+      "path": "/output/codex_docker_smoke_stdout.txt",
+      "relative_path": "output/codex_docker_smoke_stdout.txt",
+      "type": "file",
+      "size": 0,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233921.9014475
+    },
+    {
+      "path": "/output/docker_build_stderr.txt",
+      "relative_path": "output/docker_build_stderr.txt",
+      "type": "file",
+      "size": 1596,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233921.7024543
+    },
+    {
+      "path": "/output/docker_build_stdout.txt",
+      "relative_path": "output/docker_build_stdout.txt",
+      "type": "file",
+      "size": 0,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233920.67349
+    },
+    {
+      "path": "/output/filesystem_diff_smoke_preview.txt",
+      "relative_path": "output/filesystem_diff_smoke_preview.txt",
+      "type": "file",
+      "size": 1699,
+      "mode": "664",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233920.67249
+    },
+    {
+      "path": "/workspace",
+      "relative_path": "workspace",
+      "type": "dir",
+      "size": 4096,
+      "mode": "755",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778233922.3574321
+    },
+    {
+      "path": "/workspace/safe_skill",
+      "relative_path": "workspace/safe_skill",
+      "type": "dir",
+      "size": 4096,
+      "mode": "775",
+      "uid": "1000",
+      "gid": "1000",
+      "mtime": 1778202534.116139
+    }
+  ]
+}

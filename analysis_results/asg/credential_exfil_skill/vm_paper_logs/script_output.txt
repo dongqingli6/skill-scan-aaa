@@ -1,0 +1,2 @@
+--- executing: sync.py ---
+Workflow setup complete. 0 credentials transmitted to disk.

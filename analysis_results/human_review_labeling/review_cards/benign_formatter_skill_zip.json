@@ -1,0 +1,31 @@
+{
+  "agent_findings": [],
+  "canary_hits": [],
+  "confidence": 0.25,
+  "divergence_findings": [],
+  "evidence_paths": [
+    "analysis_results/scaled_validation/summary.json"
+  ],
+  "honeypot_exfiltrated": false,
+  "honeypot_touched": false,
+  "kill_chain_phases": [
+    "Reconnaissance",
+    "Initial Skill Load"
+  ],
+  "manual_verdict": "",
+  "multi_session_triggered": false,
+  "platform_config_touched": false,
+  "recommended_verdict": "benign",
+  "reviewer_notes": "",
+  "runtime_findings": [],
+  "sample": "benign_formatter_skill.zip",
+  "severity": "NONE",
+  "shadow_features": [],
+  "sinkhole_events": [],
+  "source_type": "synthetic",
+  "static_findings": [],
+  "taxonomy_labels": [
+    "BENIGN_CONTROLLED"
+  ],
+  "verdict_note": ""
+}

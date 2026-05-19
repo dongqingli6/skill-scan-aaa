@@ -1,0 +1,10 @@
+{
+  "docker_network_mode": "none",
+  "dynamic_execution_performed": true,
+  "synthetic_kill_path_validation": true,
+  "codex_executed": false,
+  "strace_executed": false,
+  "real_skill_executed": false,
+  "malicious_samples_executed": false,
+  "real_tokens_present": false
+}

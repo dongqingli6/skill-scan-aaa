@@ -1,0 +1,21 @@
+{
+  "plan_type": "filesystem_diff_plan",
+  "execution_enabled": false,
+  "before_snapshot": [
+    "find /workspace /home/codexsafe /output -xdev -printf '%p\\t%y\\t%s\\t%T@\\n'"
+  ],
+  "after_snapshot": [
+    "find /workspace /home/codexsafe /output -xdev -printf '%p\\t%y\\t%s\\t%T@\\n'"
+  ],
+  "allowed_writable_paths": [
+    "/output",
+    "/home/codexsafe/.codex if needed"
+  ],
+  "forbidden_write_paths": [
+    "/workspace/safe_skill",
+    "/opt/codex-bundle"
+  ],
+  "symlink_policy": "record symlinks as links; do not follow links outside mounted roots",
+  "max_file_size_policy": "hash and metadata for large files; cap content capture to a configured byte limit",
+  "note": "Plan only. No filesystem snapshot is executed in this stage."
+}

@@ -1,0 +1,3 @@
+unlink("/home/codexsafe/.codex/state_5.sqlite-journal") = 0
+unlink("/home/codexsafe/.codex/state_5.sqlite-journal") = 0
++++ killed by SIGTERM +++

@@ -1,0 +1,6 @@
+sample,final_verdict,honeypot_touched,honeypot_exfiltrated,sinkhole_requests,platform_config_touched,shadow_features
+ideation.zip,benign_controlled,False,False,0,False,
+react-effect-patterns.zip,benign_controlled,False,False,0,False,
+synthetic_canary_exfiltration_skill.zip,high_risk,True,True,1,False,canary_exfiltration_intent;honeypot_read_intent
+synthetic_delayed_trigger_skill.zip,suspicious,True,False,0,False,honeypot_read_intent
+synthetic_platform_config_touch_skill.zip,high_risk,False,False,0,True,platform_config_touch

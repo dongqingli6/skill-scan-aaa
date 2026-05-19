@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Codex Agent-assisted Static Analysis Report",
+  "type": "object",
+  "required": [
+    "agent_name",
+    "analysis_mode",
+    "sample_name",
+    "files_reviewed",
+    "risk_summary",
+    "findings",
+    "recommended_gate",
+    "can_execute_dynamically",
+    "requires_human_review",
+    "agent_failed",
+    "parse_error",
+    "timeout",
+    "notes"
+  ],
+  "properties": {
+    "agent_name": {"type": "string"},
+    "analysis_mode": {"type": "string"},
+    "sample_name": {"type": "string"},
+    "files_reviewed": {"type": "array", "items": {"type": "string"}},
+    "risk_summary": {
+      "type": "object",
+      "required": ["critical", "high", "medium", "low", "informational"],
+      "properties": {
+        "critical": {"type": "integer"},
+        "high": {"type": "integer"},
+        "medium": {"type": "integer"},
+        "low": {"type": "integer"},
+        "informational": {"type": "integer"}
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "category", "file", "line", "evidence", "reason", "confidence"],
+        "properties": {
+          "severity": {"type": "string"},
+          "category": {"type": "string"},
+          "file": {"type": "string"},
+          "line": {"type": "integer"},
+          "evidence": {"type": "string"},
+          "reason": {"type": "string"},
+          "confidence": {"type": "string"}
+        }
+      }
+    },
+    "recommended_gate": {"type": "string"},
+    "can_execute_dynamically": {"type": "boolean"},
+    "requires_human_review": {"type": "boolean"},
+    "agent_failed": {"type": "boolean"},
+    "parse_error": {"type": "boolean"},
+    "timeout": {"type": "boolean"},
+    "notes": {"type": "string"}
+  },
+  "additionalProperties": true
+}

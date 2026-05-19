@@ -1,0 +1,33 @@
+{
+  "agent_findings": [],
+  "canary_hits": [],
+  "confidence": 0.85,
+  "divergence_findings": [],
+  "evidence_paths": [
+    "analysis_results/scaled_validation/summary.json"
+  ],
+  "honeypot_exfiltrated": false,
+  "honeypot_touched": false,
+  "kill_chain_phases": [
+    "Initial Skill Load",
+    "Execution",
+    "Manual Review"
+  ],
+  "manual_verdict": "",
+  "multi_session_triggered": false,
+  "platform_config_touched": false,
+  "recommended_verdict": "blocked",
+  "reviewer_notes": "",
+  "runtime_findings": [],
+  "sample": "suspicious_shell_hint_skill.zip",
+  "severity": "HIGH",
+  "shadow_features": [],
+  "sinkhole_events": [],
+  "source_type": "synthetic",
+  "static_findings": [],
+  "taxonomy_labels": [
+    "MANUAL_REVIEW_REQUIRED",
+    "SHELL_EXEC"
+  ],
+  "verdict_note": ""
+}

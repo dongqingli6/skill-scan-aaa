@@ -1,209 +1,101 @@
-# "Do Not Mention This to the User": Detecting and Understanding Malicious Agent Skills
+# Malicious Agent Skills Bench — Codex + ASG (Claude) Integrated System
 
-![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+A defensive research prototype for evaluating risky AI-agent skill packages
+before they are trusted by an agent runtime. **Dual-platform**: Codex-side
+sandbox + Claude-side agent-in-the-loop scoring.
 
-This repository contains a comprehensive security benchmark dataset and evaluation framework for Claude Code Agent Skills. We collect __98,380 skills__ from two major platforms (skills.rest and skillsmp.com), including **157 malicious samples** identified through systematic security analysis.
+## Quick start (one command)
 
-## Project Structure
-
-```
-MaliciousAgentSkillsBench/
-├── data/                           # Benchmark datasets
-│   ├── malicious_skills.csv        # 157 malicious skill samples (curated)
-│   ├── skills_dataset.csv          # 98,380 total skills (157 malicious flagged)
-├── code/                           # Security analysis framework
-│   ├── analyzer/                   # AI-powered deep security analysis
-│   ├── crawler/                    # Multi-platform data crawler
-│   ├── executor/                   # Dynamic execution in Docker sandbox
-│   ├── scanner/                    # Static rule-based security scanner
-│   └── scripts/                    # analysis pipeline
-│   └── ···                         # other files
-└── README.md                       # This file
+```powershell
+python web_ui\app.py
 ```
 
-## Disclaimer
+Open `http://127.0.0.1:8765` — single portal that links to:
+- ASG Dashboard (Claude-side composite scoring, 6 samples, attack chains)
+- Codex Offline Dashboard (teammate's static framework)
+- Skill upload / scan jobs
 
-__This repository contains examples of malicious agent skills for research purposes only. Reader discretion is recommended. Any misuse is strictly prohibited.__
-
-The code and data in this repository are intended exclusively for:
-- Academic research on AI agent security
-- Developing defense mechanisms against malicious agent skills
-- Evaluating the robustness of AI agent platforms
-
-## Data
-
-### Dataset Statistics
-
-| Source | Repos | Total Skills | Suspicious |Malicious |
-|--------|-------|--------------|-----------|------|
-| skills.rest | 3,217 | 25,187 |814|  21  |
-| skillsmp.com | 10,373 | 73,193 | 3,473 | 136 |
-| **Total** | **13,590**| **98,380** | **4,287** | **157** |
-
-### Data Files
-
-#### `malicious_skills.csv`
-Curated dataset of **157 verified malicious agent skills** from **69 unique repositories**, with detailed vulnerability pattern classifications.
-
-**Columns:**
-- `source`: Data source (skills.rest / skillsmp.com)
-- `repo`: Repository identifier
-- `skill_name`: Name of the malicious skill
-- `classification`: Security classification (malicious)
-- `Pattern`: Detected vulnerability patterns (semicolon-separated)
-
-#### `skills_dataset.csv`
-Complete dataset of **98,380 skills** with security classifications (157 flagged as malicious).
-
-**Columns:**
-- `source`: Data source (skills.rest / skillsmp.com)
-- `repo`: Repository identifier
-- `skill_name`: Name of the skill
-- `classification`: Security classification (safe / suspicious / malicious)
-- `url`: Download URL for the skill repository
-
-### Load Dataset
-
-```python
-import pandas as pd
-
-# Load malicious skills only
-malicious_df = pd.read_csv('data/malicious_skills.csv')
-print(f"Malicious skills: {len(malicious_df)}")
-
-# Load complete dataset
-full_df = pd.read_csv('data/skills_dataset.csv')
-print(f"Total skills: {len(full_df)}")
-print(f"Class distribution:\n{full_df['classification'].value_counts()}")
+For the standalone ASG CLI:
+```powershell
+python -m asg.asg_cli scan-all-samples --enable-honeypot
+python -m asg.asg_cli build-html
+start asg\dashboard.html
 ```
 
-## Code
+See `asg/README.md` for ASG module details.
 
-The `code/` directory contains a complete security analysis pipeline for Claude Code Skills.
+## Project origin
 
-### Quick Start
+## Problem
+
+Agent skills can contain hidden instructions, unsafe commands, network behavior, credential access attempts, or platform-configuration abuse. This project demonstrates a static-first and evidence-driven safety pipeline for detecting those risks.
+
+## Highlights
+
+- Deterministic static scanner and mock agent-assisted analysis.
+- Document-behavior divergence checks.
+- Synthetic runtime violation evidence.
+- Controlled activation planning with human approval gates.
+- Local sinkhole, fake canary credentials, and multi-session evidence.
+- Human review cards, vulnerability taxonomy, and kill-chain mapping.
+- Sanitized public artifacts for safe demos and evaluation.
+
+## Architecture
+
+`skill intake -> static scan -> agent mock analysis -> divergence analysis -> controlled evidence -> human review labels -> sanitized release artifacts`
+
+## Safety Boundary
+
+This is a research prototype. It does not execute real malicious skills by default. It uses synthetic and sanitized examples. Real API keys must never be used in tests. Mock/static provider paths are default. Codex / Claude provider integrations are optional or mock by default. Agent analysis cannot downgrade deterministic risk.
+
+## Quick Start
 
 ```bash
-cd MaliciousAgentSkillsBench/code
-
-# 1. Install dependencies
-pip install -r requirements.txt
-
-# 2. Build Docker sandbox for dynamic execution
-docker build -t claude-skill-sandbox -f Dockerfile .
-
-# 3. Configure environment
-cp .env.example .env
-# Edit .env with your API keys (GITHUB_TOKEN, ANTHROPIC_API_KEY)
-
-# 4. Run complete pipeline
-./scripts/run_pipeline.sh
-
-# Or run from a specific step
-./scripts/run_pipeline.sh "Static Scan"
+python3 code/scripts/run_codex_open_source_release_package.py --audit --sanitize --build-docs --build-demo-materials --build-competition-pack --output analysis_results/opensource_release
+bash code/scripts/run_codex_safe_regression_static_only.sh
 ```
 
-### Pipeline Overview
+## Example Outputs
 
-| Step | Script | Description |
-|------|--------|-------------|
-| 1 | `01_crawl.sh` | Crawl skill metadata from skills.rest and skillsmp.com |
-| 2 | `02_generate_mapping.sh` | Generate repository mapping |
-| 3 | `03_download.sh` | Download skill repositories from GitHub |
-| 4 | `04_scan.sh` | Static rule-based security scanning |
-| 5 | `05_gen_cc_queue.sh` | Generate Claude Code analysis queue |
-| 6 | `06_cc_analyze.sh` | AI-powered deep security audit |
-| 7 | `07_gen_run_queue.sh` | Generate dynamic execution queue |
-| 8 | `08_execute.sh` | Execute skills in Docker sandbox with monitoring |
+Sanitized example artifacts are written to `public_artifacts/`. Stage summaries are available under `analysis_results/` for local inspection, but raw real-skill inputs are excluded from release.
 
-### Key Components
+## Directory Structure
 
-**Analyzer (`analyzer/`)**
-- `cc_analyzer.sh`: Claude Code integration for AI-powered security analysis
-- `prompts/audit_prompt.txt`: Security audit prompt template
+- `code/platforms/codex/`: Codex-specific safety modules.
+- `code/scripts/`: Static-only and controlled evidence scripts.
+- `docs/`: Open-source documentation.
+- `demo/`: Demo script and flow.
+- `competition_materials/`: Submission-oriented writeups.
+- `public_artifacts/`: Sanitized release outputs.
 
-**Scanner (`scanner/`)**
-- `scanner.py`: Rule-based static security scanner
-- Uses skill-security-scan tool for vulnerability detection
+## Testing
 
-**Executor (`executor/`)**
-- `run_skill.sh`: Docker sandbox execution script
-- `batch_runner.py`: Concurrent execution manager
-- `smart_monitor.py`: File system and network monitoring
-- `nova_setup.sh`: NOVA hook setup for system call tracing
-
-### Output Structure
-
-```
-scan_results/
-├── SAFE/           # Skills verified safe
-├── SUSPICIOUS/     # Skills with suspicious patterns
-└── MALICIOUS/      # Skills with confirmed vulnerabilities
-
-execution_logs/
-├── critical/{repo_id}/{skill_name}/
-│   ├── strace.log              # System call trace
-│   ├── network.pcap            # Network traffic capture
-│   ├── nova/                   # NOVA hook reports
-│   ├── claude_output.txt       # Claude execution output
-│   └── filesystem_changes.json # File system modifications
-├── high/...
-├── medium/...
-└── low/...
+```bash
+bash code/scripts/test_codex_opensource_release_audit_static.sh
+bash code/scripts/test_codex_opensource_release_docs_static.sh
+bash code/scripts/test_codex_opensource_release_gitignore_static.sh
+bash code/scripts/test_codex_opensource_release_public_artifacts_static.sh
 ```
 
-### Configuration
+## Competition Value
 
-Edit `config.yaml` to customize:
+The project focuses on safe reproducibility, explainable evidence, layered defenses, human-review readiness, and strong boundaries around real credentials and real execution.
 
-```yaml
-# Crawler settings
-crawler:
-  skills_rest:
-    limit: 60
-    max_limit: 300000
+## Limitations
 
-# Scanner thresholds
-scanner:
-  thresholds:
-    critical: 8
-    high: 6
-    medium: 4
-    low: 2
+This is not a production security system. Results are prototype evidence and require human validation before operational use.
 
-# Analyzer settings
-analyzer:
-  jobs: 10
-  max_retries: 3
+## Roadmap
 
-# Executor settings
-executor:
-  docker_image: "claude-skill-sandbox"
-  max_workers: 3
-  timeout: 900
-```
-
-## Ethics
-
-We acknowledge that security research on AI agents requires access to potentially harmful examples. This study follows ethical best practices:
-
-1. **Research Purpose Only**: This dataset is exclusively for defensive security research
-2. **No Live Attacks**: All analysis is conducted in isolated sandbox environments
-3. **Responsible Disclosure**: Vulnerabilities are reported to platform vendors
-4. **Aggregate Reporting**: Results are reported in aggregate, not targeting specific developers
-
-The goal of this work is to raise awareness of AI agent security risks and inform the development of stronger safeguards.
-
-## Citation
-
-```bibtex
-@misc{malicious_agent_skills_bench,
-  title={“Do Not Mention This to the User”: Detecting and Understanding Malicious Agent Skills},
-  author={Anonymous},
-  year={2026},
-}
-```
+- Broader curated public benchmark fixtures.
+- More formal policy schemas.
+- Optional isolated manual smoke tests after explicit approval.
+- Better UI for review cards and evidence browsing.
 
 ## License
 
-`MaliciousAgentSkillsBench` is licensed under the MIT License. See LICENSE for more details.
+MIT License. Please confirm this license fits your release goals before publishing.
+
+## Disclaimer
+
+For defensive security research, education, and evaluation only. Do not use this project to execute malicious behavior or process real secrets.

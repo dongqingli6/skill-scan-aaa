@@ -1,0 +1,10 @@
+{
+  "fake_home": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_sandbox_plan/prompt_injection_skill/fake_home",
+  "fake_codex_home": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_sandbox_plan/prompt_injection_skill/fake_home/.codex",
+  "fake_agents_dir": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_sandbox_plan/prompt_injection_skill/fake_home/.agents/skills",
+  "sample_mount": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_sandbox_plan/prompt_injection_skill/fake_home/.agents/skills/prompt_injection_skill",
+  "output_dir": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_sandbox_plan/prompt_injection_skill/fake_home/output",
+  "logs_dir": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_sandbox_plan/prompt_injection_skill/fake_home/logs",
+  "config_toml_path": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/analysis_results/codex_sandbox_plan/prompt_injection_skill/fake_home/.codex/config.toml",
+  "warnings": []
+}

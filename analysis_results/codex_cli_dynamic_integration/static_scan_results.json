@@ -1,0 +1,28 @@
+{
+  "platform": "codex",
+  "root": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/code/platforms/codex/examples/safe_skill",
+  "summary": {
+    "total_skills": 1,
+    "total_findings": 0,
+    "by_severity": {
+      "LOW": 0,
+      "MEDIUM": 0,
+      "HIGH": 0,
+      "CRITICAL": 0
+    }
+  },
+  "skills": [
+    {
+      "skill_name": "safe_skill",
+      "source_path": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/code/platforms/codex/examples/safe_skill",
+      "skill_md_path": "/home/empty/Desktop/MaliciousAgentSkillsBench-Codex/code/platforms/codex/examples/safe_skill/SKILL.md",
+      "agents_md_path": null,
+      "openai_yaml_path": null,
+      "scripts_paths": [],
+      "findings": [],
+      "classification": "safe",
+      "severity": "LOW",
+      "confidence": 0.0
+    }
+  ]
+}

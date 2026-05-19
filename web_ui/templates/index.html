@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codex Runtime Security Prototype - Skill Security Portal</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <h1>Agent Skill Security Portal — Codex + ASG (Claude)</h1>
+      <p>Dual-platform skill review: Codex static / dynamic plan and ASG Claude agent-in-the-loop scoring.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="/asg" style="display:inline-block;padding:10px 18px;background:#38bdf8;color:#0f172a;border-radius:6px;text-decoration:none;font-weight:600;">&#x1f6e1; Open ASG Dashboard</a>
+        <a href="/dashboard/index.html" style="display:inline-block;padding:10px 18px;background:#475569;color:#e2e8f0;border-radius:6px;text-decoration:none;">Codex Offline Dashboard</a>
+        <form method="post" action="/asg/rebuild" style="display:inline;margin:0;">
+          <button type="submit" style="padding:10px 18px;background:#22c55e;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:600;">&#x1f504; Rebuild ASG (scan 6 samples)</button>
+        </form>
+      </div>
+    </header>
+
+    <section class="status-grid" aria-label="System status">
+      <article class="status-card"><span>Codex Regression</span><strong>PASS 11/11</strong></article>
+      <article class="status-card"><span>Synthetic Matrix</span><strong>10/10</strong></article>
+      <article class="status-card"><span>ASG Static Rules</span><strong>17 patterns</strong></article>
+      <article class="status-card"><span>ASG Samples</span><strong>6 covered</strong></article>
+      <article class="status-card"><span>ASG Attack Chains</span><strong>6 from paper</strong></article>
+      <article class="status-card"><span>Composite Score</span><strong>Math formula</strong></article>
+    </section>
+
+    <section class="panel">
+      <h2>VM Docker Evidence (Claude project — real strace + tcpdump + NOVA)</h2>
+      <p class="muted">Two ways to use the Claude-side VM Docker pipeline:</p>
+
+      <h3 style="font-size:14px;margin-top:12px;">A. Ingest already-generated evidence (offline)</h3>
+      <p style="font-size:13px;color:#94a3b8;">If you already have a <code>claude_output.txt</code> + <code>strace.log</code> directory from a previous VM run, ASG will read it and feed it into the composite score.</p>
+      <form method="post" action="/asg/vm_ingest" style="display:flex;flex-direction:column;gap:8px;max-width:640px;">
+        <label style="font-size:13px;">Skill path (local) <input name="skill_path" placeholder="asg/samples/data_thief" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+        <label style="font-size:13px;">VM evidence directory <input name="evidence_dir" placeholder="C:\path\to\execution_logs\test\manual\workflow-helper" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+        <button type="submit" style="padding:8px 16px;background:#38bdf8;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:600;align-self:flex-start;">Ingest VM evidence into ASG</button>
+      </form>
+
+      <h3 style="font-size:14px;margin-top:16px;">B. Trigger live SSH run on VM — with Claude API</h3>
+      <p style="font-size:13px;color:#94a3b8;">Requires <code>asg/vm_config.json</code> with VM host/user/credentials AND lanyiapi key. SCP skill to VM, start Claude CLI in Docker, pull artifacts. <strong>Costs ~$0.18 per run</strong>.</p>
+      <form method="post" action="/asg/vm_ssh_run" style="display:flex;flex-direction:column;gap:8px;max-width:640px;">
+        <label style="font-size:13px;">Skill path (local) <input name="skill_path" placeholder="asg/samples/data_thief" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+        <button type="submit" style="padding:8px 16px;background:#a855f7;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:600;align-self:flex-start;">&#x1f916; SSH + Claude CLI in Docker (Mode B)</button>
+      </form>
+
+      <h3 style="font-size:14px;margin-top:16px;">C. Paper-mode pure Docker (NO Claude / NO API)</h3>
+      <p style="font-size:13px;color:#94a3b8;"><strong>Zero API cost.</strong> Runs <code>.py</code>/<code>.sh</code> inside Docker directly with strace + tcpdump, faithful to paper §3.4. Best for code-level attacks (e.g. <code>reverse_shell_skill</code>) where SKILL.md alone isn't enough.</p>
+      <form method="post" action="/asg/vm_paper_run" style="display:flex;flex-direction:column;gap:8px;max-width:640px;">
+        <label style="font-size:13px;">Skill path (local) <input name="skill_path" placeholder="asg/samples/reverse_shell_skill" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+        <button type="submit" style="padding:8px 16px;background:#f59e0b;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:600;align-self:flex-start;">&#x1f9ea; Paper-mode Docker (Mode C, $0 cost)</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Upload Skill Package</h2>
+      <form method="post" action="/upload" enctype="multipart/form-data" class="upload-form">
+        <label>Skill name <input name="skill_name" maxlength="120" required></label>
+        <label>Notes <textarea name="note" rows="3" maxlength="1000"></textarea></label>
+        <label>Archive <input type="file" name="archive" accept=".zip,.tar.gz,.tgz" required></label>
+        <button type="submit">Create Job</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Real Skill Static-only Intake</h2>
+      <ul class="controls">
+        <li>Real skills first enter the isolated inbox for static-only intake.</li>
+        <li>Stage 19 generates sha256 manifests, safe extraction output, static scan reports, and dynamic gate plan-only reports.</li>
+        <li>Real skills are not executed in Stage 19.</li>
+        <li>HIGH / CRITICAL findings block the dynamic gate.</li>
+        <li>Low-risk real skills still require manual review before Stage 21.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Jobs</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Job ID</th>
+              <th>Skill</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Risk summary</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ jobs_table }}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,20 @@
+.env
+*.env
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+# ASG VM SSH credentials — never commit
+asg/vm_config.json
+asg/vm_config.local.json
+*.tar.gz
+*.gz
+*.zip
+__pycache__/
+.pytest_cache/
+analysis_results/**/raw*
+analysis_results/**/inbox*
+analysis_results/**/real_skill*
+analysis_results/**/unredacted*
+.DS_Store
+Thumbs.db

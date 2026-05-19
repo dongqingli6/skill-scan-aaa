@@ -5,6 +5,13 @@ project:
   name: "claude-skill-security"
   version: "1.0.0"
 
+# Multi-platform adaptation. Existing Claude Code settings remain unchanged.
+platform:
+  mode: both
+  enabled:
+    - claude_code
+    - codex
+
 # Directory paths (relative to project root)
 paths:
   project_root: "."
@@ -74,6 +81,24 @@ executor:
   api_key_pool:
     enabled: true
     pool_file: "./api_keys.conf"
+
+# Codex Agent Skills support is scaffolded in static-only mode.
+codex:
+  enabled: true
+  dynamic_execution_enabled: false
+  codex_binary: "codex"
+  fake_home: "/tmp/codex_fake_home"
+  fake_codex_home: "/tmp/codex_fake_home/.codex"
+  skill_locations:
+    - ".agents/skills"
+  sandbox:
+    mode: "read-only"
+    network: false
+    approval_policy: "never"
+    allow_yolo: false
+  logs:
+    output: "codex_output.txt"
+    activation_trace: "skill_activation_trace.json"
 
 # Logging
 logging:
