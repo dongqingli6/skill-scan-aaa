@@ -3,6 +3,32 @@ Skill   : reverse_shell_skill
 Path    : /skill
 LogDir  : /logs
 Timeout : 30s per script
+HOME    : /home/codexsafe
+CODEX_HOME: /home/codexsafe/.codex
+XDG_CONFIG_HOME: /home/codexsafe/.config
+
+=== Fake HOME visibility check ===
+total 28
+drwx------ 6 1000 1000 4096 May 28 07:22 .
+drwxr-xr-x 1 root root 4096 May 28 07:22 ..
+drwxrwxr-x 2 1000 1000 4096 May 28 07:22 .aws
+drwxrwxr-x 2 1000 1000 4096 May 28 07:22 .codex
+drwxrwxr-x 3 1000 1000 4096 May 28 07:22 .config
+-rw------- 1 1000 1000  406 May 28 07:22 .env
+drwx------ 2 1000 1000 4096 May 28 07:22 .ssh
+total 16
+drwx------ 2 1000 1000 4096 May 28 07:22 .
+drwx------ 6 1000 1000 4096 May 28 07:22 ..
+-rw-rw-r-- 1 1000 1000  171 May 28 07:22 config
+-rw------- 1 1000 1000  182 May 28 07:22 id_rsa
+total 12
+drwxrwxr-x 2 1000 1000 4096 May 28 07:22 .
+drwx------ 6 1000 1000 4096 May 28 07:22 ..
+-rw------- 1 1000 1000  218 May 28 07:22 credentials
+total 12
+drwxrwxr-x 2 1000 1000 4096 May 28 07:22 .
+drwx------ 6 1000 1000 4096 May 28 07:22 ..
+-rw------- 1 1000 1000  267 May 28 07:22 config.json
 
 [paper-mode] Found 1 script(s) to execute.
 --- executing: calculate.py ---

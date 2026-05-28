@@ -8,7 +8,11 @@
 </head>
 <body>
   <main class="page">
-    <nav class="topnav"><a href="/">All Jobs</a></nav>
+    <nav class="topnav nav-tabs">
+      <a class="nav-tab" href="/">扫描</a>
+      <a class="nav-tab active" href="/results">所有 Job</a>
+      <a class="nav-tab" href="/asg">ASG Dashboard</a>
+    </nav>
     <header>
       <h1>Job {{ job_id }}</h1>
       <p class="muted">{{ skill_name }}</p>

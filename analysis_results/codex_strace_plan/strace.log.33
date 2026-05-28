@@ -1,7 +1,0 @@
-clone(child_stack=0x7dd0ffdcf4a8, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 51
-clone(child_stack=0x7dd0ffdcf4a8, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 53
---- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=53, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
---- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=54, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
---- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=56, si_uid=1000, si_status=127, si_utime=0, si_stime=0} ---
-clone(child_stack=0x7dd0fa28c338, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID|0x400000, parent_tid=[59], tls=0x7dd0fa28cb38, child_tidptr=0x7dd11adffe20) = 59
-+++ killed by SIGTERM +++

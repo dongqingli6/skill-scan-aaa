@@ -1,7 +1,0 @@
-{
-  "verification_type": "synthetic_runtime_kill_path",
-  "network_mode_expected": "none",
-  "external_api_attempt_observed": false,
-  "external_api_blocked": true,
-  "verification_status": "passed"
-}

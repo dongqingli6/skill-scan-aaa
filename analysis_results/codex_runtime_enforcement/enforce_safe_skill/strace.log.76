@@ -1,6 +1,0 @@
-socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 31
-sendto(31, "\253z\1\0\0\1\0\0\0\0\0\0\7chatgpt\3com\0\0\1\0\1", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
-sendto(31, "\272\266\1\0\0\1\0\0\0\0\0\0\7chatgpt\3com\0\0\34\0\1", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
-sendto(31, "\253z\1\0\0\1\0\0\0\0\0\0\7chatgpt\3com\0\0\1\0\1", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
-sendto(31, "\272\266\1\0\0\1\0\0\0\0\0\0\7chatgpt\3com\0\0\34\0\1", 29, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.198.2")}, 16) = -1 ENETUNREACH (Network is unreachable)
-+++ exited with 0 +++

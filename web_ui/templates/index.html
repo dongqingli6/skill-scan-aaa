@@ -15,7 +15,7 @@
         <a href="/asg" style="display:inline-block;padding:10px 18px;background:#38bdf8;color:#0f172a;border-radius:6px;text-decoration:none;font-weight:600;">&#x1f6e1; Open ASG Dashboard</a>
         <a href="/dashboard/index.html" style="display:inline-block;padding:10px 18px;background:#475569;color:#e2e8f0;border-radius:6px;text-decoration:none;">Codex Offline Dashboard</a>
         <form method="post" action="/asg/rebuild" style="display:inline;margin:0;">
-          <button type="submit" style="padding:10px 18px;background:#22c55e;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:600;">&#x1f504; Rebuild ASG (scan 6 samples)</button>
+          <button type="submit" style="padding:10px 18px;background:#22c55e;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:600;">&#x1f504; Rebuild ASG (scan 7 samples)</button>
         </form>
       </div>
     </header>
@@ -24,35 +24,59 @@
       <article class="status-card"><span>Codex Regression</span><strong>PASS 11/11</strong></article>
       <article class="status-card"><span>Synthetic Matrix</span><strong>10/10</strong></article>
       <article class="status-card"><span>ASG Static Rules</span><strong>17 patterns</strong></article>
-      <article class="status-card"><span>ASG Samples</span><strong>6 covered</strong></article>
+      <article class="status-card"><span>ASG Samples</span><strong>7 covered</strong></article>
       <article class="status-card"><span>ASG Attack Chains</span><strong>6 from paper</strong></article>
       <article class="status-card"><span>Composite Score</span><strong>Math formula</strong></article>
     </section>
 
     <section class="panel">
-      <h2>VM Docker Evidence (Claude project — real strace + tcpdump + NOVA)</h2>
-      <p class="muted">Two ways to use the Claude-side VM Docker pipeline:</p>
+      <h2>三种研判模式</h2>
+      <p class="muted">从「不执行」到「真执行」再到「让 Claude 真用一下」——三层证据强度递增，按需选择。</p>
 
-      <h3 style="font-size:14px;margin-top:12px;">A. Ingest already-generated evidence (offline)</h3>
-      <p style="font-size:13px;color:#94a3b8;">If you already have a <code>claude_output.txt</code> + <code>strace.log</code> directory from a previous VM run, ASG will read it and feed it into the composite score.</p>
-      <form method="post" action="/asg/vm_ingest" style="display:flex;flex-direction:column;gap:8px;max-width:640px;">
-        <label style="font-size:13px;">Skill path (local) <input name="skill_path" placeholder="asg/samples/data_thief" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
-        <label style="font-size:13px;">VM evidence directory <input name="evidence_dir" placeholder="C:\path\to\execution_logs\test\manual\workflow-helper" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
-        <button type="submit" style="padding:8px 16px;background:#38bdf8;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:600;align-self:flex-start;">Ingest VM evidence into ASG</button>
-      </form>
+      <!-- ============ 模式一 ============ -->
+      <h3 style="font-size:16px;margin-top:18px;color:#22c55e;border-left:4px solid #22c55e;padding-left:10px;">模式一 · 静态扫 + AI 研判（不执行 Skill）</h3>
+      <p style="font-size:13px;color:#94a3b8;">用 17 条静态规则扫所有文件（找已知恶意模式），再把 <code>SKILL.md</code> 文本送 Claude（kuaipao.ai 中转）当安全审计员判 <strong>SAFE / SUSPICIOUS / MALICIOUS</strong>。报告里会显示 skill 的目录结构和每个文件内容预览。<strong>Skill 代码全程不执行</strong>——任何人上传任何文件都安全，零风险。最快、最便宜（约 ¥0.1/次）。</p>
 
-      <h3 style="font-size:14px;margin-top:16px;">B. Trigger live SSH run on VM — with Claude API</h3>
-      <p style="font-size:13px;color:#94a3b8;">Requires <code>asg/vm_config.json</code> with VM host/user/credentials AND lanyiapi key. SCP skill to VM, start Claude CLI in Docker, pull artifacts. <strong>Costs ~$0.18 per run</strong>.</p>
-      <form method="post" action="/asg/vm_ssh_run" style="display:flex;flex-direction:column;gap:8px;max-width:640px;">
-        <label style="font-size:13px;">Skill path (local) <input name="skill_path" placeholder="asg/samples/data_thief" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
-        <button type="submit" style="padding:8px 16px;background:#a855f7;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:600;align-self:flex-start;">&#x1f916; SSH + Claude CLI in Docker (Mode B)</button>
-      </form>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;">
+        <form method="post" action="/asg/upload_scan" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+          <div style="font-size:12px;color:#64748b;font-weight:600;">A · 上传文件扫描（推荐）</div>
+          <label style="font-size:13px;">Skill 文件（.zip / .py / .md / 任意单文件） <input type="file" name="archive" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+          <button type="submit" style="padding:10px 18px;background:#22c55e;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:700;align-self:flex-start;">上传并扫描</button>
+        </form>
 
-      <h3 style="font-size:14px;margin-top:16px;">C. Paper-mode pure Docker (NO Claude / NO API)</h3>
-      <p style="font-size:13px;color:#94a3b8;"><strong>Zero API cost.</strong> Runs <code>.py</code>/<code>.sh</code> inside Docker directly with strace + tcpdump, faithful to paper §3.4. Best for code-level attacks (e.g. <code>reverse_shell_skill</code>) where SKILL.md alone isn't enough.</p>
-      <form method="post" action="/asg/vm_paper_run" style="display:flex;flex-direction:column;gap:8px;max-width:640px;">
-        <label style="font-size:13px;">Skill path (local) <input name="skill_path" placeholder="asg/samples/reverse_shell_skill" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
-        <button type="submit" style="padding:8px 16px;background:#f59e0b;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:600;align-self:flex-start;">&#x1f9ea; Paper-mode Docker (Mode C, $0 cost)</button>
+        <form method="post" action="/asg/local_api_check" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+          <div style="font-size:12px;color:#64748b;font-weight:600;">B · 强调 AI 研判（同上传，也走 Claude API）</div>
+          <label style="font-size:13px;">Skill zip / 单文件 <input type="file" name="archive" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+          <button type="submit" style="padding:10px 18px;background:#22c55e;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:700;align-self:flex-start;">上传 + 强制 AI 研判</button>
+        </form>
+      </div>
+
+      <!-- ============ 模式二 ============ -->
+      <h3 style="font-size:16px;margin-top:30px;color:#f59e0b;border-left:4px solid #f59e0b;padding-left:10px;">模式二 · 动态执行（Docker 跑代码 + 看真行为）</h3>
+      <p style="font-size:13px;color:#94a3b8;">在 VM 的 Docker 容器里直接 <code>python script.py</code> / <code>bash script.sh</code> 跑 skill 的所有可执行文件，<code>strace</code> 抓系统调用、<code>tcpdump</code> 抓网络包。<strong>不调 Claude API，零成本</strong>。最强证据——syscall 不会撒谎。或者你已经有以前录好的 <code>strace.log</code> 目录，直接喂进来重新打分。</p>
+
+      <div style="display:flex;gap:20px;flex-wrap:wrap;">
+        <form method="post" action="/asg/vm_paper_run" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+          <div style="font-size:12px;color:#64748b;font-weight:600;">A · 现场跑（连 VM 真执行）</div>
+          <label style="font-size:13px;">Skill zip / 单文件 <input type="file" name="archive" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+          <button type="submit" style="padding:10px 18px;background:#f59e0b;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:700;align-self:flex-start;">上传 + VM 容器执行</button>
+        </form>
+
+        <form method="post" action="/asg/vm_ingest" style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:320px;">
+          <div style="font-size:12px;color:#64748b;font-weight:600;">B · 吃旧证据（离线打分）</div>
+          <label style="font-size:13px;">本地 Skill 目录路径 <input name="skill_path" placeholder="asg/samples/data_thief" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+          <label style="font-size:13px;">证据目录（含 strace.log / claude_output.txt） <input name="evidence_dir" placeholder="analysis_results/asg/data_thief/vm_ssh_logs" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+          <button type="submit" style="padding:10px 18px;background:#f59e0b;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:700;align-self:flex-start;">离线吃证据</button>
+        </form>
+      </div>
+
+      <!-- ============ 模式三 ============ -->
+      <h3 style="font-size:16px;margin-top:30px;color:#a855f7;border-left:4px solid #a855f7;padding-left:10px;">模式三 · Docker 里跑 Claude（验证 Agent 抗诱导）</h3>
+      <p style="font-size:13px;color:#94a3b8;">在 VM 的 Docker 容器里启动 <strong>Claude CLI</strong>，把 skill 装到 <code>~/.claude/skills/</code>，给 Claude 一个用户 prompt 让它"读这个 skill 并使用"——然后 <code>strace</code> 录下 Claude 实际做了什么。回答的核心问题：<strong>真 Claude 会不会被这个 SKILL.md 骗着干坏事</strong>。这才是论文真正关心的攻击面。约 ¥1.2/次。</p>
+
+      <form method="post" action="/asg/vm_ssh_run" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:8px;max-width:640px;">
+        <label style="font-size:13px;">Skill zip / 单文件 <input type="file" name="archive" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>
+        <button type="submit" style="padding:10px 18px;background:#a855f7;color:#0f172a;border:none;border-radius:6px;cursor:pointer;font-weight:700;align-self:flex-start;">上传 + 让 Claude 在容器里使用此 Skill</button>
       </form>
     </section>
 

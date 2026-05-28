@@ -1,6 +1,0 @@
-archive_name,deterministic_highest,agent_highest,final_highest,recommended_gate,agent_failed
-implementation-guide.zip,high,high,high,denied,False
-logging-best-practices.zip,medium,medium,medium,manual_review,False
-val-town-cli.zip,medium,medium,medium,manual_review,False
-ideation.zip,none,none,none,allowed_for_manual_review,False
-react-effect-patterns.zip,none,none,none,allowed_for_manual_review,False

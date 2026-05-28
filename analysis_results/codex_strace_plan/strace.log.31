@@ -1,6 +1,0 @@
-clone(child_stack=0x7dd101d79288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 90
-clone(child_stack=0x7dd101d79288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 91
---- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=91, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
-clone(child_stack=0x7dd101d79288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 96
-clone(child_stack=0x7dd101d79288, flags=CLONE_VM|CLONE_VFORK|SIGCHLD) = 97
-+++ killed by SIGTERM +++

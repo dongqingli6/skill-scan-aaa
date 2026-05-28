@@ -1,4 +1,0 @@
-unlink("/home/codexsafe/.codex/logs_2.sqlite-journal") = 0
-unlink("/home/codexsafe/.codex/logs_2.sqlite-journal") = 0
-???( <unfinished ...>
-+++ killed by SIGTERM +++

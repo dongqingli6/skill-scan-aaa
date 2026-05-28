@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(python -c ' *)",
-      "PowerShell(Start-Process \"http://127.0.0.1:8765/asg#skill-reverse_shell_skill\")"
+      "PowerShell(Start-Process \"http://127.0.0.1:8765/asg#skill-reverse_shell_skill\")",
+      "PowerShell(Start-Process \"http://127.0.0.1:8765/\")",
+      "Bash(python -c \"import sys,json; c=json.load\\(sys.stdin\\); print\\('host:', c.get\\('host'\\)\\); print\\('username:', c.get\\('username'\\)\\); print\\('base_url:', c.get\\('remote_anthropic_base_url'\\)\\); k=c.get\\('remote_anthropic_api_key',''\\); print\\('api_key set?:', bool\\(k\\) and not k.startswith\\('sk-LANYI-asg-REPLACE'\\)\\); print\\('api_key \\(masked\\):', k[:7]+'***'+k[-4:] if k else ''\\)\")",
+      "Bash(python -c \"import anthropic; print\\('anthropic SDK installed, version:', anthropic.__version__\\)\")",
+      "Bash(python -c \"import os; [print\\(k,'set' if os.environ.get\\(k\\) else 'NOT set'\\) for k in ['ANTHROPIC_API_KEY','ANTHROPIC_AUTH_TOKEN','ANTHROPIC_BASE_URL']]\")",
+      "Bash(docker --version)",
+      "Bash(python -c \"import json; c=json.load\\(open\\('asg/vm_config.json'\\)\\); print\\('JSON OK'\\); print\\('base_url:', c['remote_anthropic_base_url']\\); k=c['remote_anthropic_api_key']; print\\('api_key:', 'PLACEHOLDER \\(you need to fill\\)' if 'REPLACE' in k else 'SET'\\)\")",
+      "PowerShell($c = Get-NetTCPConnection -LocalPort 8765 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c.OwningProcess | Select-Object -Unique | ForEach-Object { Stop-Process -Id $_ -Force; Write-Output \"Killed PID $_\" } } else { Write-Output \"Nothing on 8765\" })",
+      "Bash(python -m py_compile web_ui/app.py)",
+      "Read(//c/Users/captivating/Pictures/MaliciousAgentSkillsBench-Codex/**)"
     ]
   }
 }

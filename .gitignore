@@ -2,16 +2,24 @@
 *.env
 *.pem
 *.key
+*.pcap
+*.pcapng
 id_rsa
 id_rsa.pub
 # ASG VM SSH credentials — never commit
 asg/vm_config.json
 asg/vm_config.local.json
+**/honeypot_bundle.json
+**/fake_homes/
+analysis_results/private/
+analysis_results/controlled_sinkhole_dynamic/
+analysis_results/real_skill_intake/quarantine/
 *.tar.gz
 *.gz
 *.zip
 __pycache__/
 .pytest_cache/
+*.pyc
 analysis_results/**/raw*
 analysis_results/**/inbox*
 analysis_results/**/real_skill*

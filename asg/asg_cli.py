@@ -4,6 +4,7 @@ Usage:
     python -m asg.asg_cli scan <skill_path> [--output-dir DIR] [--enable-claude] [--enable-honeypot]
     python -m asg.asg_cli scan-all-samples [--output-dir DIR] [--enable-claude]
     python -m asg.asg_cli build-dashboard [--output dashboard/dashboard_data.json]
+    python -m asg.asg_cli release-check
 
 The CLI performs a 4-layer analysis and writes a dashboard-compatible
 JSON report:
@@ -50,9 +51,119 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "analysis_results" / "asg"
 
 
+def _runtime_layer_from_vm_record(vm_record: dict[str, Any] | None) -> dict[str, Any]:
+    """Convert ingested VM evidence into the report's layer_5 shape."""
+    if not vm_record:
+        return {"present": False}
+    return {
+        "present": True,
+        "evidence_dir": vm_record.get("evidence_dir"),
+        "mode": (
+            "paper_no_claude"
+            if not vm_record.get("claude", {}).get("output_path")
+            else "agent_in_the_loop"
+        ),
+        "claude_output_present": bool(
+            vm_record.get("claude", {}).get("output_path")
+        ),
+        "claude_output_size_chars": vm_record.get("claude", {}).get(
+            "response_length_chars", 0
+        ),
+        "claude_output_preview": vm_record.get("claude", {}).get(
+            "output_preview", ""
+        )[:600],
+        "strace": vm_record.get("strace", {}),
+        "tcpdump": vm_record.get("tcpdump", {}),
+        "filesystem": vm_record.get("filesystem", {}),
+        "nova": vm_record.get("nova", {}),
+        "honeypot": {
+            "touched": vm_record.get("honeypot_evidence", {}).get("touched", False),
+            "leaked": vm_record.get("honeypot_evidence", {}).get("any_honeypot_leaked", False),
+            "touched_files": vm_record.get("honeypot_evidence", {}).get("touched_files", []),
+            "leak_sources": vm_record.get("honeypot_evidence", {}).get("leak_sources", []),
+        },
+    }
+
+
+def _find_existing_vm_evidence_dir(skill_name: str, output_dir: Path) -> Path | None:
+    """Reuse already-pulled VM evidence when scan-all-samples is rerun."""
+    skill_out = output_dir / skill_name
+    for dirname in ("vm_paper_logs", "vm_ssh_logs"):
+        candidate = skill_out / dirname
+        if not candidate.is_dir():
+            continue
+        if any((candidate / name).exists() for name in ("strace.log", "claude_output.txt", "network.pcap")):
+            return candidate
+    return None
+
+
 # ============================================================
 # Single-skill analysis
 # ============================================================
+SKILL_CONTENT_TEXT_EXTENSIONS = {
+    ".md", ".py", ".sh", ".txt", ".json", ".yaml", ".yml",
+    ".toml", ".ini", ".cfg", ".js", ".ts",
+}
+
+
+def _walk_skill_contents(
+    skill_path: Path,
+    max_files: int = 50,
+    max_chars_per_file: int = 4000,
+    max_total_preview_bytes: int = 200_000,
+) -> dict[str, Any]:
+    """Collect file list + content preview for every text file in the skill.
+
+    Each text file gets a content preview (capped at max_chars_per_file).
+    Binary files get path + size only.
+    """
+    files: list[dict[str, Any]] = []
+    total_bytes = 0
+    total_preview = 0
+    if not skill_path.exists():
+        return {"file_count": 0, "total_bytes": 0, "files": [], "skill_md_preview": ""}
+    truncated = False
+    skill_md_preview = ""
+    for p in sorted(skill_path.rglob("*")):
+        if not p.is_file():
+            continue
+        if len(files) >= max_files:
+            truncated = True
+            break
+        try:
+            size = p.stat().st_size
+        except OSError:
+            size = 0
+        rel = p.relative_to(skill_path).as_posix()
+        ext = p.suffix.lower()
+        kind = "text" if ext in SKILL_CONTENT_TEXT_EXTENSIONS else "binary"
+        entry: dict[str, Any] = {
+            "path": rel, "size_bytes": size, "kind": kind,
+            "content_preview": "", "content_truncated": False,
+        }
+        if kind == "text" and total_preview < max_total_preview_bytes:
+            try:
+                text = p.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                text = ""
+            preview = text[:max_chars_per_file]
+            if len(text) > max_chars_per_file:
+                entry["content_truncated"] = True
+            entry["content_preview"] = preview
+            total_preview += len(preview)
+            if rel == "SKILL.md":
+                skill_md_preview = preview
+        files.append(entry)
+        total_bytes += size
+    return {
+        "file_count": len(files),
+        "total_bytes": total_bytes,
+        "files": files,
+        "files_truncated": truncated,
+        "skill_md_preview": skill_md_preview,
+    }
+
+
 def analyze_skill(
     skill_path: Path,
     output_dir: Path,
@@ -97,11 +208,31 @@ def analyze_skill(
         "enabled": enable_honeypot,
         "bundle": None,
         "any_honeypot_leaked": False,
+        "deployed": False,
+        "honeypot_deployed": False,
+        "deployment_mode": None,
+        "honeypot_deployment_mode": None,
+        "files_created": [],
+        "honeypot_files_created": [],
+        "marker_count": 0,
+        "honeypot_marker_count": 0,
+        "redacted_preview": {},
+        "honeypot_markers_redacted_preview": {},
+        "touched": False,
+        "honeypot_touched": False,
+        "touched_files": [],
+        "leak_sources": [],
+        "honeypot_leak_sources": [],
+        "matches": [],
     }
     honeypot_markers: list[str] = []
     if enable_honeypot:
-        bundle = honeypot.generate_bundle()
-        honeypot_record["bundle"] = bundle.to_dict()
+        bundle = honeypot.generate_bundle(sample_name=skill_path.name)
+        honeypot_record["bundle"] = bundle.to_redacted_dict()
+        honeypot_record["redacted_preview"] = bundle.redacted_preview
+        honeypot_record["honeypot_markers_redacted_preview"] = bundle.redacted_preview
+        honeypot_record["marker_count"] = len(bundle.all_markers())
+        honeypot_record["honeypot_marker_count"] = len(bundle.all_markers())
         honeypot_markers = bundle.all_markers()
         (skill_out / "honeypot_bundle.json").write_text(
             json.dumps(bundle.to_dict(), indent=2, ensure_ascii=False),
@@ -122,15 +253,38 @@ def analyze_skill(
             )
             agent_eval = vm_evidence.vm_evidence_to_agent_eval(vm_record)
             # Honeypot leak status from VM evidence overrides synthetic bundle
-            if honeypot_record.get("enabled") and vm_record.get("honeypot_evidence", {}).get("any_honeypot_leaked"):
+            hp_vm = vm_record.get("honeypot_evidence", {})
+            if honeypot_record.get("enabled") and hp_vm:
+                honeypot_record.update(
+                    {
+                        "deployed": hp_vm.get("deployed", False),
+                        "honeypot_deployed": hp_vm.get("deployed", False),
+                        "deployment_mode": hp_vm.get("deployment_mode"),
+                        "honeypot_deployment_mode": hp_vm.get("deployment_mode"),
+                        "bundle_id": hp_vm.get("bundle_id"),
+                        "files_created": hp_vm.get("files_created", []),
+                        "honeypot_files_created": hp_vm.get("files_created", []),
+                        "marker_count": hp_vm.get("marker_count", honeypot_record.get("marker_count", 0)),
+                        "honeypot_marker_count": hp_vm.get("marker_count", honeypot_record.get("marker_count", 0)),
+                        "redacted_preview": hp_vm.get("redacted_preview", honeypot_record.get("redacted_preview", {})),
+                        "honeypot_markers_redacted_preview": hp_vm.get("redacted_preview", honeypot_record.get("redacted_preview", {})),
+                        "touched": hp_vm.get("touched", False),
+                        "honeypot_touched": hp_vm.get("touched", False),
+                        "touched_files": hp_vm.get("touched_files", []),
+                        "leak_sources": hp_vm.get("leak_sources", []),
+                        "honeypot_leak_sources": hp_vm.get("leak_sources", []),
+                        "matches": hp_vm.get("matches", []),
+                    }
+                )
+            if honeypot_record.get("enabled") and hp_vm.get("any_honeypot_leaked"):
                 honeypot_record["any_honeypot_leaked"] = True
                 honeypot_record["leaked_from_vm_evidence"] = True
         except FileNotFoundError as exc:
             agent_eval = {
                 "tested": False,
                 "skipped_reason": f"vm_evidence_dir invalid: {exc}",
-                "refusal_score": 0.5,
-                "disclosure_score": 0.5,
+                "refusal_score": 1.0,
+                "disclosure_score": 0.0,
                 "compliance_signal": 0.0,
                 "raw_response_preview": "",
                 "model": claude_model,
@@ -145,8 +299,8 @@ def analyze_skill(
         agent_eval = {
             "tested": False,
             "skipped_reason": "--enable-claude not set and no VM evidence provided",
-            "refusal_score": 0.5,
-            "disclosure_score": 0.5,
+            "refusal_score": 1.0,
+            "disclosure_score": 0.0,
             "compliance_signal": 0.0,
             "raw_response_preview": "",
             "model": claude_model,
@@ -167,45 +321,54 @@ def analyze_skill(
             "honeypot_markers_leaked_in_response", []
         )
 
+    # === Layer 5: VM Docker Runtime evidence (if any) ===
+    layer_5_runtime = _runtime_layer_from_vm_record(vm_record)
+
+    # === 增量合并：保留之前已经跑过的 layer 数据，避免重跑某层时丢失其他层 ===
+    # 例：如果之前跑过 Claude AI 评判（layer 3），现在只跑 vm-paper-run（只产生 layer 5），
+    # 应该保留 layer 3 数据，而不是用本次的空 agent_eval 覆盖。
+    existing_report_path = skill_out / "asg_report.json"
+    if existing_report_path.exists():
+        try:
+            prev = json.loads(existing_report_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            prev = {}
+        # Layer 3: 保留真正调过 LLM 的结果，不被 vm-paper-run 的伪 agent_eval 覆盖
+        prev_ae = prev.get("layer_3_agent_eval") or {}
+        prev_has_real_llm = bool(prev_ae.get("verdict_from_llm")
+                                 or prev_ae.get("detailed_audit"))
+        cur_has_real_llm = bool(agent_eval.get("verdict_from_llm")
+                                or agent_eval.get("detailed_audit"))
+        if not agent_eval.get("tested") and prev_ae.get("tested"):
+            agent_eval = prev_ae
+        elif prev_has_real_llm and not cur_has_real_llm:
+            # 本次是 paper-mode 等只产生 runtime 证据的扫描，
+            # 不应覆盖之前真调 Claude API 拿到的 verdict/risks。
+            agent_eval = prev_ae
+        # Layer 5: 本次没新 runtime 证据但旧的有 → 保留旧的
+        prev_rt = prev.get("layer_5_runtime") or {}
+        if not layer_5_runtime.get("present") and prev_rt.get("present"):
+            layer_5_runtime = prev_rt
+        # Layer 4: 本次没开 honeypot 但旧的开过 → 保留旧的（防止 honeypot 数据被清空）
+        prev_hp = prev.get("layer_4_honeypot") or {}
+        if not honeypot_record.get("enabled") and prev_hp.get("enabled"):
+            honeypot_record = prev_hp
+
     # === Composite risk scoring ===
     risk = risk_scorer.compute_risk(
         scan_result=scan_result,
         chain_result=chain_result,
         agent_eval=agent_eval if agent_eval.get("tested") else None,
         honeypot_result=honeypot_record if enable_honeypot else None,
+        layer_5_runtime=layer_5_runtime,
     )
-
-    # === Layer 5: VM Docker Runtime evidence (if any) ===
-    layer_5_runtime: dict[str, Any] = {"present": False}
-    if vm_record:
-        layer_5_runtime = {
-            "present": True,
-            "evidence_dir": vm_record.get("evidence_dir"),
-            "mode": (
-                "paper_no_claude"
-                if not vm_record.get("claude", {}).get("output_path")
-                else "agent_in_the_loop"
-            ),
-            "claude_output_present": bool(
-                vm_record.get("claude", {}).get("output_path")
-            ),
-            "claude_output_size_chars": vm_record.get("claude", {}).get(
-                "response_length_chars", 0
-            ),
-            "claude_output_preview": vm_record.get("claude", {}).get(
-                "output_preview", ""
-            )[:600],
-            "strace": vm_record.get("strace", {}),
-            "tcpdump": vm_record.get("tcpdump", {}),
-            "filesystem": vm_record.get("filesystem", {}),
-            "nova": vm_record.get("nova", {}),
-        }
 
     asg_report = {
         "asg_version": "1.0.0",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "skill_name": scan_result["skill_name"],
         "skill_path": scan_result["skill_path"],
+        "skill_contents": _walk_skill_contents(skill_path),
         "layer_1_static_scan": {
             "total_findings": scan_result["total_findings"],
             "by_severity": scan_result["by_severity"],
@@ -255,6 +418,7 @@ def scan_all_samples(
                 output_dir=output_dir,
                 enable_claude=enable_claude,
                 enable_honeypot=enable_honeypot,
+                vm_evidence_dir=_find_existing_vm_evidence_dir(entry.name, output_dir),
             )
             reports.append(report)
         except Exception as exc:  # keep batch resilient
@@ -308,6 +472,8 @@ def build_batch_summary(reports: list[dict[str, Any]]) -> dict[str, Any]:
                 "agent_tested": r["layer_3_agent_eval"]["tested"],
                 "agent_refusal_score": r["layer_3_agent_eval"]["refusal_score"],
                 "honeypot_leaked": r["layer_4_honeypot"]["any_honeypot_leaked"],
+                "S_runtime": r["composite_risk"].get("sub_scores", {}).get("S_runtime", 0.0),
+                "runtime_score_delta": r["composite_risk"].get("runtime_score_delta", 0.0),
             }
         )
 
@@ -321,6 +487,10 @@ def build_batch_summary(reports: list[dict[str, Any]]) -> dict[str, Any]:
         "by_sophistication_level": by_soph_level,
         "chain_trigger_counts": chain_counts,
         "rows": rows,
+        "runtime_score_delta_total": round(
+            sum(row.get("runtime_score_delta", 0.0) for row in rows if "error" not in row),
+            2,
+        ),
     }
 
 
@@ -349,8 +519,9 @@ def build_dashboard_payload(
         "rule_breakdown": {"paper_original": 14, "asg_extensions": 3},
         "extension_rules": ["P5 Authority Impersonation", "P6 Persistence", "P7 Cross-tool Coercion"],
         "composite_score_formula": (
-            "R = 100 * (0.25*S_static + 0.20*S_chain + 0.10*S_soph "
-            "+ 0.10*S_phases + 0.25*(1 - S_resilience) + 0.10*S_honeypot)"
+            "R = 100 * (0.22*S_static + 0.18*S_chain + 0.10*S_soph "
+            "+ 0.08*S_phases + 0.17*(1 - S_resilience) "
+            "+ 0.10*S_honeypot + 0.15*S_runtime)"
         ),
         "total_skills_evaluated": batch_summary["total_skills"],
         "total_static_findings": batch_summary["total_static_findings"],
@@ -378,17 +549,24 @@ def _cmd_scan(args: argparse.Namespace) -> int:
         claude_model=args.claude_model,
         vm_evidence_dir=vm_dir,
     )
+    html_path = REPO_ROOT / "asg" / "dashboard.html"
+    dashboard_builder.build_from_results(
+        out, html_path, only_skill=report["skill_name"]
+    )
     print(json.dumps(
         {
             "skill_name": report["skill_name"],
             "composite_score": report["composite_risk"]["composite_score"],
             "verdict": report["composite_risk"]["verdict"],
+            "dashboard_html": str(html_path),
             "archetype": report["layer_2_attack_chain"]["archetype"]["archetype"],
             "sophistication": report["layer_2_attack_chain"]["sophistication"]["label"],
             "chains_triggered": report["layer_2_attack_chain"]["chain_count"],
             "agent_tested": report["layer_3_agent_eval"]["tested"],
             "agent_refusal_score": report["layer_3_agent_eval"]["refusal_score"],
             "honeypot_leaked": report["layer_4_honeypot"]["any_honeypot_leaked"],
+            "S_runtime": report["composite_risk"].get("sub_scores", {}).get("S_runtime", 0.0),
+            "runtime_score_delta": report["composite_risk"].get("runtime_score_delta", 0.0),
             "report_path": str(out / report["skill_name"] / "asg_report.json"),
         },
         indent=2,
@@ -438,6 +616,8 @@ def _cmd_ingest_vm(args: argparse.Namespace) -> int:
             "agent_tested_from_vm": report["layer_3_agent_eval"].get("tested"),
             "refusal_score": report["layer_3_agent_eval"].get("refusal_score"),
             "disclosure_score": report["layer_3_agent_eval"].get("disclosure_score"),
+            "S_runtime": report["composite_risk"].get("sub_scores", {}).get("S_runtime", 0.0),
+            "runtime_score_delta": report["composite_risk"].get("runtime_score_delta", 0.0),
             "evidence_dir": str(evidence),
             "report_path": str(out / report["skill_name"] / "asg_report.json"),
         },
@@ -479,6 +659,8 @@ def _cmd_vm_ssh_run(args: argparse.Namespace) -> int:
         skill_path_local=skill,
         timeout_seconds=args.timeout_seconds,
         local_log_dir=ssh_log_dir,
+        enable_honeypot=args.enable_honeypot,
+        no_honeypot_materialize=args.no_honeypot_materialize,
     )
     print(f"[vm-ssh] status={ssh_result.get('status')}")
     if ssh_result.get("status") not in ("completed", "completed_no_logs"):
@@ -500,6 +682,8 @@ def _cmd_vm_ssh_run(args: argparse.Namespace) -> int:
             "verdict": report["composite_risk"]["verdict"],
             "agent_tested": report["layer_3_agent_eval"].get("tested"),
             "refusal_score": report["layer_3_agent_eval"].get("refusal_score"),
+            "S_runtime": report["composite_risk"].get("sub_scores", {}).get("S_runtime", 0.0),
+            "runtime_score_delta": report["composite_risk"].get("runtime_score_delta", 0.0),
             "ssh_log_dir": str(ssh_log_dir),
         },
         indent=2,
@@ -533,6 +717,8 @@ def _cmd_vm_paper_run(args: argparse.Namespace) -> int:
         skill_path_local=skill,
         timeout_seconds=args.timeout_seconds,
         local_log_dir=paper_log_dir,
+        enable_honeypot=args.enable_honeypot,
+        no_honeypot_materialize=args.no_honeypot_materialize,
     )
     print(f"[vm-paper] status={result.get('status')}")
     if result.get("status") not in ("completed", "completed_no_logs"):
@@ -554,6 +740,8 @@ def _cmd_vm_paper_run(args: argparse.Namespace) -> int:
             "verdict": report["composite_risk"]["verdict"],
             "mode": "paper_no_claude",
             "scripts_executed": result.get("pulled_any_logs"),
+            "S_runtime": report["composite_risk"].get("sub_scores", {}).get("S_runtime", 0.0),
+            "runtime_score_delta": report["composite_risk"].get("runtime_score_delta", 0.0),
             "paper_log_dir": str(paper_log_dir),
             "outbound_ips": report["layer_3_agent_eval"]
                 .get("ingested_from_vm_evidence", False),
@@ -567,7 +755,9 @@ def _cmd_vm_paper_run(args: argparse.Namespace) -> int:
 def _cmd_build_html(args: argparse.Namespace) -> int:
     results_dir = Path(args.results_dir or DEFAULT_OUTPUT_DIR)
     output = Path(args.output or REPO_ROOT / "asg" / "dashboard.html")
-    out_path = dashboard_builder.build_from_results(results_dir, output)
+    out_path = dashboard_builder.build_from_results(
+        results_dir, output, only_skill=args.skill
+    )
     print(f"Wrote: {out_path.resolve()}")
     return 0
 
@@ -597,6 +787,18 @@ def _cmd_build_dashboard(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_release_check(args: argparse.Namespace) -> int:
+    scripts_dir = REPO_ROOT / "code" / "scripts"
+    if str(scripts_dir) not in sys.path:
+        sys.path.insert(0, str(scripts_dir))
+    from release_safety_check import print_summary, run_release_safety_check
+
+    output_dir = Path(args.output_dir or REPO_ROOT / "analysis_results" / "release_safety_check")
+    report = run_release_safety_check(repo_root=REPO_ROOT, output_dir=output_dir, write_reports=True)
+    print_summary(report, output_dir)
+    return 0 if report["passed"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="asg", description="AgentSkillGuard CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -606,7 +808,7 @@ def main(argv: list[str] | None = None) -> int:
     p_scan.add_argument("--output-dir", default=None)
     p_scan.add_argument("--enable-claude", action="store_true")
     p_scan.add_argument("--enable-honeypot", action="store_true")
-    p_scan.add_argument("--claude-model", default="claude-sonnet-4-5")
+    p_scan.add_argument("--claude-model", default="claude-opus-4-7")
     p_scan.add_argument(
         "--vm-evidence-dir",
         default=None,
@@ -635,6 +837,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="Directory containing per-skill asg_report.json files")
     p_html.add_argument("--output", default=None,
                         help="Output HTML path (default: asg/dashboard.html)")
+    p_html.add_argument("--skill", default=None,
+                        help="Only render this skill (by directory name); "
+                             "default renders the full aggregated history")
     p_html.set_defaults(func=_cmd_build_html)
 
     p_ingest = sub.add_parser(
@@ -662,6 +867,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     p_ssh.add_argument("--output-dir", default=None)
     p_ssh.add_argument("--enable-honeypot", action="store_true")
+    p_ssh.add_argument("--no-honeypot-materialize", action="store_true")
     p_ssh.add_argument("--timeout-seconds", type=int, default=300)
     p_ssh.set_defaults(func=_cmd_vm_ssh_run)
 
@@ -673,8 +879,16 @@ def main(argv: list[str] | None = None) -> int:
     p_paper.add_argument("--vm-config", default="asg/vm_config.json")
     p_paper.add_argument("--output-dir", default=None)
     p_paper.add_argument("--enable-honeypot", action="store_true")
+    p_paper.add_argument("--no-honeypot-materialize", action="store_true")
     p_paper.add_argument("--timeout-seconds", type=int, default=60)
     p_paper.set_defaults(func=_cmd_vm_paper_run)
+
+    p_release = sub.add_parser(
+        "release-check",
+        help="Run level_3 GitHub release safety checks",
+    )
+    p_release.add_argument("--output-dir", default=None)
+    p_release.set_defaults(func=_cmd_release_check)
 
     args = parser.parse_args(argv)
     return args.func(args)

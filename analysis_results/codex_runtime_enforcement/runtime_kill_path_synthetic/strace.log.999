@@ -1,2 +1,0 @@
-openat(AT_FDCWD, "/workspace/safe_skill/SKILL.md", O_WRONLY|O_TRUNC|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/opt/codex-bundle/bin/codex", O_WRONLY|O_TRUNC|O_CLOEXEC) = 4

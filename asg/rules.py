@@ -32,6 +32,7 @@ class Finding:
     matched_text: str
     description: str
     confidence: float
+    context: str = ""  # 命中行 ±N 行的上下文（带行号，命中行用 » 标记）
 
 
 @dataclass
@@ -69,7 +70,7 @@ PAPER_RULES: list[Rule] = [
         rule_id="E4",
         name="Network Reconnaissance",
         kill_chain_phase="recon",
-        severity="MEDIUM",
+        severity="LOW",  # was MEDIUM; bare socket.connect is too generic, real signal needs nmap/portscan keywords (bumped in _classify_match)
         patterns=[
             r"socket\.(?:connect|gethostbyname|socket)",
             r"socket\.AF_INET",
@@ -85,7 +86,7 @@ PAPER_RULES: list[Rule] = [
         rule_id="E2",
         name="Credential Harvesting",
         kill_chain_phase="cred_access",
-        severity="CRITICAL",
+        severity="HIGH",  # was CRITICAL; reading env vars alone is FP-prone, real harm needs E1 chain
         patterns=[
             r"os\.(?:environ|getenv).*(?:key|secret|token|password|api)",
             r"\$\{?(?:ANTHROPIC|OPENAI|GITHUB|AWS)_(?:API_)?(?:KEY|TOKEN|SECRET)",
@@ -208,7 +209,7 @@ PAPER_RULES: list[Rule] = [
         rule_id="P1",
         name="Instruction Override",
         kill_chain_phase="impact",
-        severity="HIGH",
+        severity="MEDIUM",  # was HIGH; "must be followed"/"non-negotiable" wording alone is benign emphasis. Real prompt-injection (ignore/disregard/override) is bumped to HIGH in _classify_match.
         patterns=[
             r"(?i)ignore\s+(?:previous|above|prior|all)\s+(?:instruction|message|prompt|rule)",
             r"(?i)disregard\s+(?:previous|above|prior|all|safety|user)",
@@ -313,7 +314,7 @@ EXTENSION_RULES: list[Rule] = [
         rule_id="P7",
         name="Cross-tool Coercion",
         kill_chain_phase="impact",
-        severity="HIGH",
+        severity="MEDIUM",  # was HIGH; "first install" / "use another skill" is super common in install docs, real risk only when chained with E1/SC2
         patterns=[
             r"(?i)use\s+(?:another|different|the)\s+skill",
             r"(?i)first\s+install\s+",
@@ -353,6 +354,104 @@ def _read_text_safely(path: Path) -> str:
         return ""
 
 
+# Known-bad indicators: when these appear in a match, severity stays as-is.
+# Without them, "example" patterns in .md docs (curl POST, requests.post)
+# get downgraded to LOW to avoid false-positives on benign skill READMEs.
+SINKHOLE_KEYWORDS = (
+    "attacker.", "exfil", "c2.", ".onion", "webhook.site", "pastebin.com",
+    "ngrok.io", "burpcollaborator", "interactsh", "requestbin",
+)
+# Rules that frequently produce noise inside markdown docs unless they hit
+# a real sinkhole. Downgrade these in .md/.txt files when matched_text has
+# no sinkhole keyword.
+MARKDOWN_NOISE_RULE_IDS = {"E1", "SC1", "SC2", "PE2", "P7"}
+
+# Real prompt-injection language. P1 base is MEDIUM (catches emphasis words
+# like "non-negotiable" which legitimate skills also use). When the match
+# contains a true override directive, bump to HIGH.
+P1_OVERRIDE_KEYWORDS = ("ignore", "disregard", "override", "supersede")
+
+# Reverse-shell signatures. SC1 base is HIGH (covers `os.system`, shell=True).
+# When the match is a reverse-shell pattern, bump to CRITICAL.
+SC1_REVSHELL_KEYWORDS = ("/bin/sh", "bash -i", "dup2", "nc -e ", " nc -e", "/bin/bash -i")
+
+# Real port-scan / recon signals. E4 base is LOW (bare socket.connect is too
+# generic). Bump to MEDIUM only when these keywords appear.
+E4_SCAN_KEYWORDS = ("nmap", "netstat", "port_scan", "portscan", "port-scan")
+
+# Unicode zero-width / bidi-override / non-printing characters used in
+# steganographic prompt injection. P2 base is HIGH; bump these to CRITICAL.
+P2_INVISIBLE_CHARS = (
+    "​", "‌", "‍", "⁠", "﻿",
+    "‪", "‫", "‬", "‭", "‮",  # bidi overrides
+)
+
+
+def _is_doc_context(path: Path) -> bool:
+    return path.suffix.lower() in {".md", ".txt"}
+
+
+def _hit_real_sinkhole(matched_text: str) -> bool:
+    low = matched_text.lower()
+    return any(kw in low for kw in SINKHOLE_KEYWORDS)
+
+
+def _build_context(lines: list[str], hit_line_no: int, radius: int = 3) -> str:
+    """命中行周围 ±radius 行，带行号；命中行用 '»' 前缀标记，其余用 ' '。
+    行号从 1 开始（hit_line_no 是 1-based）。"""
+    start = max(1, hit_line_no - radius)
+    end = min(len(lines), hit_line_no + radius)
+    width = len(str(end))
+    out: list[str] = []
+    for n in range(start, end + 1):
+        marker = "»" if n == hit_line_no else " "
+        text = lines[n - 1].rstrip("\n")
+        if len(text) > 200:
+            text = text[:200] + " …"
+        out.append(f"{marker} {str(n).rjust(width)} | {text}")
+    return "\n".join(out)
+
+
+def _classify_match(rule_id: str, base_severity: str, matched_text: str, doc_context: bool) -> str:
+    """Decide the final severity of a single match based on rule-specific
+    high-confidence / low-confidence indicators in the matched text.
+
+    Bump-up cases (matched text indicates clear malicious intent):
+      * E1 + sinkhole keyword     → CRITICAL  (attacker.example, .onion, ...)
+      * SC1 + reverse-shell sig   → CRITICAL  (bin/sh -i, nc -e, dup2, ...)
+      * E4 + scan keyword         → MEDIUM    (nmap, port_scan, ...)
+      * P1 + override keyword     → HIGH      (ignore previous, disregard, ...)
+      * P2 + invisible Unicode    → CRITICAL  (zero-width / bidi override)
+
+    Bump-down cases (matched text in doc context with no high-confidence hint):
+      * Any MARKDOWN_NOISE_RULE_IDS rule in .md/.txt with no sinkhole keyword
+        → LOW
+    """
+    low = matched_text.lower()
+
+    # ---- Per-rule bump-up rules ----
+    if rule_id == "E1" and _hit_real_sinkhole(matched_text):
+        return "CRITICAL"
+    if rule_id == "SC1" and any(kw in low for kw in SC1_REVSHELL_KEYWORDS):
+        return "CRITICAL"
+    if rule_id == "E4" and any(kw in low for kw in E4_SCAN_KEYWORDS):
+        return "MEDIUM"
+    if rule_id == "P1" and any(kw in low for kw in P1_OVERRIDE_KEYWORDS):
+        return "HIGH"
+    if rule_id == "P2" and any(ch in matched_text for ch in P2_INVISIBLE_CHARS):
+        return "CRITICAL"
+    # P4: specific "mandatory_activation/protocol" sub-pattern is noisy emphasis,
+    # not a coercion signal. Downgrade.
+    if rule_id == "P4" and "mandatory" in low and ("activation" in low or "protocol" in low):
+        return "LOW"
+
+    # ---- Markdown-context downgrade ----
+    if doc_context and rule_id in MARKDOWN_NOISE_RULE_IDS and not _hit_real_sinkhole(matched_text):
+        return "LOW"
+
+    return base_severity
+
+
 def scan_file(path: Path, skill_root: Path, rules: list[Rule] | None = None) -> list[Finding]:
     """Scan one file with all rules. Returns list of Finding."""
     if rules is None:
@@ -367,6 +466,7 @@ def scan_file(path: Path, skill_root: Path, rules: list[Rule] | None = None) -> 
     except ValueError:
         rel = str(path)
 
+    doc_context = _is_doc_context(path)
     lines = text.splitlines()
     for rule in rules:
         for pattern in rule.patterns:
@@ -375,17 +475,20 @@ def scan_file(path: Path, skill_root: Path, rules: list[Rule] | None = None) -> 
                 match = compiled.search(line)
                 if not match:
                     continue
+                matched = match.group(0)[:160]
+                severity = _classify_match(rule.rule_id, rule.severity, matched, doc_context)
                 findings.append(
                     Finding(
                         rule_id=rule.rule_id,
-                        severity=rule.severity,
+                        severity=severity,
                         kill_chain_phase=rule.kill_chain_phase,
                         file=rel,
                         line=line_no,
                         pattern=pattern,
-                        matched_text=match.group(0)[:160],
+                        matched_text=matched,
                         description=rule.description,
                         confidence=rule.confidence,
+                        context=_build_context(lines, line_no, radius=3),
                     )
                 )
     return findings
@@ -443,6 +546,7 @@ def scan_skill_directory(skill_path: Path) -> dict[str, Any]:
                 "matched_text": f.matched_text,
                 "description": f.description,
                 "confidence": f.confidence,
+                "context": f.context,
             }
             for f in findings
         ],

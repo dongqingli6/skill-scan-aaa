@@ -1,0 +1,203 @@
+{
+  "skill_name": "build-status",
+  "analysis_mode": "real_static",
+  "data_source": "real_skills/selected/build-status",
+  "generated_at": "2026-05-13T03:37:53.267314+00:00",
+  "level": "level3.1",
+  "risk_score": 52,
+  "risk_level": "MEDIUM",
+  "confidence": 0.68,
+  "reviewer_summary": {
+    "verdict": "Medium risk real static finding",
+    "summary": "This skill declares a remote Buildkite MCP connection through npx mcp-remote. The listed tools appear read-oriented, but the skill still depends on an external MCP endpoint and may expose CI/CD metadata if authorized.",
+    "manual_review_required": true,
+    "suggested_decision": "Require manual review before use",
+    "top_risks": [
+      "Remote MCP endpoint",
+      "External command declaration",
+      "CI/CD metadata access"
+    ]
+  },
+  "suggested_decision": "Require manual review before use",
+  "manual_review_required": true,
+  "top_risks": [
+    "Remote MCP endpoint",
+    "External command declaration",
+    "CI/CD metadata access"
+  ],
+  "security_flags": {
+    "sensitive_file_access": false,
+    "shell_execution": false,
+    "network_attempt": true,
+    "remote_mcp": true,
+    "ci_cd_access": true,
+    "write_capable_tools": false,
+    "prompt_injection_risk": false,
+    "persistence_risk": false,
+    "evasion_risk": false
+  },
+  "summary_cards": [
+    {
+      "label": "Risk Score",
+      "value": "52/100",
+      "description": "Static review score based on manifest and skill text."
+    },
+    {
+      "label": "Risk Level",
+      "value": "MEDIUM",
+      "description": "Static review risk level for this skill."
+    },
+    {
+      "label": "Triggered Rules",
+      "value": "3",
+      "description": "Number of static review rules matched."
+    },
+    {
+      "label": "Evidence Events",
+      "value": "5",
+      "description": "Number of static review events collected."
+    }
+  ],
+  "risk_dimensions": {
+    "static_risk": 58,
+    "dynamic_risk": 0,
+    "network_risk": 62,
+    "secret_risk": 20,
+    "persistence_risk": 0,
+    "prompt_injection_risk": 10,
+    "evasion_risk": 15
+  },
+  "timeline_events": [
+    {
+      "timestamp": "00:00.000",
+      "event_type": "static_parse",
+      "severity": "INFO",
+      "message": "Loaded SKILL.md for static review.",
+      "evidence": "real_skills/selected/build-status/SKILL.md"
+    },
+    {
+      "timestamp": "00:00.010",
+      "event_type": "manifest_parse",
+      "severity": "INFO",
+      "message": "Loaded mcp.json for static review.",
+      "evidence": "real_skills/selected/build-status/mcp.json"
+    },
+    {
+      "timestamp": "00:00.020",
+      "event_type": "mcp_endpoint",
+      "severity": "MEDIUM",
+      "message": "Detected remote MCP endpoint declaration.",
+      "evidence": "https://mcp.buildkite.com/mcp"
+    },
+    {
+      "timestamp": "00:00.030",
+      "event_type": "tool_inventory",
+      "severity": "MEDIUM",
+      "message": "Detected declared MCP tools.",
+      "evidence": "list_builds, get_build, get_pipeline"
+    },
+    {
+      "timestamp": "00:00.040",
+      "event_type": "review_complete",
+      "severity": "INFO",
+      "message": "Static review completed. No dynamic execution evidence was collected.",
+      "evidence": "static-only review; no command execution performed"
+    }
+  ],
+  "static_findings": [
+    {
+      "rule_id": "REMOTE_MCP_ENDPOINT",
+      "title": "Remote MCP endpoint declared",
+      "severity": "MEDIUM",
+      "source": "static",
+      "evidence": "https://mcp.buildkite.com/mcp",
+      "explanation": "The skill declares a remote MCP endpoint.",
+      "recommendation": "Review the remote MCP provider and required permissions before use."
+    },
+    {
+      "rule_id": "DECLARED_NPX_MCP_REMOTE",
+      "title": "Declared npx mcp-remote bridge",
+      "severity": "MEDIUM",
+      "source": "static",
+      "evidence": "npx -y mcp-remote https://mcp.buildkite.com/mcp",
+      "explanation": "The skill declares an external command used to launch a remote MCP bridge.",
+      "recommendation": "Do not execute this command until the package source and permissions are reviewed."
+    },
+    {
+      "rule_id": "CICD_METADATA_ACCESS",
+      "title": "CI/CD metadata access",
+      "severity": "MEDIUM",
+      "source": "static",
+      "evidence": "list_builds, get_build, get_pipeline",
+      "explanation": "The skill can access Buildkite build and pipeline metadata through MCP tools.",
+      "recommendation": "Use least-privilege credentials and avoid production tokens during testing."
+    }
+  ],
+  "dynamic_findings": [],
+  "rule_findings": [
+    {
+      "rule_id": "REMOTE_MCP_ENDPOINT",
+      "title": "Remote MCP endpoint declared",
+      "severity": "MEDIUM",
+      "source": "static",
+      "evidence": "https://mcp.buildkite.com/mcp",
+      "explanation": "The skill declares a remote MCP endpoint.",
+      "recommendation": "Review the remote MCP provider and required permissions before use."
+    },
+    {
+      "rule_id": "DECLARED_NPX_MCP_REMOTE",
+      "title": "Declared npx mcp-remote bridge",
+      "severity": "MEDIUM",
+      "source": "static",
+      "evidence": "npx -y mcp-remote https://mcp.buildkite.com/mcp",
+      "explanation": "The skill declares an external command used to launch a remote MCP bridge.",
+      "recommendation": "Do not execute this command until the package source and permissions are reviewed."
+    },
+    {
+      "rule_id": "CICD_METADATA_ACCESS",
+      "title": "CI/CD metadata access",
+      "severity": "MEDIUM",
+      "source": "static",
+      "evidence": "list_builds, get_build, get_pipeline",
+      "explanation": "The skill can access Buildkite build and pipeline metadata through MCP tools.",
+      "recommendation": "Use least-privilege credentials and avoid production tokens during testing."
+    }
+  ],
+  "static_dynamic_comparison": [
+    {
+      "risk": "Remote MCP endpoint",
+      "static_detected": true,
+      "dynamic_triggered": false,
+      "conclusion": "Static-only finding; dynamic execution not performed"
+    },
+    {
+      "risk": "CI/CD metadata access",
+      "static_detected": true,
+      "dynamic_triggered": false,
+      "conclusion": "Static-only finding; review required before authorization"
+    },
+    {
+      "risk": "Write-capable MCP tools",
+      "static_detected": false,
+      "dynamic_triggered": false,
+      "conclusion": "Not detected in declared tool allowlist"
+    }
+  ],
+  "recommendations": [
+    "Require manual review before use.",
+    "Do not execute the declared npx mcp-remote command until the package source and permissions are reviewed.",
+    "Use least-privilege Buildkite credentials and avoid production tokens during testing.",
+    "Keep this skill in static-only review until dynamic execution is explicitly approved in a sandbox."
+  ],
+  "notes": [
+    "Real static review only; no dynamic execution evidence was collected.",
+    "The declared MCP command was not executed by this generator."
+  ],
+  "mcp_server": "buildkite",
+  "declared_command": "npx -y mcp-remote https://mcp.buildkite.com/mcp",
+  "declared_tools": [
+    "list_builds",
+    "get_build",
+    "get_pipeline"
+  ]
+}

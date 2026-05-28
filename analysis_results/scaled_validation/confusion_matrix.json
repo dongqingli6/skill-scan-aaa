@@ -1,8 +1,0 @@
-{
-  "false_negative": 0,
-  "false_positive": 0,
-  "note": "Suspicious samples are tracked separately as manual review targets.",
-  "suspicious_manual_review_count": 4,
-  "true_negative": 4,
-  "true_positive": 4
-}

