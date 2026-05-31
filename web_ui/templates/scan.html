@@ -157,41 +157,41 @@
     </nav>
 
     <header class="hero">
-      <h1>🛡 Agent Skill Security Portal</h1>
-      <p>上传 Skill 包 → 静态规则扫描（17 条 ASG 规则）+ Claude API 安全研判。扫完到「结果」页看报告卡片。</p>
+      <h1>Skill 安全研判平台</h1>
+      <p>上传 Skill 包后，平台会运行静态规则扫描，并可选调用 Claude API 进行安全研判。扫描完成后，结果会出现在“扫描结果”页面。</p>
     </header>
 
     <section class="mode-section mode-1">
       <h2 class="mode-title">
         <span class="mode-num">1</span>
-        静态扫 + AI 研判
-        <span class="mode-tag tag-recommend">推荐 · 不执行 Skill</span>
+        静态扫描 + AI 研判
+        <span class="mode-tag tag-recommend">推荐 · 不执行 Skill 代码</span>
       </h2>
       <p class="mode-desc">
-        用 <strong>17 条静态规则</strong>扫所有文件，再把 <code>SKILL.md</code> 文本送 Claude（kuaipao.ai 中转）当安全审计员判
-        <strong>SAFE / SUSPICIOUS / MALICIOUS</strong>。<strong>Skill 代码全程不执行</strong>，任何人上传任何文件都安全。
+        使用 <strong>17 条静态规则</strong>扫描所有文件，并将 <code>SKILL.md</code> 文本提交给 Claude 模型进行安全研判，
+        输出 <strong>SAFE / SUSPICIOUS / MALICIOUS</strong> 三档结论。整个过程不会执行 Skill 中的任何代码。
       </p>
 
       <div class="upload-row">
         <form method="post" action="/asg/upload_scan" enctype="multipart/form-data" class="upload-card">
           <span class="upload-card-tag">A · 标准扫描（推荐）</span>
-          <p class="card-note">静态规则 + 蜜罐<strong>必跑</strong>；Claude AI 研判<strong>有 key 就自动跑、没 key 就降级成纯静态</strong>，不会失败。日常用这个。</p>
-          <label>选择 Skill 文件（.zip / .py / .md / 任意单文件）
+          <p class="card-note">静态规则与蜜罐检测始终执行。Claude AI 研判在配置了 API key 时自动启用，未配置时降级为纯静态扫描。</p>
+          <label>选择 Skill 文件（支持 .zip / .py / .md / 任意单文件）
             <input class="file-input" type="file" name="archive" required>
           </label>
-          <button class="btn-submit" type="submit">▶ 上传并扫描</button>
+          <button class="btn-submit" type="submit">上传并扫描</button>
         </form>
 
         <form method="post" action="/asg/local_api_check" enctype="multipart/form-data" class="upload-card">
           <span class="upload-card-tag">B · 强制 AI 研判</span>
-          <p class="card-note"><strong>必须</strong>走 Claude AI——没配 API key 直接报错拒绝。用于「我就是要 AI 看过，否则别给我结果」的场景。</p>
-          <label>Skill zip / 单文件
+          <p class="card-note">强制要求 Claude AI 参与研判。若未配置 API key，请求将直接返回错误。适用于必须获得 AI 研判结论的场景。</p>
+          <label>Skill 文件（.zip 或单文件）
             <input class="file-input" type="file" name="archive" required>
           </label>
-          <button class="btn-submit" type="submit">▶ 上传 + 强制 AI 研判</button>
+          <button class="btn-submit" type="submit">上传并强制 AI 研判</button>
         </form>
       </div>
-      <p class="mode-foot">💡 目前 <code>vm_config.json</code> 已配 kuaipao.ai key，所以 A 和 B 跑出来一样（都含 AI）。区别只在没 key 时：A 降级、B 报错。</p>
+      <p class="mode-foot">说明：当 <code>vm_config.json</code> 已配置 API key 时，A 与 B 的输出一致；区别仅出现在未配置 key 的情况下——A 降级为静态扫描，B 返回错误。</p>
     </section>
 
     {{ dynamic_section }}

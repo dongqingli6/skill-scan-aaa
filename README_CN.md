@@ -1,169 +1,148 @@
 # SkillSentinel · AI Agent Skill 安全研判平台
 
-> **一句话**：在你给 Claude / Codex 装一个第三方 Skill 之前，先让本平台扫一遍——告诉你它是**安全 / 可疑 / 危险**，并给出可解释的证据（静态命中、AI 研判、容器里真跑出来的系统调用）。
+一个面向 Claude / Codex 第三方 Skill 的安全检测平台。接收一个 Skill 包（`.zip` 或单文件），输出带证据的研判结论：安全 / 可疑 / 危险，并指出风险所在的具体规则与代码行。
 
-参考论文：[arXiv:2602.06547v2 — Malicious Agent Skills in the Wild](https://arxiv.org/abs/2602.06547)，复现其 14 条静态规则 / 6 条攻击链 / 4 类原型分类，并扩展了 3 条新规则 + Claude 实时研判 + 蜜罐 + 容器运行时证据。
-
----
-
-## 目录
-
-1. [它解决什么问题](#1-它解决什么问题)
-2. [五层联合研判（核心架构）](#2-五层联合研判核心架构)
-3. [三种扫描模式](#3-三种扫描模式)
-4. [网页三页结构](#4-网页三页结构)
-5. [快速开始](#5-快速开始)
-6. [公开模式 PUBLIC_MODE](#6-公开模式-public_mode)
-7. [命令行 CLI](#7-命令行-cli)
-8. [报告页看什么](#8-报告页看什么)
-9. [17 条静态规则与严重度分级](#9-17-条静态规则与严重度分级)
-10. [综合评分公式](#10-综合评分公式)
-11. [安全声明与密钥管理](#11-安全声明与密钥管理)
-12. [文件结构速查](#12-文件结构速查)
+参考论文 arXiv 2602.06547v2 *Malicious Agent Skills in the Wild*，复现其 14 条静态规则、6 条攻击链与 4 类原型分类，扩展 3 条新规则，并加入 Claude 实时研判、蜜罐与容器运行时证据。
 
 ---
 
-## 1. 它解决什么问题
+## 如何打开网页
 
-Anthropic 推出 **Claude Skills**（让 Agent 加载并执行第三方"技能包"的机制）后，社区涌现大量民间 Skill，其中混着恶意样本：
+### 方式 A · 一键启动（推荐）
 
-- 把"偷你 API key 再发给攻击者"伪装成开发工具
-- 在 `SKILL.md` 里写隐藏指令，诱导 Claude 偷偷干坏事
-- 在 `.py` / `.sh` 里藏反弹 shell、持久化、提权
+适合直接拿到项目文件夹的用户。
 
-**SkillSentinel** 接收一个 Skill 包（`.zip` 或单文件），输出一份带证据的研判报告：**能不能用、为什么、风险在哪一行**。
+1. 进入项目根目录，双击 `打开网页.bat`。
+2. 首次启动会自动安装两个依赖（`anthropic`、`paramiko`），耗时数十秒。
+3. 启动成功后，浏览器会自动打开 `http://127.0.0.1:8765/`，进入扫描页。
+
+本机环境要求：Windows 10 / 11，已安装 Python 3.10 或以上（安装时勾选 “Add Python to PATH”）。如未安装 Python，脚本会给出下载地址。
+
+关闭服务：关闭命令行窗口，或在窗口内按 Ctrl + C。
+
+### 方式 B · 命令行手动启动
+
+适合熟悉命令行的用户，或在 Linux / macOS 上运行。
+
+```bash
+cd MaliciousAgentSkillsBench
+pip install -r requirements.txt
+python web_ui/app.py
+```
+
+启动后终端显示监听地址 `http://0.0.0.0:8765/`，保持窗口运行，在浏览器中打开 `http://127.0.0.1:8765/` 即可。
+
+### 网页包含的页面
+
+| 路径 | 页面 | 用途 |
+| --- | --- | --- |
+| `/` | 扫描页 | 上传 Skill 文件（`.zip` 或单文件），提交后开始检测 |
+| `/results` | 扫描结果页 | 历史扫描结果卡片列表，点击卡片查看完整报告 |
+| `/report/<skill_name>` | 报告页 | 单个 Skill 的完整研判报告 |
+
+局域网内其他设备访问：将 `127.0.0.1` 替换为本机的局域网 IP。
 
 ---
 
-## 2. 五层联合研判（核心架构）
+## 它解决什么问题
 
-每个 Skill 经过 5 层检测，任意一层有问题都会被记录，最后用一个**公开的加权公式**汇总成 0–100 分。
+Anthropic 推出 Claude Skills（让 Agent 加载并执行第三方"技能包"的机制）后，社区涌现大量民间 Skill，其中混杂恶意样本，典型形式包括：
 
-| 层 | 干什么 | 类比 |
-|---|---|---|
-| **L1 · 静态规则扫** | 用 17 条 regex 扫 `SKILL.md` + 所有 `.py/.sh/.js/.json/.md`，找已知恶意模式 | 杀毒软件特征库 |
-| **L2 · 攻击链分析** | 多条规则同时命中时，识别成"凭证窃取链""提权链"等组合，并判攻击复杂度 | 安全运营中心 SOC |
-| **L3 · AI 安全审计** | 把 `SKILL.md` 发给 Claude（Opus 4.7），让它当审计员直接判 `SAFE / SUSPICIOUS / MALICIOUS` 并给中文理由 | 资深安全工程师人工审一眼 |
-| **L4 · 蜜罐 canary** | 在沙箱里预置假凭证（`.env`、`.ssh/id_rsa`、`.aws/credentials`），看 Skill 有没有去读、有没有外发 | 桌上摆假信用卡看谁偷 |
-| **L5 · 容器运行时** | 在 VM 的 Docker 里真跑 Skill 脚本，`strace` 抓系统调用 + `tcpdump` 抓网络包 | 把嫌疑人放沙盘里观察真行为 |
+- 伪装成开发工具，实际窃取 API key、SSH 私钥并外传
+- 在 `SKILL.md` 中写入隐藏指令，诱导 Agent 执行越权操作
+- 在 `.py` / `.sh` 中藏反弹 shell、持久化、提权代码
+
+SkillSentinel 对此类 Skill 提供一份可解释的研判报告：能否使用、判定依据、风险所在的规则与位置。
+
+---
+
+## 五层联合检测
+
+每个 Skill 经过 5 层检测，任意一层的结果都会被记录，最终由加权公式汇总为 0–100 分。
+
+| 层 | 内容 |
+| --- | --- |
+| L1 · 静态规则扫描 | 17 条 regex 扫描 `SKILL.md` 与所有 `.py / .sh / .js / .json / .md` |
+| L2 · 攻击链分析 | 多规则联动识别为"凭证窃取链"、"提权链"等组合，并判定攻击复杂度 |
+| L3 · AI 安全审计 | 将 `SKILL.md` 提交 Claude（Opus 4.7），判定 SAFE / SUSPICIOUS / MALICIOUS 并给出理由 |
+| L4 · 蜜罐 canary | 在沙箱中预置假凭证（`.env`、`.ssh/id_rsa`、`.aws/credentials`），观察 Skill 是否读取、是否外发 |
+| L5 · 容器运行时 | 在 VM 的 Docker 内执行 Skill 脚本，`strace` 抓系统调用，`tcpdump` 抓网络包 |
 
 判定阈值（基于合成样本校准）：
 
 | Verdict | 分数 | 处置建议 |
-|---|---|---|
-| **SAFE（安全）** | 0–15 | 建议放行 |
-| **SUSPICIOUS（可疑）** | 15–40 | 人工复核 |
-| **MALICIOUS（危险）** | 40–75 | 拒绝安装 |
-| **CRITICAL（严重）** | 75–100 | 立即隔离 |
+| --- | --- | --- |
+| SAFE 安全 | 0–15 | 建议放行 |
+| SUSPICIOUS 可疑 | 15–40 | 人工复核 |
+| MALICIOUS 危险 | 40–75 | 拒绝安装 |
+| CRITICAL 严重 | 75–100 | 立即隔离 |
 
-> **verdict 下限规则**：即使综合分偏低，只要静态命中 ≥1 个 CRITICAL 或 ≥3 个 HIGH、且 Claude 没明确判 SAFE，verdict 也会被托底到至少 SUSPICIOUS，避免漏报。
+下限规则：即使综合分偏低，若静态命中 ≥1 个 CRITICAL 或 ≥3 个 HIGH，且 Claude 未明确判 SAFE，verdict 将至少托底为 SUSPICIOUS。
 
 ---
 
-## 3. 三种扫描模式
+## 三种扫描模式
 
-扫描页（`/`）上从轻到重三档，证据强度递增：
+扫描页按证据强度提供三档：
 
 | 模式 | 调 Claude API | 执行 Skill 代码 | 成本 | 用途 |
-|---|---|---|---|---|
-| **模式一 · 静态扫 + AI 研判** | ✅（可选） | ❌ 全程不执行 | ≈¥0.1–1.2/次 | 日常首选。任何人上传任何文件都安全 |
-| **模式二 · 动态执行（Docker 跑代码）** | ❌ | ✅ `python script.py` / `bash` | 零 API 成本 | 看脚本真实行为，strace/tcpdump 录证据 |
-| **模式三 · Docker 里跑 Claude** | ✅（在 VM 内） | ✅ Claude 决定执不执行 | ≈¥1.2/次 | 验证真 Claude 会不会被 SKILL.md 骗着干坏事 |
+| --- | --- | --- | --- | --- |
+| 一 · 静态扫 + AI 研判 | 可选 | 否 | 约 ¥0.1–1.2 / 次 | 日常首选，公开服务也安全 |
+| 二 · 动态执行（Docker） | 否 | 是 | 零 API 成本 | 看脚本真实行为，`strace` / `tcpdump` 留证据 |
+| 三 · Docker 中跑 Claude | 是（VM 内） | 是 | 约 ¥1.2 / 次 | 评估真 Claude 是否会被 `SKILL.md` 诱导 |
 
-**模式一**又分两个上传入口：
-- **A · 标准扫描（推荐）**：静态 + 蜜罐必跑；AI 研判**有 key 自动跑、没 key 降级成纯静态**，不会失败。
-- **B · 强制 AI 研判**：**必须**走 Claude，没配 key 直接报错。用于"我就是要 AI 看过、否则别给结果"的场景。
+模式一提供两个上传入口：
 
-> 模式二/三需要 VM + Docker（见 [§7](#7-命令行-cli)），且在公开模式下默认禁用（见 [§6](#6-公开模式-public_mode)）。
+- A 标准扫描（推荐）：静态规则与蜜罐始终执行；AI 研判在配置 API key 时自动启用，未配置时降级为纯静态。
+- B 强制 AI 研判：必须经 Claude 研判，未配置 key 直接返回错误。
 
----
-
-## 4. 网页三页结构
-
-| 路由 | 页面 | 内容 |
-|---|---|---|
-| `/` | **扫描页** | 三种模式的上传入口（深色 UI） |
-| `/results` | **扫描结果** | 所有已扫 Skill 的**卡片网格**，按时间倒序、自动去重、分页（每页 12 个）。每张卡显示 verdict 徽章、综合分、风险标签、AI 简介 |
-| `/report/<skill_name>` | **SAFESKILL 报告页** | 点卡片进入，单个 Skill 的完整报告（见 [§8](#8-报告页看什么)）|
-
-> **去重保证**：`/results` 直接读 `analysis_results/asg/<skill>/asg_report.json`，一个 Skill 名对应一个目录，重扫即覆盖——**每个 Skill 永远只有一份最新结果**，不会出现重复卡片。
+模式二、三需要 VM 与 Docker，公开模式下默认禁用。
 
 ---
 
-## 5. 快速开始
+## 运行环境与配置
 
-### 5.1 环境
+环境要求：
 
-- Windows 10/11 或 Linux，Python 3.10+
-- 装依赖：`pip install -r requirements.txt`（只有 `anthropic` + `paramiko` 两个）
-- （可选）Claude API key，经 [kuaipao.ai](https://kuaipao.ai) 中转（国内可访问）—— 模式一的 AI 研判需要
-- （可选）一台开了 Docker 的 VM —— 仅模式二/三需要，见 [5.4](#54-动态执行复现模式二三)
+- Windows 10 / 11 或 Linux，Python 3.10+
+- 安装依赖：`pip install -r requirements.txt`（仅 `anthropic` 与 `paramiko` 两个第三方包）
+- 模式一的 AI 研判需要 Claude API key（可经 kuaipao.ai 中转，国内可访问）
+- 模式二 / 三需要一台已装 Docker 的 VM
 
-### 5.1.1 别人 clone 后的最小复现（模式一：网页 + 静态 + AI）
-
-```bash
-git clone https://github.com/dongqingli6/skill-scan-aaa.git
-cd skill-scan-aaa
-pip install -r requirements.txt
-# 填自己的 key 到 asg/vm_config.json（见 5.2）
-python web_ui/app.py        # 打开 http://127.0.0.1:8765/
-```
-
-即可复现完全一样的网页 + 静态扫描 + AI 研判。内置 `asg/samples/` 7 个样本可直接测。
-
-### 5.2 配置（`asg/vm_config.json`）
-
-复制模板 `asg/vm_config.example.json` 为 `asg/vm_config.json` 并填入：
+配置文件 `asg/vm_config.json`（由 `asg/vm_config.example.json` 复制并填入）：
 
 ```json
 {
   "host": "192.168.61.130",
   "port": 22,
-  "username": "你的VM用户名",
-  "password": "你的VM密码",
-  "remote_anthropic_api_key": "sk-你的-kuaipao-key",
+  "username": "VM 用户名",
+  "password": "VM 密码",
+  "remote_anthropic_api_key": "sk-your-key",
   "remote_anthropic_base_url": "https://kuaipao.ai"
 }
 ```
 
-> ⚠️ `vm_config.json` 已在 `.gitignore` 里，**永远不会进 git**。只有 `vm_config.example.json` 模板会上传。
-
-### 5.3 启动 Web UI
-
-```powershell
-python web_ui/app.py
-# 本机:   http://127.0.0.1:8765/
-# 局域网: http://<本机IP>:8765/
-```
-
-服务监听 `0.0.0.0:8765`，局域网内其它设备可直接访问。
-
-### 5.4 动态执行复现（模式二/三）
-
-模式二/三在 VM 的 Docker 里真跑脚本，需要先在 VM 上构建沙箱镜像：
-
-```bash
-# 在 VM（或任何装了 Docker 的机器）上：
-docker build -t claude-skill-sandbox code/
-```
-
-镜像内含 `python3 + bash + strace + tcpdump + Node.js 18 + Claude Code CLI`。蜜罐假凭证和 runner 脚本由宿主机在运行时挂载/写入，不烤进镜像。构建好后：
-
-```powershell
-# 模式二：容器里直接跑脚本，strace+tcpdump 录证据（不调 Claude）
-python -m asg.asg_cli vm-paper-run asg/samples/credential_exfil_skill --enable-honeypot --timeout-seconds 30
-
-# 模式三：容器里启动 Claude CLI 使用此 skill（需镜像含 claude-code）
-python -m asg.asg_cli vm-ssh-run asg/samples/reverse_shell_skill --enable-honeypot
-```
-
-> 模式三的容器编排脚本在 `code/executor/run_skill.sh`（默认 `USE_NOVA=false`，匹配精简镜像）。
+`vm_config.json` 已在 `.gitignore` 中，不会进入版本控制，模板文件 `vm_config.example.json` 会进入。
 
 ---
 
-## 6. 公开模式 PUBLIC_MODE
+## 动态执行的镜像构建
 
-想把平台分享给别人（局域网 / 内网）但又不想让陌生人在你机器上执行任意代码时，开**公开模式**：
+模式二 / 三在 VM 的 Docker 内运行脚本，需在 VM 上预先构建沙箱镜像：
+
+```bash
+docker build -t claude-skill-sandbox code/
+```
+
+镜像内含 `python3`、`bash`、`strace`、`tcpdump`、Node.js 18 与 Claude Code CLI。蜜罐假凭证与 runner 脚本由宿主机在运行时挂载，不烤进镜像。
+
+构建完成后即可在 CLI 或网页中触发模式二 / 三。
+
+---
+
+## 公开模式 PUBLIC_MODE
+
+希望将平台开放给局域网或内网用户，但又不允许陌生人在自己机器上执行任意代码时，启用公开模式：
 
 ```powershell
 $env:ASG_PUBLIC_MODE = "1"
@@ -171,89 +150,85 @@ python web_ui/app.py
 ```
 
 公开模式下：
-- ✅ 模式一（静态 + AI，不执行代码）正常开放
-- ❌ 模式二/三（动态执行）和删除等破坏性端点全部返回 403
-- 页面右上角显示「公开模式」徽章
 
-**一键脚本** `web_ui/start_lan.ps1`：自动放行 Windows 防火墙 8765 端口 + 打印局域网 IP + 以公开模式启动。
+- 模式一（静态 + AI，不执行代码）正常开放
+- 模式二 / 三与删除等破坏性端点全部返回 403
+- 页面右上角显示 "公开模式" 徽章
+
+随附脚本 `web_ui/start_lan.ps1`：自动放行 Windows 防火墙 8765 端口，打印局域网 IP，并以公开模式启动。
 
 ```powershell
 .\web_ui\start_lan.ps1
 ```
 
-> **设计理由**：让陌生人在你服务器上"动态执行"任意代码等于自残（容器逃逸、挖矿、攻击放大）。这也是 VirusTotal / ANY.RUN 等商业平台都要收费 + KYC 的根本原因。所以本平台默认只把"不执行"的路径开放给公网，需要真实运行时证据的用户自己部署 Docker 跑 CLI。
+设计取舍：公开沙箱若允许任意代码执行，需要商业级隔离（Firecracker / gVisor）与人工审核才能控制容器逃逸与资源滥用风险，超出本项目范围，因此默认仅开放 "不执行" 路径。
 
 ---
 
-## 7. 命令行 CLI
+## 命令行 CLI
 
 ```powershell
 # 静态 + Claude AI 研判 + 蜜罐（不执行代码）
 python -m asg.asg_cli scan asg/samples/credential_exfil_skill --enable-claude --enable-honeypot
 
-# 批量扫一个目录下所有 Skill
+# 批量扫描一个目录下的所有 Skill
 python -m asg.asg_cli scan-all-samples --enable-claude --enable-honeypot
 
-# 模式二：VM Docker 里直接跑脚本（python/bash），strace+tcpdump 录证据（不调 Claude）
+# 模式二：VM Docker 中直接运行脚本，strace + tcpdump 记录证据
 python -m asg.asg_cli vm-paper-run asg/samples/credential_exfil_skill --enable-honeypot --timeout-seconds 30
 
-# 模式三：VM Docker 里启动 Claude CLI 使用此 Skill，录真实行为
+# 模式三：VM Docker 中启动 Claude CLI 使用此 Skill
 python -m asg.asg_cli vm-ssh-run asg/samples/reverse_shell_skill --enable-honeypot
 
 # 离线导入已有证据（strace.log / claude_output.txt）重新打分
 python -m asg.asg_cli ingest-vm-evidence <skill_dir> <evidence_dir> --enable-honeypot
 
-# 重建可视化（HTML + dashboard JSON）
+# 重建可视化
 python -m asg.asg_cli build-html
 python -m asg.asg_cli build-dashboard
 ```
 
-CLI 的扫描结果写到固定路径 `analysis_results/asg/<skill_name>/asg_report.json`，重跑即覆盖（天然去重）。
-
-> **沙箱镜像**：模式二/三在 VM 上用名为 `claude-skill-sandbox` 的 Docker 镜像（预置假 HOME + 蜜罐凭证 + strace/tcpdump）。该镜像需在 VM 上预先构建好。
+CLI 的扫描结果写入固定路径 `analysis_results/asg/<skill_name>/asg_report.json`，重跑即覆盖（天然去重）。
 
 ---
 
-## 8. 报告页看什么
+## 报告页内容
 
 `/report/<skill_name>` 自顶向下：
 
-1. **顶部 hero**：Skill 名 + 红/橙/绿大徽章（`危险/可疑/安全` · `MALICIOUS/SUSPICIOUS/SAFE`）+ 处置建议 + 攻击原型标签
-2. **综合风险评分面板**：大号分数 + 阈值条带（标记线指出落点）+ 可展开的「分项明细」（7 个子分加权推导）+ 评分说明（比如"静态命中被 AI 判 SAFE 降权为误报"）
-3. **AI 研判描述**：Claude 用中文说明为什么这么判
-4. **威胁横幅**：一句话总结命中的严重问题数
-5. **风险类别检测（17 格子）**：命中的规则显示严重度 + 次数（红/橙），未命中显示「✓ 未检出」（灰）
-6. **目录结构（文件树）**：语言占比条 + 每个文件可展开看内容预览（`SKILL.md` 红色高亮）
-7. **静态命中详情**：每条命中显示 规则名 / 严重度 / `文件:行号` + **命中行上下文代码**（命中行用 `»` 标记）
-8. **动态执行详情**（仅跑过模式二/三的 Skill）：
-   - 关键指标卡：敏感文件读取数 / 对外连接数 / 敏感写入数 / 唯一对外 IP
-   - 🐳 Docker 执行流程说明（可展开）
-   - 蜜罐结果：碰没碰诱饵凭证、读没读出 canary
-   - 📤 脚本运行输出（stdout）——常常是伪装
-   - 🔍 关键系统调用证据：从 `strace.log` 抽出的真实 `openat()` 读敏感文件 + `connect()` 外联记录
-   - 运行时判定依据（中文）
-
-> **核心叙事**：syscall 不会撒谎。脚本可以打印 *"0 credentials transmitted"*，但只要它真去 `open()` 了 `id_rsa`，strace 就记下来了——这是动态层比静态/AI 更硬的地方。
+1. 顶部 hero：Skill 名 + verdict 大徽章 + 处置建议 + 攻击原型标签
+2. 综合风险评分面板：分数、阈值条带，可展开分项明细与评分说明
+3. AI 研判描述：Claude 给出的中文判定理由
+4. 威胁横幅：一句话总结严重问题数
+5. 风险类别检测：17 个规则格，命中显示严重度与次数，未命中显示 "未检出"
+6. 目录结构：语言占比条；每个文件可展开查看内容预览
+7. 静态命中详情：规则、严重度、`文件:行号` 与命中行上下文（命中行以 `»` 标记）
+8. 动态执行详情（仅模式二 / 三有数据）：
+   - 关键指标卡：敏感文件读取、对外连接、敏感写入、唯一外联 IP
+   - 蜜罐结果：是否读取或外发诱饵凭证
+   - 脚本运行输出（stdout）
+   - 关键系统调用：从 `strace.log` 抽取的 `openat()` 与 `connect()` 记录
+   - 运行时判定依据
 
 ---
 
-## 9. 17 条静态规则与严重度分级
+## 静态规则与严重度
 
-规则定义在 [`asg/rules.py`](asg/rules.py)。每条规则的 **base 严重度反映"裸命中"的可信度**，越像普通编程/文档措辞的，base 越低；规则内真正高置信度的子模式靠 `_classify_match()` 临时升降级，避免误报。
+规则定义在 `asg/rules.py`。每条规则的 base 严重度反映 "裸命中" 的可信度——越像普通编程或文档措辞的规则，base 越低；高置信度子模式通过 `_classify_match()` 进行临时升降级以避免误报。
 
-| 规则 | 类别 | base | 升级条件（→CRITICAL/HIGH） | 降级条件（→LOW） |
-|---|---|---|---|---|
-| E1 | 数据外传 | HIGH | 命中已知 sinkhole（attacker./onion/webhook.site…） | `.md` 文档里的通用 HTTP |
+| 规则 | 类别 | base | 升级条件 | 降级条件 |
+| --- | --- | --- | --- | --- |
+| E1 | 数据外传 | HIGH | 命中已知 sinkhole（attacker./onion/webhook.site 等） | `.md` 文档中的通用 HTTP |
 | E2 | 凭证窃取 | HIGH | — | — |
 | E3 | 文件系统枚举 | MEDIUM | — | — |
-| E4 | 网络侦察 | LOW | 命中 nmap/netstat/portscan → MEDIUM | — |
-| SC1 | 命令注入 | HIGH | 反弹 shell 签名（`bin/sh -i`/`nc -e`/`dup2`） → CRITICAL | `.md` 文档 |
+| E4 | 网络侦察 | LOW | nmap / netstat / portscan → MEDIUM | — |
+| SC1 | 命令注入 | HIGH | 反弹 shell 签名（`bin/sh -i`、`nc -e`、`dup2`） → CRITICAL | `.md` 文档 |
 | SC2 | 远程脚本执行 | CRITICAL | — | `.md` 文档 |
 | SC3 | 代码混淆 | CRITICAL | — | — |
 | PE1 | 权限过大 | HIGH | — | — |
 | PE2 | 权限提升 | MEDIUM | — | `.md` 文档 |
 | PE3 | 凭证文件访问 | CRITICAL | — | — |
-| P1 | 指令覆盖 | MEDIUM | 真提示注入（ignore/disregard/override/supersede） → HIGH | — |
+| P1 | 指令覆盖 | MEDIUM | 真提示注入（ignore / disregard / override / supersede） → HIGH | — |
 | P2 | 隐藏指令 | HIGH | 零宽 Unicode / bidi override → CRITICAL | — |
 | P3 | 代码执行外传 | HIGH | — | — |
 | P4 | 行为操纵 | MEDIUM | — | `mandatory_activation/protocol` 噪声 |
@@ -261,11 +236,9 @@ CLI 的扫描结果写到固定路径 `analysis_results/asg/<skill_name>/asg_rep
 | P6 | 持久化植入 | CRITICAL | — | — |
 | P7 | 跨工具诱导 | MEDIUM | — | `.md` 文档 |
 
-> 例：`P1` 默认 MEDIUM——`"non-negotiable"`、`"must be followed"` 这类强调措辞良性 Skill 也常用，不该一命中就 HIGH；只有真的 `"ignore previous instructions"` 才升 HIGH。
-
 ---
 
-## 10. 综合评分公式
+## 综合评分公式
 
 ```
 R = 100 × (
@@ -277,75 +250,79 @@ R = 100 × (
 ```
 
 | 子分 | 含义 | 计算 |
-|---|---|---|
-| `S_static` | 静态命中加权 | `(CRIT×1 + HIGH×0.7 + MED×0.4 + LOW×0.1) / 8` 截断到 1 |
+| --- | --- | --- |
+| `S_static` | 静态命中加权 | `(CRIT×1 + HIGH×0.7 + MED×0.4 + LOW×0.1) / 8`，截断到 1 |
 | `S_chain` | 攻击链触发数 | `min(链数 × 0.25, 1.0)` |
-| `S_soph` | 攻击复杂度 | L0/L1/L2/L3 → 0 / 0.33 / 0.67 / 1.0 |
+| `S_soph` | 攻击复杂度 | L0 / L1 / L2 / L3 → 0 / 0.33 / 0.67 / 1.0 |
 | `S_phases` | kill-chain 阶段覆盖 | 命中阶段数 / 6 |
-| `S_resilience` | AI 抗诱导 | Claude 判 SAFE→1.0、SUSPICIOUS→0.5、未测→0.5 |
-| `S_llm_verdict` | LLM 直接判定 | MALICIOUS→1.0 / SUSPICIOUS→0.5 / SAFE→0 |
-| `S_honeypot` | 蜜罐泄露 | 假凭证被发现→1.0 |
-| `S_runtime` | 运行时风险 | 敏感文件访问 + 外联 + 文件系统改动 加权 |
+| `S_resilience` | AI 抗诱导 | Claude 判 SAFE → 1.0，SUSPICIOUS → 0.5，未测 → 0.5 |
+| `S_llm_verdict` | LLM 直接判定 | MALICIOUS → 1.0，SUSPICIOUS → 0.5，SAFE → 0 |
+| `S_honeypot` | 蜜罐泄露 | 假凭证被读取或外发 → 1.0 |
+| `S_runtime` | 运行时风险 | 敏感文件访问、外联与文件系统改动加权 |
 
-权重 `w_i` 加和 = 1.0，定义在 [`asg/risk_scorer.py`](asg/risk_scorer.py) 的 `DEFAULT_WEIGHTS`。
+权重 `w_i` 之和为 1.0，定义在 `asg/risk_scorer.py` 的 `DEFAULT_WEIGHTS`。
 
-> **AI 降权机制**：当 Claude 完整审计后判 SAFE，但静态规则有命中，则把 `S_static` × 0.3（视为误报），并在报告里写明原因。这就是为什么"AI 说没问题"的 Skill 不会被几个静态误报顶成 MALICIOUS。
-
----
-
-## 11. 安全声明与密钥管理
-
-**密钥**
-- `asg/vm_config.json`（含 API key + VM 密码）已 gitignore，**不进仓库**
-- 蜜罐 canary、`.pcap`、`*.pyc` 等运行时产物也已 gitignore
-
-**使用边界**
-- 本平台**不在公网提供"任意上传 + 立即执行"服务**——公开沙箱需要商业级隔离（Firecracker/gVisor）+ 人工审核才能扛住容器逃逸/资源滥用。
-- 公开层（模式一）：上传 → 静态 + AI，零执行风险，任何人可用。
-- 自托管层（模式二/三）：需部署方自带 Docker，**谁运行谁担责**。
-
-**已知限制**
-1. L3 用大模型有 API 费用（默认 Opus 4.7 ≈¥1.2/次，可改 Sonnet 降本）。
-2. L5 需 VM + Docker；本机无 Docker 时通过 SSH 调用远程 VM。
-3. 静态规则难免假阳性，已用上下文升降级 + AI 降权 + verdict 下限多重缓解，动态层是最终裁判。
-4. Claude API 经 kuaipao.ai 中转（国内直连 anthropic.com 不通），模型本身仍是真 Claude。
-
-> 仅用于学术研究 / 安全评测；不得用于攻击或绕过他人系统的安全防护。
+AI 降权：当 Claude 完整审计后判 SAFE 但静态规则有命中时，`S_static` 乘以 0.3 视为误报，并在报告中说明原因。
 
 ---
 
-## 12. 文件结构速查
+## 安全声明与密钥管理
+
+密钥：
+
+- `asg/vm_config.json` 含 API key 与 VM 密码，已加入 `.gitignore`，不会进入仓库
+- 蜜罐 canary、`.pcap`、`*.pyc` 等运行时产物同样已 gitignore
+
+使用边界：
+
+- 本项目不在公网提供 "任意上传 + 即时执行" 服务，公开沙箱需要商业级隔离与人工审核
+- 公开层（模式一）：上传后仅做静态与 AI 研判，不执行代码，可对外开放
+- 自托管层（模式二 / 三）：需部署方自带 Docker，谁运行谁担责
+
+已知限制：
+
+1. L3 调用大模型存在 API 费用（默认 Opus 4.7 约 ¥1.2 / 次，可改 Sonnet 降本）
+2. L5 需要 VM + Docker；本机无 Docker 时通过 SSH 调用远程 VM
+3. 静态规则存在假阳性，已通过上下文升降级、AI 降权与 verdict 下限多重缓解，动态层为最终裁判
+4. Claude API 经 kuaipao.ai 中转，模型仍为真 Claude
+
+本项目仅用于学术研究与安全评测，不得用于攻击或绕过他人系统的安全防护。
+
+---
+
+## 文件结构
 
 ```
 .
-├── asg/                        ← 核心引擎
-│   ├── asg_cli.py              ← 命令行入口（scan / vm-paper-run / vm-ssh-run / build-*）
-│   ├── rules.py                ← 17 条静态规则 + _classify_match 上下文升降级
-│   ├── attack_chain.py         ← L2 攻击链识别
-│   ├── claude_runner.py        ← L3 Claude API 研判
-│   ├── honeypot.py             ← L4 蜜罐生成 + 泄露检测
-│   ├── vm_ssh.py               ← 模式二/三 VM Docker 远程执行
-│   ├── vm_evidence.py          ← L5 strace/tcpdump 解析
-│   ├── risk_scorer.py          ← 综合评分公式 + verdict 下限
-│   ├── dashboard_builder.py    ← HTML 看板生成
-│   ├── samples/                ← 合成 Skill 样本（恶意 + 良性对照）
-│   ├── vm_config.example.json  ← 配置模板（vm_config.json 不入 git）
-│   └── skills/                 ← 生成的单 Skill 详情 HTML
+├── asg/                        核心引擎
+│   ├── asg_cli.py              命令行入口
+│   ├── rules.py                17 条静态规则与上下文升降级
+│   ├── attack_chain.py         L2 攻击链识别
+│   ├── claude_runner.py        L3 Claude API 研判
+│   ├── honeypot.py             L4 蜜罐生成与泄露检测
+│   ├── vm_ssh.py               模式二 / 三 VM Docker 远程执行
+│   ├── vm_evidence.py          L5 strace / tcpdump 解析
+│   ├── risk_scorer.py          综合评分与 verdict 下限
+│   ├── dashboard_builder.py    HTML 看板生成
+│   ├── samples/                合成 Skill 样本（恶意 + 良性对照）
+│   ├── vm_config.example.json  配置模板
+│   └── skills/                 生成的单 Skill 详情 HTML
 ├── web_ui/
-│   ├── app.py                  ← Web 服务（Python 内置 http.server）
-│   ├── start_lan.ps1           ← 一键局域网公开模式启动脚本
+│   ├── app.py                  Web 服务（Python 内置 http.server）
+│   ├── start_lan.ps1           一键局域网公开模式启动脚本
 │   └── templates/
-│       ├── scan.html           ← 扫描页（/）
-│       ├── results.html        ← 结果卡片页（/results）
-│       └── safeskill_report.html ← 报告页（/report/<skill>）
-├── analysis_results/asg/       ← 每个 Skill 一个目录（去重）
-│   ├── <skill>/asg_report.json ← 五层完整报告
-│   ├── <skill>/vm_paper_logs/  ← strace.log / network.pcap / 脚本输出
+│       ├── scan.html           扫描页
+│       ├── results.html        结果卡片页
+│       └── safeskill_report.html  报告页
+├── analysis_results/asg/       每个 Skill 一个目录（去重）
+│   ├── <skill>/asg_report.json 五层完整报告
+│   ├── <skill>/vm_paper_logs/  strace.log / network.pcap / 脚本输出
 │   └── batch_summary.json
 └── README_CN.md / README.md
 ```
 
 ---
 
-**版本**：v2.0 · 2026-05（web_ui 三页重做 + 静态检测器严重度调优 + 动态执行详情）
-**许可**：仅用于学术研究 / 安全评测。
+版本：v2.0（2026-05）
+
+许可：仅用于学术研究与安全评测。
