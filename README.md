@@ -1,4 +1,4 @@
-# SkillScan · AI Agent Skill 安全扫描系统
+# SkillVault · 分层多级防护架构的大模型 Skill 安全检测系统
 
 面向 Claude Code / OpenCode / Gemini CLI 等 AI 编码 Agent 生态中传播的第三方 `SKILL.md` 包，实现"**声明—实现—运行行为**"三域一致性验证的多层安全审计系统。
 
@@ -20,14 +20,14 @@
 ## 二、目录结构
 
 ```
-skill-scan-aaa/
+skillvault/
 ├── asg/                 核心检测引擎（rules.py, ssd_runner.py, risk_scorer.py, vm_ssh.py）
 ├── web_ui/              Flask 网页前端 + 三种查看模式
 ├── code/                Docker 沙箱执行器（run_skill.sh, Dockerfile）
 ├── tools/               批量评测与实用工具（malskillbench_runner.py, unified_15.py 等）
 ├── docs/                中英文说明 + 静态化的扫描结果页
 ├── examples/            示例 Skill
-├── analysis_results/    演示扫描结果（reviewer 直接看）
+├── analysis_results/    演示扫描结果
 └── requirements.txt
 ```
 
@@ -132,7 +132,11 @@ Stage 3  Claude CLI Docker     ~10%        30s     ¥1.2
 - **Canary 蜜罐凭据**（`.env`/`.ssh/id_rsa`/`.aws/credentials`）全部是带唯一标记的假凭据，真凭据不进容器
 - **DNS sinkhole** 全部指向 `198.18.0.x`（RFC 5735 保留段），TCP 挂起保留证据
 
-## 九、许可与致谢
+## 九、团队介绍
+
+本小队专注大模型技能安全的科创小队，依托多层级分层检测架构，实现 AgentSkill 全链路风险识别。成员精通网络攻防、LLM 算法与系统开发，协同完成分层检测系统研发，致力补齐 AI 智能体 skill 安全防护短板。
+
+## 十、许可与致谢
 
 - 数据集参考：**MalSkillBench** (arXiv:2606.07131) · 论文开源 repo: [lxyeternal/MalSkillBench](https://github.com/lxyeternal/MalSkillBench)
 - 静态规则参考：Cisco Skill Scanner · Sentry Skill Scanner · Tencent AI-Infra-Guard · Snyk Agent Scan

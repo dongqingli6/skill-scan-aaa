@@ -1280,7 +1280,7 @@ def render_unified_15_overview() -> bytes:
         "<h3>基线方法对照（MalSkillBench §4 + 本系统）</h3>"
         "<table>"
         "<tr><td>Skill Security Scan（静态规则）</td><td>F1 13.3% / Recall 8.7%</td></tr>"
-        "<tr><td>SkillScan（静态规则）</td><td>F1 24.0% / Recall 14.5%</td></tr>"
+        "<tr><td>SkillVault（静态规则）</td><td>F1 24.0% / Recall 14.5%</td></tr>"
         "<tr><td>LLM Guard（LLM 原生）</td><td>F1 50.9% / Recall 44.6%</td></tr>"
         "<tr><td>AI-Infra-Guard（LLM）</td><td>F1 85.6% / Recall 86.6%</td></tr>"
         f"<tr class='ours'><td>本系统 · 完整流水线（5 阶段 + 6 路融合）</td><td>准确率 {acc}%</td></tr>"
