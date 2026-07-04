@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate SkillSentinel level3 dashboard data.
+"""Generate SkillVault level3 dashboard data.
 
 The script prefers an existing dashboard_data.json next to the input skill path.
 If no compatible evidence file is present, it writes clearly labeled demo data.
@@ -495,7 +495,7 @@ def ensure_demo_skill(skill_path: Path) -> None:
     if not readme.exists():
         readme.write_text(
             "# demo-risky-skill\n\n"
-            "Safe demo fixture for SkillSentinel level3 visualization. "
+            "Safe demo fixture for SkillVault level3 visualization. "
             "This directory contains no executable malicious code; dashboard evidence is synthetic demo data.\n",
             encoding="utf-8",
         )
@@ -540,7 +540,7 @@ def generate_dashboard_data(skill_arg: str, output_root: Path = DEFAULT_OUTPUT_R
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate SkillSentinel level3 dashboard data.")
+    parser = argparse.ArgumentParser(description="Generate SkillVault level3 dashboard data.")
     parser.add_argument("skill", nargs="?", default="examples/demo-risky-skill")
     parser.add_argument("--output-root", default=str(DEFAULT_OUTPUT_ROOT))
     args = parser.parse_args()

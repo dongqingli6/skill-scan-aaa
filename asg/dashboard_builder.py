@@ -1104,7 +1104,7 @@ def _build_detail_html(report: dict[str, Any]) -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{_escape(name)} · SkillSentinel 详情</title>
+  <title>{_escape(name)} · SkillVault 详情</title>
   <style>{CSS}</style>
 </head>
 <body>
@@ -1120,7 +1120,7 @@ def _build_detail_html(report: dict[str, Any]) -> str:
       {_skill_card(report)}
     </div>
   </main>
-  <div class="footer">SkillSentinel v1.1 · Skill 详情页</div>
+  <div class="footer">SkillVault v1.1 · Skill 详情页</div>
 </body>
 </html>"""
 
@@ -1163,13 +1163,13 @@ def build_html(batch_summary: dict[str, Any], reports: list[dict[str, Any]]) -> 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SkillSentinel · AI Skill 安全研判平台</title>
+  <title>SkillVault · AI Skill 安全研判平台</title>
   <style>{CSS}</style>
 </head>
 <body>
   <header class="topbar">
     <div class="eyebrow">SKILLSENTINEL · AI SKILL SECURITY PLATFORM</div>
-    <h1>SkillSentinel · AI Skill 安全研判平台</h1>
+    <h1>SkillVault · AI Skill 安全研判平台</h1>
     <div class="subtitle">
       静态规则 + 攻击链 + LLM 智能体研判 + 蜜罐 + Docker 运行时证据 · 五层闭环
       <span style="margin-left:12px;color:#475569;">基准对齐: arXiv:2602.06547v2（14 项 + 3 项 ASG 扩展，共 17 条规则）</span>
@@ -1218,7 +1218,7 @@ def build_html(batch_summary: dict[str, Any], reports: list[dict[str, Any]]) -> 
   </main>
 
   <div class="footer">
-    SkillSentinel v1.1 · 基于 ASG (AgentSkillGuard) · Codex Runtime Security
+    SkillVault v1.1 · 基于 ASG (AgentSkillGuard) · Codex Runtime Security
   </div>
 </body>
 </html>

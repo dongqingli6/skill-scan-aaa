@@ -1,4 +1,4 @@
-"""ASG: AgentSkillGuard — Claude-side integration module.
+"""ASG (AgentSkillGuard) — SkillVault 核心检测模块.
 
 This package extends the Codex Runtime Security Prototype with:
   - Claude API integration (real agent-in-the-loop evidence)

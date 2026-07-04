@@ -149,7 +149,7 @@ function renderDashboard(data) {
     <div class="level3-shell">
       <header class="level3-hero">
         <div>
-          <p class="level3-eyebrow">SkillSentinel</p>
+          <p class="level3-eyebrow">SkillVault</p>
           <h1>Level3 Visual Dashboard</h1>
           <p class="level3-muted">${escapeHtml(data.skill_name)} · ${escapeHtml(data.analysis_mode)} · ${escapeHtml(data.level)}</p>
         </div>
@@ -221,7 +221,7 @@ function renderError(error) {
   const app = document.getElementById("app");
   app.innerHTML = `
     <div class="error-box">
-      <h1>SkillSentinel Level3 Visual Dashboard</h1>
+      <h1>SkillVault Level3 Visual Dashboard</h1>
       <p>${escapeHtml(error.message)}</p>
       <p>Run <code>python3 tools/generate_dashboard_data.py examples/demo-risky-skill</code> and serve the repository with <code>python3 -m http.server 8000</code>.</p>
     </div>
@@ -318,8 +318,8 @@ function renderReviewHeader(data) {
   return `
     <header class="review-header">
       <div>
-        <p class="level3-eyebrow">SkillSentinel</p>
-        <h1>SkillSentinel Security Review Dashboard</h1>
+        <p class="level3-eyebrow">SkillVault</p>
+        <h1>SkillVault Security Review Dashboard</h1>
         <p class="level3-muted">Level3.1 security review interface for inspecting skill risk evidence.</p>
       </div>
       <div class="header-badges">
@@ -744,7 +744,7 @@ function renderSecurityReviewError(error) {
   const app = document.getElementById("app");
   app.innerHTML = `
     <div class="error-box">
-      <h1>SkillSentinel Security Review Dashboard</h1>
+      <h1>SkillVault Security Review Dashboard</h1>
       <p><strong>Failed to load dashboard_data.json.</strong></p>
       <p>${escapeHtml(error.message)}</p>
       <p>Current data path: <code>${escapeHtml(DATA_PATH)}</code></p>
@@ -759,7 +759,7 @@ function initSecurityReviewDashboard() {
   const app = document.getElementById("app");
   app.innerHTML = `
     <div class="error-box">
-      <h1>SkillSentinel Security Review Dashboard</h1>
+      <h1>SkillVault Security Review Dashboard</h1>
       <p id="load-status" class="load-status">Loading dashboard data...</p>
       <p>Current data path: <code>${escapeHtml(DATA_PATH)}</code></p>
     </div>

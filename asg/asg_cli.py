@@ -555,7 +555,7 @@ def build_dashboard_payload(
     base["asg_extension"] = {
         "version": "1.0.0",
         "generated_at_utc": batch_summary["generated_at_utc"],
-        "module": "AgentSkillGuard (Claude-side integration)",
+        "module": "SkillVault ASG (AgentSkillGuard)",
         "paper_alignment": "arXiv:2602.06547v2 Table 3/Table 9/Table 11",
         "rule_count": 17,
         "rule_breakdown": {"paper_original": 14, "asg_extensions": 3},
@@ -1302,7 +1302,7 @@ def _cmd_release_check(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="asg", description="AgentSkillGuard CLI")
+    parser = argparse.ArgumentParser(prog="asg", description="SkillVault ASG CLI")
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_scan = sub.add_parser("scan", help="Scan one skill directory")

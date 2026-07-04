@@ -15,7 +15,12 @@ sys.path.insert(0, str(REPO / "tools"))
 
 from malskillbench_runner import DATASET_ROOT
 from unified_runner import UNIFIED_ROOT, run_unified
-from inject_stage2b_runtime import inject as inject_s2b
+
+try:
+    from inject_stage2b_runtime import inject as inject_s2b
+except ImportError:
+    def inject_s2b(*_args, **_kwargs):  # graceful no-op fallback
+        return None
 
 # 5 个 PI 攻击新样本（不在 unified_15 里）
 PICKS = [
