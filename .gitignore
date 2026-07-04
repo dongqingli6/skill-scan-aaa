@@ -43,3 +43,14 @@ analysis_results/asg/*/vm_ssh_logs/strace.log
 
 # Nested external skill repos (don't recurse)
 asg/external_samples/*/.git/
+
+# Runtime temp dirs (recreate on demand)
+tmp/
+queues/
+
+# Stale intermediate JSON results
+tools/batch_*_results.json
+tools/mode3_*_results.json
+tools/scr_*_results.json
+tools/ssd_borderline_results.json
+tools/dynamic_batch_summary.json
