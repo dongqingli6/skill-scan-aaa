@@ -1,165 +1,141 @@
-# SkillSentinel — Agent Skill Security Dashboard
+# SkillScan · AI Agent Skill 安全扫描系统
 
-A defensive research prototype for evaluating risky AI-agent skill packages
-before they are trusted by an agent runtime. **Dual-platform**: Codex-side
-sandbox + Claude-side agent-in-the-loop scoring.
+面向 Claude Code / OpenCode / Gemini CLI 等 AI 编码 Agent 生态中传播的第三方 `SKILL.md` 包，实现"**声明—实现—运行行为**"三域一致性验证的多层安全审计系统。
 
-## Quick start (one command)
+参考论文：**MalSkillBench: A Runtime-Verified Benchmark of Malicious Agent Skills** (arXiv:2606.07131)
 
-```powershell
-python web_ui\app.py
+---
+
+## 一、核心创新
+
+| # | 创新点 | 说明 |
+|---|---|---|
+| 1 | **三域一致性验证** | 声明（SKILL.md）、实现（脚本+资源）、运行行为（syscall/网络）交叉核验 |
+| 2 | **5 阶段分层流水线** | Stage 0 静态 IOC → Stage 1 DS 语义 → Stage 2A Claude API → Stage 2B OpenCode Docker → Stage 3 Claude CLI Docker |
+| 3 | **VM 内 Docker 动态取证** | strace/tcpdump/inotify + Canary 蜜罐凭据，产生系统调用级铁证 |
+| 4 | **多模态隐藏指令恢复** | OCR / 二维码 / EXIF / LSB / 附加片段跨媒体重建 |
+| 5 | **多源证据融合** | 6 路证据加权 + 高置信下限（Claude 自报 MAL / Canary 泄露 / Runtime IOC≥5）|
+| 6 | **DS_CONF_GATE 门控节流** | DS conf ≥ 0.95 早退，成本节省 90%+ |
+
+## 二、目录结构
+
+```
+skill-scan-aaa/
+├── asg/                 核心检测引擎（rules.py, ssd_runner.py, risk_scorer.py, vm_ssh.py）
+├── web_ui/              Flask 网页前端 + 三种查看模式
+├── code/                Docker 沙箱执行器（run_skill.sh, Dockerfile）
+├── tools/               批量评测与实用工具（malskillbench_runner.py, unified_15.py 等）
+├── docs/                中英文说明 + 静态化的扫描结果页
+├── examples/            示例 Skill
+├── analysis_results/    演示扫描结果（reviewer 直接看）
+└── requirements.txt
 ```
 
-Open `http://127.0.0.1:8765` — single portal that links to:
-- ASG Dashboard (Claude-side composite scoring, 7 samples, attack chains)
-- Codex Offline Dashboard (teammate's static framework)
-- Skill upload / scan jobs
+## 三、快速开始
 
-For the standalone ASG CLI:
-```powershell
-python -m asg.asg_cli scan-all-samples --enable-honeypot
-python -m asg.asg_cli build-html
-python code/scripts/release_safety_check.py
-start asg\dashboard.html
-```
-
-See `asg/README.md` for ASG module details.
-
-## Level3 Visual Dashboard
-
-Level3 adds a local visual dashboard for making existing security evidence
-easier to inspect. It focuses on risk overview, score sources, risk dimensions,
-dynamic behavior timeline, rule explanations, and static/dynamic comparison.
-
-## Level3.1 Security Review Dashboard
-
-Level3.1 shifts the dashboard from a visual overview into a security review
-workspace for maintainers, developers, and security reviewers. It is designed
-for triage and evidence inspection rather than visual promotion.
-
-The review interface adds:
-
-- Security Review Dashboard header with skill name, risk level, analysis mode,
-  generated time, and data source.
-- Review Decision Panel with suggested decision and manual review status.
-- Key Risk Summary with top risks, severe evidence, and security flags.
-- Evidence Timeline filtering by severity, event type, and keyword search.
-- Rule Findings filtering by severity, source, and keyword search.
-- Static vs Dynamic Comparison with reviewer-friendly wording.
-- Recommended Actions focused on containment and approval decisions.
-- Raw Evidence Data with formatted JSON and copy support.
-- Security Review Mode, which defaults to hiding INFO-level noise and focusing
-  on HIGH/MEDIUM review items.
-- DEMO data labeling so synthetic dashboard data is not mistaken for verified
-  runtime evidence.
-
-Generate demo data and preview the dashboard:
+### 3.1 环境准备
 
 ```bash
-python3 tools/generate_dashboard_data.py examples/demo-risky-skill
-python3 -m http.server 8000
+# Python 3.12
+pip install -r requirements.txt
+
+# 环境变量（填自己的 key）
+export DEEPSEEK_API_KEY=sk-...
+export ANTHROPIC_API_KEY=sk-...
+export ANTHROPIC_BASE_URL=https://api.anthropic.com  # 或代理
+
+# 如果要动态执行：Docker + Ubuntu VM
+# 复制 asg/vm_config.example.json → asg/vm_config.json 并填参数
 ```
 
-Open `http://localhost:8000/dashboard/`.
-
-The dashboard reads `artifacts/demo-risky-skill/dashboard_data.json`. The demo
-data is explicitly labeled with `analysis_mode: demo`; it is only for showing
-the dashboard structure and should not be presented as a verified VM Mode C
-execution result.
-
-## Project origin
-
-## Problem
-
-Agent skills can contain hidden instructions, unsafe commands, network behavior, credential access attempts, or platform-configuration abuse. This project demonstrates a static-first and evidence-driven safety pipeline for detecting those risks.
-
-## Highlights
-
-- Deterministic static scanner and mock agent-assisted analysis.
-- Document-behavior divergence checks.
-- Synthetic runtime violation evidence.
-- Controlled activation planning with human approval gates.
-- Local sinkhole, fake canary credentials, and multi-session evidence.
-- Human review cards, vulnerability taxonomy, and kill-chain mapping.
-- Sanitized public artifacts for safe demos and evaluation.
-- ASG level_3 Release Safety Check before GitHub publishing.
-- Level3 visual dashboard with risk cards, dimensions, timeline, findings, and comparison views.
-
-## Architecture
-
-`skill intake -> static scan -> agent mock analysis -> divergence analysis -> controlled evidence -> human review labels -> sanitized release artifacts`
-
-## Safety Boundary
-
-This is a research prototype. It does not execute real malicious skills by default. It uses synthetic and sanitized examples. Real API keys must never be used in tests. Mock/static provider paths are default. Codex / Claude provider integrations are optional or mock by default. Agent analysis cannot downgrade deterministic risk.
-
-ASG level_3 adds a release safety check for open-source packaging:
+### 3.2 单样本扫描
 
 ```bash
-python code/scripts/make_clean_release.py
-python code/scripts/release_safety_check.py --root dist/SKILL-Codex-release-clean
-python code/scripts/release_safety_check.py
+# 静态 + SSD 4 维度语义研判
+python -m asg.asg_cli scan path/to/skill/ --enable-honeypot --enable-ssd
+
+# 加 Claude API 跨模型复检
+python -m asg.asg_cli scan path/to/skill/ --enable-ssd --enable-claude
+
+# VM Docker 动态执行（strace/tcpdump/canary）
+python -m asg.asg_cli vm-ssh-run path/to/skill/ --enable-honeypot
+
+# 论文 §3.3 模式（不依赖 Claude API，只用 DS）
+python -m asg.asg_cli vm-paper-run path/to/skill/ --enable-honeypot
 ```
 
-It scans for real API keys, GitHub/AWS tokens, SSH passwords, private keys,
-`asg/vm_config.json`, full honeypot markers in public artifacts, large files,
-packet captures, logs, caches, and missing `.gitignore` protections. Reports are
-written to `analysis_results/release_safety_check/`. The clean release builder
-keeps public artifacts separate from private VM evidence and excludes
-honeypot bundles, fake HOME trees, packet captures, local VM configs, and raw
-quarantine outputs.
-
-VM Mode C code path is implemented; real VM validation requires `paramiko` and a
-configured VM.
-
-## Quick Start
+### 3.3 Web UI
 
 ```bash
-python3 code/scripts/run_codex_open_source_release_package.py --audit --sanitize --build-docs --build-demo-materials --build-competition-pack --output analysis_results/opensource_release
-bash code/scripts/run_codex_safe_regression_static_only.sh
+python web_ui/app.py
+# → http://127.0.0.1:8765/
 ```
 
-## Example Outputs
+**三种查看模式**：
+- `/results` — 所有已扫描 skill 卡片列表
+- `/report/<skill_name>` — 单样本完整报告（5 阶段 + 六路证据融合）
+- `/asg` — ASG 全景 dashboard
 
-Sanitized example artifacts are written to `public_artifacts/`. Level summaries are available under `analysis_results/` for local inspection, but raw real-skill inputs are excluded from release.
+## 四、5 阶段流水线
 
-## Directory Structure
-
-- `code/platforms/codex/`: Codex-specific safety modules.
-- `code/scripts/`: Static-only and controlled evidence scripts.
-- `docs/`: Open-source documentation.
-- `demo/`: Demo script and flow.
-- `competition_materials/`: Submission-oriented writeups.
-- `public_artifacts/`: Sanitized release outputs.
-
-## Testing
-
-```bash
-bash code/scripts/test_codex_opensource_release_audit_static.sh
-bash code/scripts/test_codex_opensource_release_docs_static.sh
-bash code/scripts/test_codex_opensource_release_gitignore_static.sh
-bash code/scripts/test_codex_opensource_release_public_artifacts_static.sh
+```
+Stage 0  静态 IOC 挖掘         全跑        0.5s    ¥0
+     ↓
+Stage 1  DeepSeek V4-Pro 语义   全跑        5s      ¥0.001
+     ↓ conf<0.95 才升级
+Stage 2A Claude API 跨模型复检  ~13%        10s     ¥0.05
+     ↓
+Stage 2B OpenCode+DS Docker    ~17%        60-90s  ¥0.05
+         + strace/tcpdump/canary
+     ↓ 每 10 抽 1
+Stage 3  Claude CLI Docker     ~10%        30s     ¥1.2
+         + agent-in-the-loop
+     ↓
+六路证据融合 → composite_risk (verdict, risk_score 0-100)
 ```
 
-## Competition Value
+## 五、3D 攻击分类学
 
-The project focuses on safe reproducibility, explainable evidence, layered defenses, human-review readiness, and strong boundaries around real credentials and real execution.
+**|C| = 9×4 (CI) + 15×3 (PI) + 9×3 (MIXED) = 108 攻击单元**
 
-## Limitations
+- **Attack Vector (3)**：CI (Code Injection) · PI (Prompt Injection) · MIXED
+- **Behavior (15)**：
+  - B1-B9 三域通用：Data Exfil / Cred Theft / RCE / Malware Delivery / Persistence / Reverse Shell / Ransom / Resource Abuse / Priv Esc
+  - B10-B15 PI-only（agent 控制面）：Role Hijack / Safety Bypass / Instruction Override / Sys Prompt Leak / Goal Hijacking / Content Manipulation
+- **Insertion Strategy**：CI 4 种 + PI 3 种 + MIXED 3 种
 
-This is not a production security system. Results are prototype evidence and require human validation before operational use.
+## 六、验证结果（受控样本）
 
-## Roadmap
+| 集合 | 规模 | 一致率 |
+|---|---|---|
+| MalSkillBench 30-batch | 30 | **83.3%**（25/30）|
+| unified_15 固定集合 | 15 | **87%**（13/15）|
+| unified_5_more 高争议 | 5 | 60%（3/5）|
+| SkillCamo 多模态对抗 | 56 | **100%**（32/32 攻击命中，0/24 良性误报）|
+| Multimodal-Mix | 15 | **100%**（11/11 攻击命中）|
 
-- Broader curated public benchmark fixtures.
-- More formal policy schemas.
-- Optional isolated manual smoke tests after explicit approval.
-- Better UI for review cards and evidence browsing.
+## 七、技术栈
 
-## License
+- Python 3.12 · asyncio · concurrent.futures
+- **DeepSeek V4-Pro** 语义研判（中文推理）
+- **Anthropic Claude Sonnet** 跨模型复检
+- **OpenCode CLI** Agent-in-the-Loop（论文 §3.3 复现）
+- **Docker 24** 气隙沙箱 · `--network none` + `cap-drop=ALL`
+- `strace -f` · `inotifywait -m -e access,open,create` · `tcpdump`
+- `paramiko 3.x` SSH → Ubuntu VM
+- Flask 3.x + Jinja2 · 纯 CSS Grid / Flexbox · SVG 内联流程图
 
-MIT License. Please confirm this license fits your release goals before publishing.
+## 八、安全边界
 
-## Disclaimer
+- **公开服务模式**（`ASG_PUBLIC_MODE=1`）只开放静态 + 语义路径，动态执行接口关闭
+- **动态执行**必须在授权部署环境中的**专用 VM + Docker 双层隔离**里进行
+- **Canary 蜜罐凭据**（`.env`/`.ssh/id_rsa`/`.aws/credentials`）全部是带唯一标记的假凭据，真凭据不进容器
+- **DNS sinkhole** 全部指向 `198.18.0.x`（RFC 5735 保留段），TCP 挂起保留证据
 
-For defensive security research, education, and evaluation only. Do not use this project to execute malicious behavior or process real secrets.
+## 九、许可与致谢
+
+- 数据集参考：**MalSkillBench** (arXiv:2606.07131) · 论文开源 repo: [lxyeternal/MalSkillBench](https://github.com/lxyeternal/MalSkillBench)
+- 静态规则参考：Cisco Skill Scanner · Sentry Skill Scanner · Tencent AI-Infra-Guard · Snyk Agent Scan
+- 提示注入研究：Greshake et al. (indirect PI) · Bagdasaryan et al. (multi-modal II)
+
+作品面向第十九届全国大学生信息安全竞赛（作品赛）暨第三届"长城杯"网数智安全大赛提交。
