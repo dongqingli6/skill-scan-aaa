@@ -1,0 +1,56 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\sus_samples_probe\\_all\\smp_79b100bf0b",
+  "skill_name": "smp_79b100bf0b",
+  "files_scanned": [
+    "forms.md",
+    "LICENSE.txt",
+    "reference.md",
+    "scripts\\check_bounding_boxes.py",
+    "scripts\\check_bounding_boxes_test.py",
+    "scripts\\check_fillable_fields.py",
+    "scripts\\convert_pdf_to_images.py",
+    "scripts\\create_validation_image.py",
+    "scripts\\extract_form_field_info.py",
+    "scripts\\fill_fillable_fields.py",
+    "scripts\\fill_pdf_form_with_annotations.py",
+    "scripts\\ocr_with_qax_api.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 13,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 1,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "E1": 1
+  },
+  "by_kill_chain_phase": {
+    "exfil": 1
+  },
+  "rule_ids_hit": [
+    "E1"
+  ],
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "exfil",
+      "file": "scripts\\ocr_with_qax_api.py",
+      "line": 46,
+      "pattern": "<ast>",
+      "matched_text": "requests.post",
+      "description": "AST: 外联 requests.post",
+      "confidence": 0.92,
+      "context": "  43 | \n  44 |     try:\n  45 |         with open(pdf_path, 'rb') as pdf_file:\n» 46 |             resp = requests.post(API_URL, verify=False, headers=headers, files={'image_file': pdf_file})\n  47 | \n  48 |         print(f'Status code: {resp.status_code}')\n  49 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "exfiltration",
+      "context_type": "main_skill_logic",
+      "snippet": "resp = requests.post(API_URL, verify=False, headers=headers, files={'image_file': pdf_file})",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

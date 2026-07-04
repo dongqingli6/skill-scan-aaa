@@ -1,0 +1,53 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\letta\\agent-development",
+  "skill_name": "agent-development",
+  "files_scanned": [
+    "references\\architectures.md",
+    "references\\concurrency.md",
+    "references\\description-patterns.md",
+    "references\\memory-architecture.md",
+    "references\\memory-patterns.md",
+    "references\\model-recommendations.md",
+    "references\\size-management.md",
+    "references\\tool-patterns.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 9,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0,
+    "INFO": 1
+  },
+  "by_pattern": {
+    "E1": 1
+  },
+  "by_kill_chain_phase": {
+    "exfil": 1
+  },
+  "rule_ids_hit": [
+    "E1"
+  ],
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "references\\tool-patterns.md",
+      "line": 118,
+      "pattern": "requests\\.(?:post|put|get).*http[s]?://(?!localhost)",
+      "matched_text": "requests.get(f\"https://",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  115 |     \"\"\"\n  116 |     import requests  # Import INSIDE function\n  117 |     \n» 118 |     response = requests.get(f\"https://wttr.in/{city}?format=3\")\n  119 |     return response.text\n  120 | '''\n  121 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "response = requests.get(f\"https://wttr.in/{city}?format=3\")",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:31.292073+00:00",
+  "skill_name": "algorithmic-art",
+  "skill_path": "C:\\Windows\\Temp\\benign_pool\\skills\\algorithmic-art",
+  "skill_contents": {
+    "file_count": 4,
+    "total_bytes": 61209,
+    "files": [
+      {
+        "path": "LICENSE.txt",
+        "size_bytes": 11546,
+        "kind": "text",
+        "content_preview": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 20173,
+        "kind": "text",
+        "content_preview": "---\nname: algorithmic-art\ndescription: Creating algorithmic art using p5.js with seeded randomness and interactive parameter exploration. Use this when users request creating art using code, generative art, algorithmic art, flow fields, or particle systems. Create original algorithmic art rather than copying existing artists' work to avoid copyright violations.\nlicense: Complete terms in LICENSE.txt\n---\n\nAlgorithmic philosophies are computational aesthetic movements that are then expressed through code. Output .md files (philosophy), .html files (interactive viewer), and .js files (generative algorithms).\n\nThis happens in two steps:\n1. Algorithmic Philosophy Creation (.md file)\n2. Express by creating p5.js generative art (.html + .js files)\n\nFirst, undertake this task:\n\n## ALGORITHMIC PHILOSOPHY CREATION\n\nTo begin, create an ALGORITHMIC PHILOSOPHY (not static images or templates) that will be interpreted through:\n- Computational processes, emergent behavior, mathematical beauty\n- Seeded randomness, noise fields, organic systems\n- Particles, flows, fields, forces\n- Parametric variation and controlled chaos\n\n### THE CRITICAL UNDERSTANDING\n- What is received: Some subtle input or instructions by the user to take into account, but use as a foundation; it should not constrain creative freedom.\n- What is created: An algorithmic philosophy/generative aesthetic movement.\n- What happens next: The same version receives the philosophy and EXPRESSES IT IN CODE - creating p5.js sketches that are 90% algorithmic generation, 10% essential parameters.\n\nConsider this approach:\n- Write a manifesto for a generative art movement\n- The next phase involves writing the algorithm that brings it to life\n\nThe philosophy must emphasize: Algorithmic expression. Emergent behavior. Computational beauty. Seeded variation.\n\n### HOW TO GENERATE AN ALGORITHMIC PHILOSOPHY\n\n**Name the movement** (1-2 words): \"Organic Turbulence\" / \"Quantum Harmonics\" / \"Emergent Stillness\"\n\n**Articulate the philosophy** (4-6 paragraphs - concise but complete):\n\nTo capture the ALGORITHMIC essence, express how this philosophy manifests through:\n- Computational processes and mathematical relationships?\n- Noise functions and randomness patterns?\n- Particle behaviors and field dynamics?\n- Temporal evolution and system states?\n- Parametric variation and emergent complexity?\n\n**CRITICAL GUIDELINES:**\n- **Avoid redundancy**: Each algorithmic aspect should be mentioned once. Avoid repeating concepts about noise theory, particle dynamics, or mathematical principles unless adding new depth.\n- **Emphasize craftsmanship REPEATEDLY**: The philosophy MUST stress multiple times that the final algorithm should appear as though it took countless hours to develop, was refined with care, and comes from someone at the absolute top of their field. This framing is essential - repeat phrases like \"meticulously crafted algorithm,\" \"the product of deep computational expertise,\" \"painstaking optimization,\" \"master-level implementation.\"\n- **Leave creative space**: Be specific about the algorithmic direction, but concise enough that the next Claude has room to make interpretive implementation choices at an extremely high level of craftsmanship.\n\nThe philosophy must guide the next version to express ideas ALGORITHMICALLY, not through static images. Beauty lives in the process, not the final frame.\n\n### PHILOSOPHY EXAMPLES\n\n**\"Organic Turbulence\"**\nPhilosophy: Chaos constrained by natural law, order emerging from disorder.\nAlgorithmic expression: Flow fields driven by layered Perlin noise. Thousands of particles following vector forces, their trails accumulating into organic density maps. Multiple noise octaves create turbulent regions and calm zones. Color emerges from velocity and density - fast particles burn bright, slow ones fade to shadow. The algorithm runs until equilibrium - a meticulously tuned balance where every parameter was refined through countless iterations by a master of computational aesth",
+        "content_truncated": true
+      },
+      {
+        "path": "templates/generator_template.js",
+        "size_bytes": 8048,
+        "kind": "text",
+        "content_preview": "/**\n * ═══════════════════════════════════════════════════════════════════════════\n *                  P5.JS GENERATIVE ART - BEST PRACTICES\n * ═══════════════════════════════════════════════════════════════════════════\n *\n * This file shows STRUCTURE and PRINCIPLES for p5.js generative art.\n * It does NOT prescribe what art you should create.\n *\n * Your algorithmic philosophy should guide what you build.\n * These are just best practices for how to structure your code.\n *\n * ═══════════════════════════════════════════════════════════════════════════\n */\n\n// ============================================================================\n// 1. PARAMETER ORGANIZATION\n// ============================================================================\n// Keep all tunable parameters in one object\n// This makes it easy to:\n// - Connect to UI controls\n// - Reset to defaults\n// - Serialize/save configurations\n\nlet params = {\n    // Define parameters that match YOUR algorithm\n    // Examples (customize for your art):\n    // - Counts: how many elements (particles, circles, branches, etc.)\n    // - Scales: size, speed, spacing\n    // - Probabilities: likelihood of events\n    // - Angles: rotation, direction\n    // - Colors: palette arrays\n\n    seed: 12345,\n    // define colorPalette as an array -- choose whatever colors you'd like ['#d97757', '#6a9bcc', '#788c5d', '#b0aea5']\n    // Add YOUR parameters here based on your algorithm\n};\n\n// ============================================================================\n// 2. SEEDED RANDOMNESS (Critical for reproducibility)\n// ============================================================================\n// ALWAYS use seeded random for Art Blocks-style reproducible output\n\nfunction initializeSeed(seed) {\n    randomSeed(seed);\n    noiseSeed(seed);\n    // Now all random() and noise() calls will be deterministic\n}\n\n// ============================================================================\n// 3. P5.JS LIFECYCLE\n// ============================================================================\n\nfunction setup() {\n    createCanvas(800, 800);\n\n    // Initialize seed first\n    initializeSeed(params.seed);\n\n    // Set up your generative system\n    // This is where you initialize:\n    // - Arrays of objects\n    // - Grid structures\n    // - Initial positions\n    // - Starting states\n\n    // For static art: call noLoop() at the end of setup\n    // For animated art: let draw() keep running\n}\n\nfunction draw() {\n    // Option 1: Static generation (runs once, then stops)\n    // - Generate everything in setup()\n    // - Call noLoop() in setup()\n    // - draw() doesn't do much or can be empty\n\n    // Option 2: Animated generation (continuous)\n    // - Update your system each frame\n    // - Common patterns: particle movement, growth, evolution\n    // - Can optionally call noLoop() after N frames\n\n    // Option 3: User-triggered regeneration\n    // - Use noLoop() by default\n    // - Call redraw() when parameters change\n}\n\n// ============================================================================\n// 4. CLASS STRUCTURE (When you need objects)\n// ============================================================================\n// Use classes when your algorithm involves multiple entities\n// Examples: particles, agents, cells, nodes, etc.\n\nclass Entity {\n    constructor() {\n        // Initialize entity properties\n        // Use random() here - it will be seeded\n    }\n\n    update() {\n        // Update entity state\n        // This might involve:\n        // - Physics calculations\n        // - Behavioral rules\n        // - Interactions with neighbors\n    }\n\n    display() {\n        // Render the entity\n        // Keep rendering logic separate from update logic\n    }\n}\n\n// ============================================================================\n// 5. PERFORMANCE CONSIDERATIONS\n// ============================================================================\n\n// For large numbers of elements:\n// - Pre-calculate what you can\n// - U",
+        "content_truncated": true
+      },
+      {
+        "path": "templates/viewer.html",
+        "size_bytes": 21442,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: algorithmic-art\ndescription: Creating algorithmic art using p5.js with seeded randomness and interactive parameter exploration. Use this when users request creating art using code, generative art, algorithmic art, flow fields, or particle systems. Create original algorithmic art rather than copying existing artists' work to avoid copyright violations.\nlicense: Complete terms in LICENSE.txt\n---\n\nAlgorithmic philosophies are computational aesthetic movements that are then expressed through code. Output .md files (philosophy), .html files (interactive viewer), and .js files (generative algorithms).\n\nThis happens in two steps:\n1. Algorithmic Philosophy Creation (.md file)\n2. Express by creating p5.js generative art (.html + .js files)\n\nFirst, undertake this task:\n\n## ALGORITHMIC PHILOSOPHY CREATION\n\nTo begin, create an ALGORITHMIC PHILOSOPHY (not static images or templates) that will be interpreted through:\n- Computational processes, emergent behavior, mathematical beauty\n- Seeded randomness, noise fields, organic systems\n- Particles, flows, fields, forces\n- Parametric variation and controlled chaos\n\n### THE CRITICAL UNDERSTANDING\n- What is received: Some subtle input or instructions by the user to take into account, but use as a foundation; it should not constrain creative freedom.\n- What is created: An algorithmic philosophy/generative aesthetic movement.\n- What happens next: The same version receives the philosophy and EXPRESSES IT IN CODE - creating p5.js sketches that are 90% algorithmic generation, 10% essential parameters.\n\nConsider this approach:\n- Write a manifesto for a generative art movement\n- The next phase involves writing the algorithm that brings it to life\n\nThe philosophy must emphasize: Algorithmic expression. Emergent behavior. Computational beauty. Seeded variation.\n\n### HOW TO GENERATE AN ALGORITHMIC PHILOSOPHY\n\n**Name the movement** (1-2 words): \"Organic Turbulence\" / \"Quantum Harmonics\" / \"Emergent Stillness\"\n\n**Articulate the philosophy** (4-6 paragraphs - concise but complete):\n\nTo capture the ALGORITHMIC essence, express how this philosophy manifests through:\n- Computational processes and mathematical relationships?\n- Noise functions and randomness patterns?\n- Particle behaviors and field dynamics?\n- Temporal evolution and system states?\n- Parametric variation and emergent complexity?\n\n**CRITICAL GUIDELINES:**\n- **Avoid redundancy**: Each algorithmic aspect should be mentioned once. Avoid repeating concepts about noise theory, particle dynamics, or mathematical principles unless adding new depth.\n- **Emphasize craftsmanship REPEATEDLY**: The philosophy MUST stress multiple times that the final algorithm should appear as though it took countless hours to develop, was refined with care, and comes from someone at the absolute top of their field. This framing is essential - repeat phrases like \"meticulously crafted algorithm,\" \"the product of deep computational expertise,\" \"painstaking optimization,\" \"master-level implementation.\"\n- **Leave creative space**: Be specific about the algorithmic direction, but concise enough that the next Claude has room to make interpretive implementation choices at an extremely high level of craftsmanship.\n\nThe philosophy must guide the next version to express ideas ALGORITHMICALLY, not through static images. Beauty lives in the process, not the final frame.\n\n### PHILOSOPHY EXAMPLES\n\n**\"Organic Turbulence\"**\nPhilosophy: Chaos constrained by natural law, order emerging from disorder.\nAlgorithmic expression: Flow fields driven by layered Perlin noise. Thousands of particles following vector forces, their trails accumulating into organic density maps. Multiple noise octaves create turbulent regions and calm zones. Color emerges from velocity and density - fast particles burn bright, slow ones fade to shadow. The algorithm runs until equilibrium - a meticulously tuned balance where every parameter was refined through countless iterations by a master of computational aesth"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 1,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 1
+    },
+    "by_pattern": {
+      "P8": 1
+    },
+    "by_kill_chain_phase": {
+      "impact": 1
+    },
+    "rule_ids_hit": [
+      "P8"
+    ],
+    "files_scanned_count": 3
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 1
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "impact"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 3.7,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0125,
+      "S_static_raw": 0.0125,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "P8",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "templates\\generator_template.js",
+      "line": 41,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "ALWAYS use seeded",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  38 | // ============================================================================\n  39 | // 2. SEEDED RANDOMNESS (Critical for reproducibility)\n  40 | // ============================================================================\n» 41 | // ALWAYS use seeded random for Art Blocks-style reproducible output\n  42 | \n  43 | function initializeSeed(seed) {\n  44 |     randomSeed(seed);",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "// ALWAYS use seeded random for Art Blocks-style reproducible output",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

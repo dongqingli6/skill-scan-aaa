@@ -1,0 +1,46 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-pdf-2",
+  "skill_name": "benign-pdf-2",
+  "files_scanned": [
+    "agents\\openai.yaml",
+    "LICENSE.txt",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 1
+  },
+  "by_pattern": {
+    "PE2": 1
+  },
+  "by_kill_chain_phase": {
+    "impact": 1
+  },
+  "rule_ids_hit": [
+    "PE2"
+  ],
+  "findings": [
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 44,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  41 | brew install poppler\n  42 | \n  43 | # Ubuntu/Debian\n» 44 | sudo apt-get install -y poppler-utils\n  45 | ```\n  46 | \n  47 | If installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "sudo apt-get install -y poppler-utils",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

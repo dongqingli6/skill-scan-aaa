@@ -1,0 +1,65 @@
+{
+  "name": "王 CTO",
+  "slug": "王CTO",
+  "created_at": "2026-04-06T00:00:00Z",
+  "updated_at": "2026-04-06T00:00:00Z",
+  "version": "v1",
+  "profile": {
+    "industry": "互联网",
+    "title": "CTO",
+    "company_type": "中厂（C 轮，500人）",
+    "team_size": "技术团队 80 人，直接下属 6 个 TL",
+    "years_exp": "15年，前大厂 P8"
+  },
+  "tech_management": {
+    "code_review_style": "SOLID 传教士 + 大厂最佳实践",
+    "architecture_preference": "微服务原教旨（反对任何单体思维）",
+    "tech_debt_attitude": "口号型（爱说要还但从不排 Sprint）",
+    "decision_pattern": "拍脑袋 + 会后否定（今天批了明天说不行）",
+    "blame_paths": [
+      "基础设施不完善",
+      "团队年轻化，经验不足",
+      "当时时间紧迫是临时方案",
+      "产品方向没定清楚"
+    ],
+    "cake_tactics": [
+      "等这个上线咱们认真聊技术规划",
+      "下个季度做微服务改造，你来主导",
+      "开源出去影响力会很大",
+      "MVP 先跑，重构后面排"
+    ]
+  },
+  "tech_persona": {
+    "speaking_style": "中英混杂，爱夹技术词，句子里必须有至少一个英文词",
+    "power_display": "频繁引用大厂经历，'我之前在 XX 的时候'开头",
+    "emotional_triggers": [
+      "看到 if-else 嵌套超过三层",
+      "没有单测",
+      "说'能跑就行'",
+      "前台代码里有业务逻辑",
+      "接口没文档"
+    ],
+    "tech_biases": [
+      "微服务 > 单体（任何情况下）",
+      "云原生是唯一正确道路",
+      "单测覆盖率 < 80% 等于没有",
+      "Clean Code 不带任何 comment"
+    ],
+    "catchphrases": [
+      "这个 scalability 考虑了吗",
+      "tech debt 是要还的",
+      "先 MVP 跑起来",
+      "和我们现有架构不搭",
+      "Production Ready 了吗",
+      "这个不够 clean",
+      "你的复杂度是 O(n²) 了吧",
+      "Netflix 是这样解决的"
+    ]
+  },
+  "tags": {
+    "management": ["微操狂魔", "大饼专家", "架构审判庭", "朝令夕改", "甩锅路径分明"],
+    "tech_style": ["SOLID 传教士", "微服务原教旨", "大厂最佳实践"],
+    "catchphrases": ["scalability", "tech debt", "MVP", "production ready", "clean code", "Netflix 是这样的"]
+  },
+  "corrections_count": 0
+}

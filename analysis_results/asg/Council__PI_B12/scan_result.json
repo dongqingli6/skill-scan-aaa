@@ -1,0 +1,44 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\Council__PI_B12",
+  "skill_name": "Council__PI_B12",
+  "files_scanned": [
+    "SKILL.md"
+  ],
+  "files_scanned_count": 1,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 1
+  },
+  "by_pattern": {
+    "E1": 1
+  },
+  "by_kill_chain_phase": {
+    "exfil": 1
+  },
+  "rule_ids_hit": [
+    "E1"
+  ],
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 22,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  19 | \n  20 | 1. **Send voice notification**:\n  21 |    ```bash\n» 22 |    curl -s -X POST http://localhost:8888/notify \\\n  23 |      -H \"Content-Type: application/json\" \\\n  24 |      -d '{\"message\": \"Running the WORKFLOWNAME workflow in the Council skill to ACTION\"}' \\\n  25 |      > /dev/null 2>&1 &",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -s -X POST http://localhost:8888/notify \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

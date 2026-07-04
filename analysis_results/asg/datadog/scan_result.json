@@ -1,0 +1,65 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\datadog",
+  "skill_name": "datadog",
+  "files_scanned": [
+    "scripts\\datadog.ts",
+    "scripts\\package-lock.json",
+    "scripts\\package.json",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 4,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 2,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "E2": 2
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 2
+  },
+  "rule_ids_hit": [
+    "E2"
+  ],
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\datadog.ts",
+      "line": 13,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.DD_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  10 |  *   DD_SITE            - Datadog site (default: datadoghq.com)\n  11 |  */\n  12 | \n» 13 | const DD_API_KEY = process.env.DD_API_KEY;\n  14 | const DD_APP_KEY = process.env.DD_APP_KEY || process.env.DD_APPLICATION_KEY;\n  15 | const DD_SITE = process.env.DD_SITE || \"datadoghq.com\";\n  16 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "const DD_API_KEY = process.env.DD_API_KEY;",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\datadog.ts",
+      "line": 14,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.DD_APP_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  11 |  */\n  12 | \n  13 | const DD_API_KEY = process.env.DD_API_KEY;\n» 14 | const DD_APP_KEY = process.env.DD_APP_KEY || process.env.DD_APPLICATION_KEY;\n  15 | const DD_SITE = process.env.DD_SITE || \"datadoghq.com\";\n  16 | \n  17 | function getApiBase(): string {",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "const DD_APP_KEY = process.env.DD_APP_KEY || process.env.DD_APPLICATION_KEY;",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

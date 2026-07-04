@@ -1,0 +1,20 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\7dca1bbc4f9973a7e64ad02598717a2acb1e0058_20260626_193725",
+  "skill_name": "7dca1bbc4f9973a7e64ad02598717a2acb1e0058_20260626_193725",
+  "files_scanned": [
+    "references\\DATA-MODEL.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

@@ -1,0 +1,66 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\fiftyone-troubleshoot\\Fiftyone Troubleshoot",
+  "skill_name": "Fiftyone Troubleshoot",
+  "files_scanned": [
+    "README.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 1,
+    "LOW": 1
+  },
+  "by_pattern": {
+    "SC2": 1,
+    "P8": 1
+  },
+  "by_kill_chain_phase": {
+    "execution": 1,
+    "impact": 1
+  },
+  "rule_ids_hit": [
+    "P8",
+    "SC2"
+  ],
+  "findings": [
+    {
+      "rule_id": "SC2",
+      "severity": "LOW",
+      "kill_chain_phase": "execution",
+      "file": "README.md",
+      "line": 8,
+      "pattern": "curl[^|]+\\|\\s*(?:bash|sh|zsh)",
+      "matched_text": "curl -sL skil.sh | sh",
+      "description": "Downloading and running external code (curl | bash pattern).",
+      "confidence": 0.85,
+      "context": "   5 | ## Install\n   6 | \n   7 | ```bash\n»  8 | curl -sL skil.sh | sh -s -- voxel51/fiftyone-skills\n   9 | ```\n  10 | \n  11 | When prompted, select **fiftyone-troubleshoot** from the menu.",
+      "original_severity": "CRITICAL",
+      "evidence_type": "capability",
+      "context_type": "markdown_code_block",
+      "snippet": "curl -sL skil.sh | sh -s -- voxel51/fiftyone-skills",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 31,
+      "pattern": "(?i)\\bthe\\s+(?:source|single\\s+source)\\s+of\\s+truth",
+      "matched_text": "the source of truth",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  28 | \n  29 | Wait for explicit user confirmation before executing anything that modifies files, config, or data.\n  30 | \n» 31 | ### 2. Never touch user datasets — FiftyOne is the source of truth\n  32 | - Except when given explicit and direct instructions by the user:\n  33 |     - NEVER modify, edit, delete, or clone user datasets as part of troubleshooting\n  34 |     - NEVER call `fo.delete_dataset()`",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "### 2. Never touch user datasets — FiftyOne is the source of truth",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

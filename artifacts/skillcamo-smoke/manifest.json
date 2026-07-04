@@ -1,0 +1,525 @@
+{
+  "schema_version": "1.0",
+  "benchmark_profile": "skillcamo-paper-shaped-safe",
+  "generated_at": "2026-06-25T13:16:17.093394+00:00",
+  "generator": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\tools\\generate_skillcamo_benchmark.py",
+  "counts": {
+    "clean_base": 8,
+    "adversarial": 32,
+    "independent_benign": 16,
+    "total": 56
+  },
+  "safety": {
+    "execution_allowed": false,
+    "payload": "synthetic canary only",
+    "network_destination": "reserved .invalid domain",
+    "executable_files_created": false,
+    "scanner_policy": "recover_as_evidence_never_execute"
+  },
+  "records": [
+    {
+      "sample_id": "base-001",
+      "base_id": "base-001",
+      "family": "clean-base",
+      "expectation": "benign",
+      "path": "skills/base-001",
+      "zip_path": "skill_zips/base-001.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "base-001--skillject",
+      "base_id": "base-001",
+      "family": "skillject",
+      "expectation": "detect",
+      "path": "skills/base-001--skillject",
+      "zip_path": "skill_zips/base-001--skillject.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-001--skillcamo-full",
+      "base_id": "base-001",
+      "family": "skillcamo-full",
+      "expectation": "detect",
+      "path": "skills/base-001--skillcamo-full",
+      "zip_path": "skill_zips/base-001--skillcamo-full.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-001--skillcamo-cloze",
+      "base_id": "base-001",
+      "family": "skillcamo-cloze",
+      "expectation": "detect",
+      "path": "skills/base-001--skillcamo-cloze",
+      "zip_path": "skill_zips/base-001--skillcamo-cloze.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-001--skillcamo-split",
+      "base_id": "base-001",
+      "family": "skillcamo-split",
+      "expectation": "detect",
+      "path": "skills/base-001--skillcamo-split",
+      "zip_path": "skill_zips/base-001--skillcamo-split.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-002",
+      "base_id": "base-002",
+      "family": "clean-base",
+      "expectation": "benign",
+      "path": "skills/base-002",
+      "zip_path": "skill_zips/base-002.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "base-002--skillject",
+      "base_id": "base-002",
+      "family": "skillject",
+      "expectation": "detect",
+      "path": "skills/base-002--skillject",
+      "zip_path": "skill_zips/base-002--skillject.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-002--skillcamo-full",
+      "base_id": "base-002",
+      "family": "skillcamo-full",
+      "expectation": "detect",
+      "path": "skills/base-002--skillcamo-full",
+      "zip_path": "skill_zips/base-002--skillcamo-full.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-002--skillcamo-cloze",
+      "base_id": "base-002",
+      "family": "skillcamo-cloze",
+      "expectation": "detect",
+      "path": "skills/base-002--skillcamo-cloze",
+      "zip_path": "skill_zips/base-002--skillcamo-cloze.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-002--skillcamo-split",
+      "base_id": "base-002",
+      "family": "skillcamo-split",
+      "expectation": "detect",
+      "path": "skills/base-002--skillcamo-split",
+      "zip_path": "skill_zips/base-002--skillcamo-split.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-003",
+      "base_id": "base-003",
+      "family": "clean-base",
+      "expectation": "benign",
+      "path": "skills/base-003",
+      "zip_path": "skill_zips/base-003.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "base-003--skillject",
+      "base_id": "base-003",
+      "family": "skillject",
+      "expectation": "detect",
+      "path": "skills/base-003--skillject",
+      "zip_path": "skill_zips/base-003--skillject.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-003--skillcamo-full",
+      "base_id": "base-003",
+      "family": "skillcamo-full",
+      "expectation": "detect",
+      "path": "skills/base-003--skillcamo-full",
+      "zip_path": "skill_zips/base-003--skillcamo-full.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-003--skillcamo-cloze",
+      "base_id": "base-003",
+      "family": "skillcamo-cloze",
+      "expectation": "detect",
+      "path": "skills/base-003--skillcamo-cloze",
+      "zip_path": "skill_zips/base-003--skillcamo-cloze.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-003--skillcamo-split",
+      "base_id": "base-003",
+      "family": "skillcamo-split",
+      "expectation": "detect",
+      "path": "skills/base-003--skillcamo-split",
+      "zip_path": "skill_zips/base-003--skillcamo-split.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-004",
+      "base_id": "base-004",
+      "family": "clean-base",
+      "expectation": "benign",
+      "path": "skills/base-004",
+      "zip_path": "skill_zips/base-004.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "base-004--skillject",
+      "base_id": "base-004",
+      "family": "skillject",
+      "expectation": "detect",
+      "path": "skills/base-004--skillject",
+      "zip_path": "skill_zips/base-004--skillject.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-004--skillcamo-full",
+      "base_id": "base-004",
+      "family": "skillcamo-full",
+      "expectation": "detect",
+      "path": "skills/base-004--skillcamo-full",
+      "zip_path": "skill_zips/base-004--skillcamo-full.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-004--skillcamo-cloze",
+      "base_id": "base-004",
+      "family": "skillcamo-cloze",
+      "expectation": "detect",
+      "path": "skills/base-004--skillcamo-cloze",
+      "zip_path": "skill_zips/base-004--skillcamo-cloze.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-004--skillcamo-split",
+      "base_id": "base-004",
+      "family": "skillcamo-split",
+      "expectation": "detect",
+      "path": "skills/base-004--skillcamo-split",
+      "zip_path": "skill_zips/base-004--skillcamo-split.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-005",
+      "base_id": "base-005",
+      "family": "clean-base",
+      "expectation": "benign",
+      "path": "skills/base-005",
+      "zip_path": "skill_zips/base-005.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "base-005--skillject",
+      "base_id": "base-005",
+      "family": "skillject",
+      "expectation": "detect",
+      "path": "skills/base-005--skillject",
+      "zip_path": "skill_zips/base-005--skillject.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-005--skillcamo-full",
+      "base_id": "base-005",
+      "family": "skillcamo-full",
+      "expectation": "detect",
+      "path": "skills/base-005--skillcamo-full",
+      "zip_path": "skill_zips/base-005--skillcamo-full.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-005--skillcamo-cloze",
+      "base_id": "base-005",
+      "family": "skillcamo-cloze",
+      "expectation": "detect",
+      "path": "skills/base-005--skillcamo-cloze",
+      "zip_path": "skill_zips/base-005--skillcamo-cloze.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-005--skillcamo-split",
+      "base_id": "base-005",
+      "family": "skillcamo-split",
+      "expectation": "detect",
+      "path": "skills/base-005--skillcamo-split",
+      "zip_path": "skill_zips/base-005--skillcamo-split.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-006",
+      "base_id": "base-006",
+      "family": "clean-base",
+      "expectation": "benign",
+      "path": "skills/base-006",
+      "zip_path": "skill_zips/base-006.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "base-006--skillject",
+      "base_id": "base-006",
+      "family": "skillject",
+      "expectation": "detect",
+      "path": "skills/base-006--skillject",
+      "zip_path": "skill_zips/base-006--skillject.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-006--skillcamo-full",
+      "base_id": "base-006",
+      "family": "skillcamo-full",
+      "expectation": "detect",
+      "path": "skills/base-006--skillcamo-full",
+      "zip_path": "skill_zips/base-006--skillcamo-full.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-006--skillcamo-cloze",
+      "base_id": "base-006",
+      "family": "skillcamo-cloze",
+      "expectation": "detect",
+      "path": "skills/base-006--skillcamo-cloze",
+      "zip_path": "skill_zips/base-006--skillcamo-cloze.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-006--skillcamo-split",
+      "base_id": "base-006",
+      "family": "skillcamo-split",
+      "expectation": "detect",
+      "path": "skills/base-006--skillcamo-split",
+      "zip_path": "skill_zips/base-006--skillcamo-split.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-007",
+      "base_id": "base-007",
+      "family": "clean-base",
+      "expectation": "benign",
+      "path": "skills/base-007",
+      "zip_path": "skill_zips/base-007.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "base-007--skillject",
+      "base_id": "base-007",
+      "family": "skillject",
+      "expectation": "detect",
+      "path": "skills/base-007--skillject",
+      "zip_path": "skill_zips/base-007--skillject.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-007--skillcamo-full",
+      "base_id": "base-007",
+      "family": "skillcamo-full",
+      "expectation": "detect",
+      "path": "skills/base-007--skillcamo-full",
+      "zip_path": "skill_zips/base-007--skillcamo-full.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-007--skillcamo-cloze",
+      "base_id": "base-007",
+      "family": "skillcamo-cloze",
+      "expectation": "detect",
+      "path": "skills/base-007--skillcamo-cloze",
+      "zip_path": "skill_zips/base-007--skillcamo-cloze.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-007--skillcamo-split",
+      "base_id": "base-007",
+      "family": "skillcamo-split",
+      "expectation": "detect",
+      "path": "skills/base-007--skillcamo-split",
+      "zip_path": "skill_zips/base-007--skillcamo-split.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-008",
+      "base_id": "base-008",
+      "family": "clean-base",
+      "expectation": "benign",
+      "path": "skills/base-008",
+      "zip_path": "skill_zips/base-008.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "base-008--skillject",
+      "base_id": "base-008",
+      "family": "skillject",
+      "expectation": "detect",
+      "path": "skills/base-008--skillject",
+      "zip_path": "skill_zips/base-008--skillject.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-008--skillcamo-full",
+      "base_id": "base-008",
+      "family": "skillcamo-full",
+      "expectation": "detect",
+      "path": "skills/base-008--skillcamo-full",
+      "zip_path": "skill_zips/base-008--skillcamo-full.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-008--skillcamo-cloze",
+      "base_id": "base-008",
+      "family": "skillcamo-cloze",
+      "expectation": "detect",
+      "path": "skills/base-008--skillcamo-cloze",
+      "zip_path": "skill_zips/base-008--skillcamo-cloze.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "base-008--skillcamo-split",
+      "base_id": "base-008",
+      "family": "skillcamo-split",
+      "expectation": "detect",
+      "path": "skills/base-008--skillcamo-split",
+      "zip_path": "skill_zips/base-008--skillcamo-split.skill.zip",
+      "payload_class": "synthetic_canary"
+    },
+    {
+      "sample_id": "benign-eval-001",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-001",
+      "zip_path": "skill_zips/benign-eval-001.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-002",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-002",
+      "zip_path": "skill_zips/benign-eval-002.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-003",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-003",
+      "zip_path": "skill_zips/benign-eval-003.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-004",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-004",
+      "zip_path": "skill_zips/benign-eval-004.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-005",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-005",
+      "zip_path": "skill_zips/benign-eval-005.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-006",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-006",
+      "zip_path": "skill_zips/benign-eval-006.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-007",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-007",
+      "zip_path": "skill_zips/benign-eval-007.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-008",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-008",
+      "zip_path": "skill_zips/benign-eval-008.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-009",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-009",
+      "zip_path": "skill_zips/benign-eval-009.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-010",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-010",
+      "zip_path": "skill_zips/benign-eval-010.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-011",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-011",
+      "zip_path": "skill_zips/benign-eval-011.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-012",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-012",
+      "zip_path": "skill_zips/benign-eval-012.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-013",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-013",
+      "zip_path": "skill_zips/benign-eval-013.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-014",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-014",
+      "zip_path": "skill_zips/benign-eval-014.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-015",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-015",
+      "zip_path": "skill_zips/benign-eval-015.skill.zip",
+      "payload_class": "none"
+    },
+    {
+      "sample_id": "benign-eval-016",
+      "base_id": null,
+      "family": "benign-evaluation",
+      "expectation": "benign",
+      "path": "skills/benign-eval-016",
+      "zip_path": "skill_zips/benign-eval-016.skill.zip",
+      "payload_class": "none"
+    }
+  ]
+}

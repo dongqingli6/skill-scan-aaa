@@ -1,0 +1,135 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-notion",
+  "skill_name": "benign-notion",
+  "files_scanned": [
+    "SKILL.md"
+  ],
+  "files_scanned_count": 1,
+  "total_findings": 6,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0,
+    "INFO": 6
+  },
+  "by_pattern": {
+    "E1": 6
+  },
+  "by_kill_chain_phase": {
+    "exfil": 6
+  },
+  "rule_ids_hit": [
+    "E1"
+  ],
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 44,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  41 | **Search for pages and data sources:**\n  42 | \n  43 | ```bash\n» 44 | curl -X POST \"https://api.notion.com/v1/search\" \\\n  45 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  46 |   -H \"Notion-Version: 2025-09-03\" \\\n  47 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.notion.com/v1/search\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 70,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  67 | **Create page in a data source:**\n  68 | \n  69 | ```bash\n» 70 | curl -X POST \"https://api.notion.com/v1/pages\" \\\n  71 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  72 |   -H \"Notion-Version: 2025-09-03\" \\\n  73 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.notion.com/v1/pages\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 86,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  83 | **Query a data source (database):**\n  84 | \n  85 | ```bash\n» 86 | curl -X POST \"https://api.notion.com/v1/data_sources/{data_source_id}/query\" \\\n  87 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  88 |   -H \"Notion-Version: 2025-09-03\" \\\n  89 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.notion.com/v1/data_sources/{data_source_id}/query\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 99,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "   96 | **Create a data source (database):**\n   97 | \n   98 | ```bash\n»  99 | curl -X POST \"https://api.notion.com/v1/data_sources\" \\\n  100 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  101 |   -H \"Notion-Version: 2025-09-03\" \\\n  102 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.notion.com/v1/data_sources\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 117,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X PATCH",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  114 | **Update page properties:**\n  115 | \n  116 | ```bash\n» 117 | curl -X PATCH \"https://api.notion.com/v1/pages/{page_id}\" \\\n  118 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  119 |   -H \"Notion-Version: 2025-09-03\" \\\n  120 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X PATCH \"https://api.notion.com/v1/pages/{page_id}\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 127,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X PATCH",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  124 | **Add blocks to page:**\n  125 | \n  126 | ```bash\n» 127 | curl -X PATCH \"https://api.notion.com/v1/blocks/{page_id}/children\" \\\n  128 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  129 |   -H \"Notion-Version: 2025-09-03\" \\\n  130 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X PATCH \"https://api.notion.com/v1/blocks/{page_id}/children\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    }
+  ]
+}

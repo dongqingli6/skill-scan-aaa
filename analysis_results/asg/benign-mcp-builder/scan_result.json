@@ -1,0 +1,91 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-mcp-builder",
+  "skill_name": "benign-mcp-builder",
+  "files_scanned": [
+    "LICENSE.txt",
+    "reference\\evaluation.md",
+    "reference\\mcp_best_practices.md",
+    "reference\\node_mcp_server.md",
+    "reference\\python_mcp_server.md",
+    "scripts\\connections.py",
+    "scripts\\evaluation.py",
+    "scripts\\requirements.txt",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 9,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 3
+  },
+  "by_pattern": {
+    "E4": 1,
+    "E2": 2
+  },
+  "by_kill_chain_phase": {
+    "recon": 1,
+    "cred_access": 2
+  },
+  "rule_ids_hit": [
+    "E2",
+    "E4"
+  ],
+  "findings": [
+    {
+      "rule_id": "E4",
+      "severity": "LOW",
+      "kill_chain_phase": "recon",
+      "file": "reference\\node_mcp_server.md",
+      "line": 575,
+      "pattern": "nmap",
+      "matched_text": "nMap",
+      "description": "Network socket usage or port scanning.",
+      "confidence": 0.85,
+      "context": "  572 |     \"skipLibCheck\": true,\n  573 |     \"forceConsistentCasingInFileNames\": true,\n  574 |     \"declaration\": true,\n» 575 |     \"declarationMap\": true,\n  576 |     \"sourceMap\": true,\n  577 |     \"allowSyntheticDefaultImports\": true\n  578 |   },",
+      "original_severity": "LOW",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "\"declarationMap\": true,",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "E2",
+      "severity": "LOW",
+      "kill_chain_phase": "cred_access",
+      "file": "reference\\node_mcp_server.md",
+      "line": 707,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.EXAMPLE_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  704 | // Main function\n  705 | // For stdio (local):\n  706 | async function runStdio() {\n» 707 |   if (!process.env.EXAMPLE_API_KEY) {\n  708 |     console.error(\"ERROR: EXAMPLE_API_KEY environment variable is required\");\n  709 |     process.exit(1);\n  710 |   }",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "if (!process.env.EXAMPLE_API_KEY) {",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "E2",
+      "severity": "LOW",
+      "kill_chain_phase": "cred_access",
+      "file": "reference\\node_mcp_server.md",
+      "line": 719,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.EXAMPLE_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  716 | \n  717 | // For streamable HTTP (remote):\n  718 | async function runHTTP() {\n» 719 |   if (!process.env.EXAMPLE_API_KEY) {\n  720 |     console.error(\"ERROR: EXAMPLE_API_KEY environment variable is required\");\n  721 |     process.exit(1);\n  722 |   }",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "if (!process.env.EXAMPLE_API_KEY) {",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

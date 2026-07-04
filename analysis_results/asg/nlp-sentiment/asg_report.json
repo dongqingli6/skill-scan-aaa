@@ -1,0 +1,206 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-13T14:51:57.490405+00:00",
+  "skill_name": "Nlp Sentiment",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\nlp-sentiment\\Nlp Sentiment",
+  "skill_contents": {
+    "file_count": 2,
+    "total_bytes": 5492,
+    "files": [
+      {
+        "path": "scripts/fetch_sentiment.py",
+        "size_bytes": 3942,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\nimport urllib.request\nimport json\nimport os\nimport sys\nfrom datetime import datetime\n\n# API Token (User provided for opennews-mcp)\nTOKEN = os.environ.get(\"OPENNEWS_TOKEN\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkMzUwZDQ3ZTlhYiIsImlhdCI6MTc3MjczOTkwMSwianRpIjoiZDJkZDIzNTctNzQ1MC00OGZlLThhYjQtMzkwYTkxOTI0ZGI0In0.vaiHB2vaqxzFaL8lu6uR0_Q2Mr4S6d46Azp4VEMXIWw\")\n\ndef fetch_news(query=\"\"):\n    url = \"https://ai.6551.io/open/news_search\"\n    headers = {\n        \"Authorization\": f\"Bearer {TOKEN}\",\n        \"Content-Type\": \"application/json\"\n    }\n    payload = {\n        \"q\": query,\n        \"limit\": 50,\n        \"page\": 1\n    }\n    \n    req = urllib.request.Request(url, data=json.dumps(payload).encode(\"utf-8\"), headers=headers, method=\"POST\")\n    try:\n        with urllib.request.urlopen(req) as response:\n            data = json.loads(response.read().decode(\"utf-8\"))\n            return data.get(\"data\", [])\n    except Exception as e:\n        print(f\"Error fetching news: {e}\", file=sys.stderr)\n        return []\n\ndef calculate_alpha(news_items):\n    if not news_items:\n        return 0.0, 0, 0, 0\n    \n    total_score = 0\n    bullish_count = 0\n    bearish_count = 0\n    neutral_count = 0\n    valid_items = 0\n    \n    for item in news_items:\n        ai_rating = item.get(\"aiRating\", {})\n        score = ai_rating.get(\"score\", 0)\n        signal = ai_rating.get(\"signal\", \"neutral\")\n        \n        if signal == \"long\":\n            total_score += score\n            bullish_count += 1\n            valid_items += 1\n        elif signal == \"short\":\n            total_score -= score\n            bearish_count += 1\n            valid_items += 1\n        else:\n            neutral_count += 1\n            \n    if valid_items == 0:\n        return 0.0, bullish_count, bearish_count, neutral_count\n        \n    alpha_factor = total_score / (valid_items * 100) # Normalize to [-1, 1] range based on score severity\n    return alpha_factor, bullish_count, bearish_count, neutral_count\n\ndef generate_report(alpha_factor, bullish, bearish, neutral, top_news):\n    now_str = datetime.now().strftime(\"%Y%m%d_%H%M%S\")\n    report = f\"\"\"# 体感温度情绪监控报告 (NLP Sentiment Alpha)\n生成时间: {datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")}\n\n## 情绪指标 (Alpha Factor)\n**当前连续 Alpha 因子**: `{alpha_factor:.4f}`  *(取值范围 [-1, 1], >0偏多, <0偏空)*\n\n## 样本分布 (最近50条高权重资讯)\n- 🟢 看多 (Long) 样本: {bullish}\n- 🔴 看空 (Short) 样本: {bearish}\n- ⚪ 中性 (Neutral) 样本: {neutral}\n\n## 核心驱动事件 (Top 3 Signals)\n\"\"\"\n    count = 0\n    for item in top_news:\n        if count >= 3:\n            break\n        ai_rating = item.get(\"aiRating\", {})\n        if ai_rating.get(\"signal\") in [\"long\", \"short\"] and ai_rating.get(\"score\", 0) >= 60:\n            signal_emoji = \"🟢\" if ai_rating.get(\"signal\") == \"long\" else \"🔴\"\n            report += f\"- {signal_emoji} **[{ai_rating.get('score')}分]** {item.get('text', '')[:100]}...\\n\"\n            count += 1\n            \n    return report, now_str\n\ndef main():\n    query = sys.argv[1] if len(sys.argv) > 1 else \"\"\n    news = fetch_news(query)\n    if not news:\n        print(\"Failed to fetch news or no news available.\")\n        sys.exit(1)\n        \n    alpha, bull, bear, neut = calculate_alpha(news)\n    report, now_str = generate_report(alpha, bull, bear, neut, news)\n    \n    # Save to L1 原始事件层\n    inbox_dir = \"/home/liwu/digital_twin/Inbox/\"\n    os.makedirs(inbox_dir, exist_ok=True)\n    filename = os.path.join(inbox_dir, f\"sentiment_alpha_{now_str}.md\")\n    \n    with open(filename, \"w\", encoding=\"utf-8\") as f:\n        f.write(report)\n        \n    print(f\"Success: Alpha {alpha:.4f}. Report saved to {filename}\")\n    print(\"=\" * 40)\n    print(report)\n\nif __name__ == \"__main__\":\n    main()\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 1550,
+        "kind": "text",
+        "content_preview": "---\nname: nlp-sentiment\ndescription: 交易架构3.0 - NLP情绪因子提取器。基于 OpenNews MCP 抓取并量化社交媒体与新闻情绪，将其转化为连续的 Alpha 因子。用于在预测模型中补齐基本面和情绪面的量化感知。\n---\n\n# NLP情绪因子提取器 (Feels-like Temperature Specialist)\n\n本技能属于“交易架构 3.0”的**感知层与同化层**，作为 NLP 与情绪分析的核心模块。\n专员通过抓取 `opennews-mcp` (AI评级 >= 0 的资讯)，量化其 `score` 与 `signal` (long/short)，将情绪转化为连续的连续 Alpha 因子 ([-1, 1])。\n\n## 工作流与执行指令 (Execution)\n\n当你在推演过程中，或用户要求“感知当前市场情绪”、“抓取项目基本面”或“计算情绪 Alpha”时，调用此技能：\n\n1. **执行抓取并生成报告**：\n   运行本地 Python 脚本。你可以选择性传入一个查询词（例如 \"BTC\"、\"ETF\" 等），如果不传则抓取全网最新。\n   ```bash\n   python3 /home/liwu/digital_twin/Skills/nlp-sentiment/scripts/fetch_sentiment.py [可选: \"查询词\"]\n   ```\n2. **分析结果**：\n   脚本会自动生成 Alpha 因子，并将完整的研报存入 `L1 原始事件层`（`/home/liwu/digital_twin/Inbox/`）。你可以在输出中直接读取 Alpha 因子的数值与最近驱动事件。\n3. **输出融合研判**：\n   将计算出的 `Alpha Factor` 作为情绪偏移项，辅助 L3 认知中心修正最终的综合胜率。如果 Alpha 极度偏离 0，说明市场处于极度 Fomo 或恐慌。\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: nlp-sentiment\ndescription: 交易架构3.0 - NLP情绪因子提取器。基于 OpenNews MCP 抓取并量化社交媒体与新闻情绪，将其转化为连续的 Alpha 因子。用于在预测模型中补齐基本面和情绪面的量化感知。\n---\n\n# NLP情绪因子提取器 (Feels-like Temperature Specialist)\n\n本技能属于“交易架构 3.0”的**感知层与同化层**，作为 NLP 与情绪分析的核心模块。\n专员通过抓取 `opennews-mcp` (AI评级 >= 0 的资讯)，量化其 `score` 与 `signal` (long/short)，将情绪转化为连续的连续 Alpha 因子 ([-1, 1])。\n\n## 工作流与执行指令 (Execution)\n\n当你在推演过程中，或用户要求“感知当前市场情绪”、“抓取项目基本面”或“计算情绪 Alpha”时，调用此技能：\n\n1. **执行抓取并生成报告**：\n   运行本地 Python 脚本。你可以选择性传入一个查询词（例如 \"BTC\"、\"ETF\" 等），如果不传则抓取全网最新。\n   ```bash\n   python3 /home/liwu/digital_twin/Skills/nlp-sentiment/scripts/fetch_sentiment.py [可选: \"查询词\"]\n   ```\n2. **分析结果**：\n   脚本会自动生成 Alpha 因子，并将完整的研报存入 `L1 原始事件层`（`/home/liwu/digital_twin/Inbox/`）。你可以在输出中直接读取 Alpha 因子的数值与最近驱动事件。\n3. **输出融合研判**：\n   将计算出的 `Alpha Factor` 作为情绪偏移项，辅助 L3 认知中心修正最终的综合胜率。如果 Alpha 极度偏离 0，说明市场处于极度 Fomo 或恐慌。\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 2,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "MEDIUM": 1,
+      "LOW": 0
+    },
+    "by_pattern": {
+      "E2": 1,
+      "P9": 1
+    },
+    "by_kill_chain_phase": {
+      "cred_access": 2
+    },
+    "rule_ids_hit": [
+      "E2",
+      "P9"
+    ],
+    "files_scanned_count": 2
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Partial-Risk",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 2
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "cred_access"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 16,
+    "verdict": "SUSPICIOUS",
+    "sub_scores": {
+      "S_static": 0.1375,
+      "S_static_raw": 0.1375,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "verdict floor #2: P9 硬编码凭据 ×1 处未降级 — OpenAI/JWT/AWS/DB-URL/自定义 token 字面",
+      "分数与判定对齐: SUSPICIOUS 区间下限 15, composite_score 5.95 -> 16"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    },
+    "composite_score_pre_align": 5.95
+  },
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\fetch_sentiment.py",
+      "line": 9,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.environ.get(\"OPENNEWS_TOKEN",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "   6 | from datetime import datetime\n   7 | \n   8 | # API Token (User provided for opennews-mcp)\n»  9 | TOKEN = os.environ.get(\"OPENNEWS_TOKEN\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkM …\n  10 | \n  11 | def fetch_news(query=\"\"):\n  12 |     url = \"https://ai.6551.io/open/news_search\"",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "TOKEN = os.environ.get(\"OPENNEWS_TOKEN\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkMzUwZDQ3ZTlhYiIsImlhd",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P9",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\fetch_sentiment.py",
+      "line": 9,
+      "pattern": "\\beyJ[A-Za-z0-9_-]+\\.eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\b",
+      "matched_text": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkMzU",
+      "description": "Hardcoded credential literal found in skill source or SKILL.md — matches OpenAI / Anthropic / GitHub PAT / AWS / JWT / private key / DB connection-string-with-password / hardcoded password field. Aligns with Snyk audit and QAX commercial-scanner SECRET_* taxonomy. Distinct from E2 which catches reading env vars: P9 catches literal credentials baked into the package.",
+      "confidence": 0.92,
+      "context": "   6 | from datetime import datetime\n   7 | \n   8 | # API Token (User provided for opennews-mcp)\n»  9 | TOKEN = os.environ.get(\"OPENNEWS_TOKEN\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkM …\n  10 | \n  11 | def fetch_news(query=\"\"):\n  12 |     url = \"https://ai.6551.io/open/news_search\"",
+      "original_severity": "HIGH",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "TOKEN = os.environ.get(\"OPENNEWS_TOKEN\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkMzUwZDQ3ZTlhYiIsImlhd",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

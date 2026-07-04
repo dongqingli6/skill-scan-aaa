@@ -1,0 +1,110 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_pool\\skills\\canvas-design",
+  "skill_name": "canvas-design",
+  "files_scanned": [
+    "canvas-fonts\\ArsenalSC-OFL.txt",
+    "canvas-fonts\\BigShoulders-OFL.txt",
+    "canvas-fonts\\Boldonse-OFL.txt",
+    "canvas-fonts\\BricolageGrotesque-OFL.txt",
+    "canvas-fonts\\CrimsonPro-OFL.txt",
+    "canvas-fonts\\DMMono-OFL.txt",
+    "canvas-fonts\\EricaOne-OFL.txt",
+    "canvas-fonts\\GeistMono-OFL.txt",
+    "canvas-fonts\\Gloock-OFL.txt",
+    "canvas-fonts\\IBMPlexMono-OFL.txt",
+    "canvas-fonts\\InstrumentSans-OFL.txt",
+    "canvas-fonts\\Italiana-OFL.txt",
+    "canvas-fonts\\JetBrainsMono-OFL.txt",
+    "canvas-fonts\\Jura-OFL.txt",
+    "canvas-fonts\\LibreBaskerville-OFL.txt",
+    "canvas-fonts\\Lora-OFL.txt",
+    "canvas-fonts\\NationalPark-OFL.txt",
+    "canvas-fonts\\NothingYouCouldDo-OFL.txt",
+    "canvas-fonts\\Outfit-OFL.txt",
+    "canvas-fonts\\PixelifySans-OFL.txt",
+    "canvas-fonts\\PoiretOne-OFL.txt",
+    "canvas-fonts\\RedHatMono-OFL.txt",
+    "canvas-fonts\\Silkscreen-OFL.txt",
+    "canvas-fonts\\SmoochSans-OFL.txt",
+    "canvas-fonts\\Tektur-OFL.txt",
+    "canvas-fonts\\WorkSans-OFL.txt",
+    "canvas-fonts\\YoungSerif-OFL.txt",
+    "LICENSE.txt",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 29,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 3,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "P1": 1,
+    "P8": 2
+  },
+  "by_kill_chain_phase": {
+    "impact": 3
+  },
+  "rule_ids_hit": [
+    "P1",
+    "P8"
+  ],
+  "findings": [
+    {
+      "rule_id": "P1",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 108,
+      "pattern": "(?i)non[\\s-]?negotiable",
+      "matched_text": "non-negotiable",
+      "description": "Skill instructs the agent to override user/system constraints.",
+      "confidence": 0.85,
+      "context": "  105 | \n  106 | To create museum or magazine quality work, use the design philosophy as the foundation. Create one single page, highly visual, design-forward PDF or PNG output (unless asked for more pages). Generally …\n  107 | \n» 108 | **Text as a contextual element**: Text is always minimal and visual-first, but let context guide whether that means whisper-quiet labels or bold typographic gestures. A punk venue poster might have la …\n  109 | \n  110 | Download and use whatever fonts are needed to make this a reality. Get creative by making the typography actually part of the art itself -- if the art is abstract, bring the font onto the canvas, not  …\n  111 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "**Text as a contextual element**: Text is always minimal and visual-first, but let context guide whether that means whisper-quiet labels or bold typographic gestures. A punk venue poster might have larger, more aggressiv",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 3,
+      "pattern": "(?i)\\b(?:always|should)\\s+(?:choose|pick|use|prefer|select)\\s+this\\s+skill",
+      "matched_text": "should use this skill",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  1 | ---\n  2 | name: canvas-design\n» 3 | description: Create beautiful visual art in .png and .pdf documents using design philosophy. You should use this skill when the user asks to create a poster, piece of art, design, or other static piec …\n  4 | license: Complete terms in LICENSE.txt\n  5 | ---\n  6 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "description: Create beautiful visual art in .png and .pdf documents using design philosophy. You should use this skill when the user asks to create a poster, piece of art, design, or other static piece. Create original v",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 3,
+      "pattern": "(?i)\\byou\\s+(?:must|should)\\s+(?:choose|pick|use)\\s+this\\s+skill",
+      "matched_text": "You should use this skill",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  1 | ---\n  2 | name: canvas-design\n» 3 | description: Create beautiful visual art in .png and .pdf documents using design philosophy. You should use this skill when the user asks to create a poster, piece of art, design, or other static piec …\n  4 | license: Complete terms in LICENSE.txt\n  5 | ---\n  6 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "description: Create beautiful visual art in .png and .pdf documents using design philosophy. You should use this skill when the user asks to create a poster, piece of art, design, or other static piece. Create original v",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

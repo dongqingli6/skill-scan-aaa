@@ -1,0 +1,67 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_pool\\skills\\webapp-testing",
+  "skill_name": "webapp-testing",
+  "files_scanned": [
+    "examples\\console_logging.py",
+    "examples\\element_discovery.py",
+    "examples\\static_html_automation.py",
+    "LICENSE.txt",
+    "scripts\\with_server.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 6,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 2,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "SC1": 2
+  },
+  "by_kill_chain_phase": {
+    "execution": 2
+  },
+  "rule_ids_hit": [
+    "SC1"
+  ],
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\with_server.py",
+      "line": 69,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.Popen",
+      "description": "AST: 调用 subprocess.Popen",
+      "confidence": 0.92,
+      "context": "  66 |             print(f\"Starting server {i+1}/{len(servers)}: {server['cmd']}\")\n  67 | \n  68 |             # Use shell=True to support commands with cd and &&\n» 69 |             process = subprocess.Popen(\n  70 |                 server['cmd'],\n  71 |                 shell=True,\n  72 |                 stdout=subprocess.PIPE,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "process = subprocess.Popen(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\with_server.py",
+      "line": 88,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  85 | \n  86 |         # Run the command\n  87 |         print(f\"Running: {' '.join(args.command)}\\n\")\n» 88 |         result = subprocess.run(args.command)\n  89 |         sys.exit(result.returncode)\n  90 | \n  91 |     finally:",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "result = subprocess.run(args.command)",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

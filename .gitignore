@@ -26,3 +26,20 @@ analysis_results/**/real_skill*
 analysis_results/**/unredacted*
 .DS_Store
 Thumbs.db
+
+# Personal deliverables & local settings
+.claude/settings.local.json
+scan_deliverable_*.zip
+*.pdf
+分类扫描数据统计报告.pdf
+作品报告书_修改建议清单.pdf
+全体扫描数据统计报告.pdf
+nohup.out
+
+
+# Large binary logs (recreate on scan)
+analysis_results/asg/*/vm_ssh_logs/network.pcap
+analysis_results/asg/*/vm_ssh_logs/strace.log
+
+# Nested external skill repos (don't recurse)
+asg/external_samples/*/.git/

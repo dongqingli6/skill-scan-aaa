@@ -341,7 +341,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
       <header class="card-hero">
         <div class="hero-left">
           <h2 class="skill-title">frontend-design</h2>
-          <div class="meta-chips">  <span class="chip chip-archetype" style="background:#22c55e;">分类: 良性</span>  <span class="chip">复杂度: L0 · None</span>  <span class="chip">文件: 2 · 14.5 KB</span>  <span class="chip">扫描: 2026-05-23 14:36:32</span></div>
+          <div class="meta-chips">  <span class="chip chip-archetype" style="background:#22c55e;">分类: 良性</span>  <span class="chip">复杂度: L0 · None</span>  <span class="chip">文件: 2 · 18.2 KB</span>  <span class="chip">扫描: 2026-06-12 07:30:34</span></div>
         </div>
         <div class="hero-right">
           <div class="verdict-big" style="border-color:#22c55e;color:#22c55e;">
@@ -353,8 +353,8 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
       </header>
 
       <div class="score-strip">
-        <div class="score-num" style="color:#22c55e;">8.5<span class="score-max">/100</span></div>
-        <div class="score-bar"><div class="score-fill" style="width:8.5%;background:#22c55e;"></div></div>
+        <div class="score-num" style="color:#22c55e;">0.0<span class="score-max">/100</span></div>
+        <div class="score-bar"><div class="score-fill" style="width:0%;background:#22c55e;"></div></div>
         <div class="score-cap">综合风险评分</div>
       </div>
 
@@ -382,30 +382,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
 
       <section class="card-section">
         <h3 class="cn-title">蜜罐检测</h3>
-        
-    <div class="honeypot-status">部署: <span class="hp-clean">未部署</span> · 触碰: <span class="hp-clean">未触碰</span> · 泄露: <span class="hp-clean">未泄露</span></div>
-    <table class="findings">
-      <tbody>
-        <tr><td>部署方式</td><td><code>None</code></td></tr>
-        <tr><td>蜜罐 bundle ID</td><td><code>frontend-design_75TPYM02UZ_GJ07MUYR</code></td></tr>
-        <tr><td>生成假凭证文件数</td><td>6</td></tr>
-        <tr><td>canary marker 数</td><td>7</td></tr>
-      </tbody>
-    </table>
-    <details>
-      <summary>展开假凭证 marker（已脱敏）</summary>
-      <table class="findings"><tbody><tr><td>ANTHROPIC</td><td><code>ANTHROPIC:&lt;redacted:8a0611e9a1&gt;</code></td></tr><tr><td>AWS</td><td><code>AWS:&lt;redacted:79e3915365&gt;</code></td></tr><tr><td>AWS_SECRET</td><td><code>AWS_SECRET:&lt;redacted:2296ebedc6&gt;</code></td></tr><tr><td>CODEX</td><td><code>CODEX:&lt;redacted:3a725fe849&gt;</code></td></tr><tr><td>GITHUB</td><td><code>GITHUB:&lt;redacted:b46beedb30&gt;</code></td></tr><tr><td>OPENAI</td><td><code>OPENAI:&lt;redacted:b1ecc70c5c&gt;</code></td></tr><tr><td>SSH</td><td><code>SSH:&lt;redacted:16ec2275bc&gt;</code></td></tr></tbody></table>
-    </details>
-    <details>
-      <summary>展开被触碰的蜜罐文件</summary>
-      <div class="empty">No touched honeypot files.</div>
-    </details>
-    <details>
-      <summary>展开泄露源头</summary>
-      <div class="empty">No leak sources.</div>
-    </details>
-    
-    
+        <div class="empty">蜜罐未启用。</div>
       </section>
 
       <section class="card-section">
@@ -426,7 +403,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
         <h3 class="cn-title">目录结构 <span class="cn-sub">展开查看每个文件内容</span></h3>
         
     <section>
-      <h4>Skill Contents — what was scanned (2 files, 14.5 KB)</h4>
+      <h4>Skill Contents — what was scanned (2 files, 18.2 KB)</h4>
       <div class="file-list"><details><summary><code>LICENSE.txt</code> <span class="muted">(10.1 KB, text)</span></summary><pre class="claude-preview file-preview">
                                  Apache License
                            Version 2.0, January 2004
@@ -501,46 +478,37 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
       Work and such Derivative Works in Source or Object form.
 
    3. Grant of Patent License. Subject to the terms and conditions of
-      this</pre><div class="muted">…(content truncated)</div></details><details open><summary><code>SKILL.md</code> <span class="muted">(4.4 KB, text)</span></summary><pre class="claude-preview file-preview">---
+      this</pre><div class="muted">…(content truncated)</div></details><details open><summary><code>SKILL.md</code> <span class="muted">(8.1 KB, text)</span></summary><pre class="claude-preview file-preview">---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.
+description: Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don&#x27;t read as templated defaults.
 license: Complete terms in LICENSE.txt
 ---
 
-This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic &quot;AI slop&quot; aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
+# Frontend Design
 
-The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
+Approach this as the design lead at a small studio known for giving every client a visual identity that could not be mistaken for anyone else&#x27;s. This client has already rejected proposals that felt templated, and is paying for a distinctive point of view: make deliberate, opinionated choices about palette, typography, and layout that are specific to this brief, and take one real aesthetic risk you can justify.
 
-## Design Thinking
+## Ground it in the subject
 
-Before coding, understand the context and commit to a BOLD aesthetic direction:
-- **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
-- **Constraints**: Technical requirements (framework, performance, accessibility).
-- **Differentiation**: What makes this UNFORGETTABLE? What&#x27;s the one thing someone will remember?
+If the brief does not pin down what the product or subject is, pin it yourself before designing: name one concrete subject, its audience, and the page&#x27;s single job, and state your choice. If there&#x27;s any information in your memory about the human&#x27;s preferences, context about what they&#x27;re building, or designs you&#x27;ve made before – use that as a hint. The subject&#x27;s own world, its materials, instruments, artifacts, and vernacular, is where distinctive choices come from. Build with the brief&#x27;s real content and subject matter throughout.
 
-**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work - the key is intentionality, not intensity.
+## Design principles
 
-Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
-- Production-grade and functional
-- Visually striking and memorable
-- Cohesive with a clear aesthetic point-of-view
-- Meticulously refined in every detail
+For web designs, the hero is a thesis. Open with the most characteristic thing in the subject&#x27;s world, in whatever form makes sense for it: a headline, an image, an animation, a live demo, an interactive moment. Be deliberate with your choice: a big number with a small label, supporting stats, and a gradient accent is the template answer, only use if that&#x27;s truly the best option.
 
-## Frontend Aesthetics Guidelines
+Typography carries the personality of the page. Pair the display and body faces deliberately, not the same families you would reach for on any other project, and set a clear type scale with intentional weights, widths, and spacing. Make the type treatment itself a memorable part of the design, not a neutral delivery vehicle for the content.
 
-Focus on:
-- **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend&#x27;s aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
-- **Color &amp; Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
-- **Motion**: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
-- **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
-- **Backgrounds &amp; Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
+Structure is information. Structural devices, numbering, eyebrows, dividers, labels, should encode something true about the content, not decorate it. Many generic designs use numbered markers (01 / 02 / 03), but that&#x27;s only appropriate if the content actually is a sequence - like a real process or a typed timeline where order carries information the reader needs. Question if choices like numbered markers actually make sense before incorporating them.
 
-NEVER use generic AI-generated aesthetics like overused font families (Inter, Roboto, Arial, system fonts), cliched color schemes (particularly purple gradients on white backgrounds), predictable layouts and component patterns, and cookie-cutter design that lacks context-specific character.
+Leverage motion deliberately. Think about where and if animation can serve the subject: a page-load sequence, a scroll-triggered reveal, hover micro-interactions, ambient atmosphere. An orchestrated moment usually lands harder than scattered effects; choose what the direction calls for. However, sometimes less is more, and extra animation contributes to the feeling that the design is AI-generated.
 
-Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics. NEVER converge on common choices (Space Grotesk, for example) across generations.
+Match complexity to the vision. Maximalist directions need elaborate execution; minimal directions need precision in spacing, type, and detail. Elegance is executing the chosen vision well.
 
-**IMPORTANT**: Match implementation complexity to the aesthetic v</pre><div class="muted">…(content truncated)</div></details></div>
+Consider written content carefully. Often a design brief may not contain real content, and it&#x27;s up to you to come up with copy. Copy can make a design feel as templated as the design itself. See the below section on writing for more guidance.
+
+## Process: brainstorm, explore, plan, critique, build, critique again
+
+For calibration: AI-generated design right now clusters around three looks: (1) a warm cream background (near #F4F1EA) with a high-contrast serif display and a terracotta accent; (2) a near-black background with a single bright acid-green or vermilion accent; (3) a broadsheet-style layout with hairline rules, zero border-radius, and dense newspaper-like columns. All three are legitimate for some briefs, but they are defaults rather than choices, and they appear regardless of subject. Where the brief pins down a visual direction, follow it exactly — the brief&#x27;s own words always win, includi</pre><div class="muted">…(content truncated)</div></details></div>
     </section>
     
       </section>
@@ -550,7 +518,7 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
         
     <table class="formula">
       <thead><tr><th>组件</th><th>符号</th><th>子分值</th><th>权重</th><th>贡献</th></tr></thead>
-      <tbody><tr><td>Static rule severity</td><td><code>S_static</code></td><td>0.000</td><td>0.22</td><td><strong>0.00</strong></td></tr><tr><td>Attack chain hit</td><td><code>S_chain</code></td><td>0.000</td><td>0.18</td><td><strong>0.00</strong></td></tr><tr><td>Sophistication level</td><td><code>S_soph</code></td><td>0.000</td><td>0.10</td><td><strong>0.00</strong></td></tr><tr><td>Kill-chain phase coverage</td><td><code>S_phases</code></td><td>0.000</td><td>0.08</td><td><strong>0.00</strong></td></tr><tr><td>Agent resilience (1 - this = risk)</td><td><code>S_resilience</code></td><td>0.500</td><td>0.17</td><td><strong>8.50</strong></td></tr><tr><td>Honeypot exfiltrated</td><td><code>S_honeypot</code></td><td>0.000</td><td>0.10</td><td><strong>0.00</strong></td></tr><tr><td>Runtime evidence</td><td><code>S_runtime</code></td><td>0.000</td><td>0.15</td><td><strong>0.00</strong></td></tr></tbody>
+      <tbody><tr><td>Static rule severity</td><td><code>S_static</code></td><td>0.000</td><td>0.18</td><td><strong>0.00</strong></td></tr><tr><td>Attack chain hit</td><td><code>S_chain</code></td><td>0.000</td><td>0.15</td><td><strong>0.00</strong></td></tr><tr><td>Sophistication level</td><td><code>S_soph</code></td><td>0.000</td><td>0.07</td><td><strong>0.00</strong></td></tr><tr><td>Kill-chain phase coverage</td><td><code>S_phases</code></td><td>0.000</td><td>0.07</td><td><strong>0.00</strong></td></tr><tr><td>Agent resilience (1 - this = risk)</td><td><code>S_resilience</code></td><td>1.000</td><td>0.10</td><td><strong>0.00</strong></td></tr><tr><td>Honeypot exfiltrated</td><td><code>S_honeypot</code></td><td>0.000</td><td>0.08</td><td><strong>0.00</strong></td></tr><tr><td>Runtime evidence</td><td><code>S_runtime</code></td><td>0.000</td><td>0.10</td><td><strong>0.00</strong></td></tr></tbody>
     </table>
     
       </details>

@@ -1,0 +1,52 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-skill-development",
+  "skill_name": "benign-skill-development",
+  "files_scanned": [
+    "references\\contribution-examples.md",
+    "references\\pr-workflow.md",
+    "references\\progressive-disclosure-research.md",
+    "references\\recognizing-learnings.md",
+    "references\\validation-criteria.md",
+    "scripts\\init_skill.py",
+    "scripts\\package_skill.py",
+    "scripts\\quick_validate.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 9,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 1,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "P9": 1
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 1
+  },
+  "rule_ids_hit": [
+    "P9"
+  ],
+  "findings": [
+    {
+      "rule_id": "P9",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "references\\validation-criteria.md",
+      "line": 221,
+      "pattern": "(?i)(?:postgres|postgresql|mysql|mongodb)(?:\\+\\w+)?://[^/\\s:]+:[^@\\s]+@[\\w.-]+",
+      "matched_text": "postgres://user:pass@db.acme.com",
+      "description": "Hardcoded credential literal found in skill source or SKILL.md — matches OpenAI / Anthropic / GitHub PAT / AWS / JWT / private key / DB connection-string-with-password / hardcoded password field. Aligns with Snyk audit and QAX commercial-scanner SECRET_* taxonomy. Distinct from E2 which catches reading env vars: P9 catches literal credentials baked into the package.",
+      "confidence": 0.92,
+      "context": "  218 | **Example 1: Project configuration**\n  219 | ```\n  220 | Skill: \"How to connect to our company database\"\n» 221 | Content: \"Use postgres://user:pass@db.acme.com:5432/production\"\n  222 | Why bad: Only applies to one company's infrastructure\n  223 | ```\n  224 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "Content: \"Use postgres://user:pass@db.acme.com:5432/production\"",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

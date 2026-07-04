@@ -1,0 +1,49 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-internal-comms",
+  "skill_name": "benign-internal-comms",
+  "files_scanned": [
+    "examples\\3p-updates.md",
+    "examples\\company-newsletter.md",
+    "examples\\faq-answers.md",
+    "examples\\general-comms.md",
+    "LICENSE.txt",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 6,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 1,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "P8": 1
+  },
+  "by_kill_chain_phase": {
+    "impact": 1
+  },
+  "rule_ids_hit": [
+    "P8"
+  ],
+  "findings": [
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 3,
+      "pattern": "(?i)\\b(?:always|should)\\s+(?:choose|pick|use|prefer|select)\\s+this\\s+skill",
+      "matched_text": "should use this skill",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  1 | ---\n  2 | name: internal-comms\n» 3 | description: A set of resources to help me write all kinds of internal communications, using the formats that my company likes to use. Claude should use this skill whenever asked to write some sort of …\n  4 | license: Complete terms in LICENSE.txt\n  5 | ---\n  6 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "description: A set of resources to help me write all kinds of internal communications, using the formats that my company likes to use. Claude should use this skill whenever asked to write some sort of internal communicat",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

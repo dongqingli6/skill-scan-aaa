@@ -1,0 +1,122 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\stay-alive",
+  "skill_name": "stay-alive",
+  "files_scanned": [
+    "_meta.json",
+    "agents\\openai.yaml",
+    "sample_meta.json",
+    "skill-card.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 5,
+  "total_findings": 5,
+  "by_severity": {
+    "CRITICAL": 3,
+    "HIGH": 0,
+    "MEDIUM": 2,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "P6": 3,
+    "P8": 2
+  },
+  "by_kill_chain_phase": {
+    "impact": 5
+  },
+  "rule_ids_hit": [
+    "P6",
+    "P8"
+  ],
+  "findings": [
+    {
+      "rule_id": "P6",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 399,
+      "pattern": "systemd.*service",
+      "matched_text": "systemd installer generates the same nine service",
+      "description": "Skill instructs persistent modification to system startup.",
+      "confidence": 0.85,
+      "context": "  396 | git diff --check\n  397 | ```\n  398 | \n» 399 | The systemd installer generates the same nine services/timers for every\n  400 | agent: light, social, community, reflect, integrate, event-wakeup,\n  401 | botland-watchdog, local-governance, and service-recovery. Main cycle services use:\n  402 | ",
+      "original_severity": "CRITICAL",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "The systemd installer generates the same nine services/timers for every",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P6",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 608,
+      "pattern": "systemd.*service",
+      "matched_text": "systemd-runtime-verify.mjs` is read-only. It uses `systemctl --user show` to verify runtime state for Stay-Alive services and timers. Missing local units are re",
+      "description": "Skill instructs persistent modification to system startup.",
+      "confidence": 0.85,
+      "context": "  605 | \n  606 | `systemd-unit-verify.mjs` is read-only. It verifies local user systemd light/reflect units, including `ExecStartPre=preflight.mjs --no-checkpoint`, runner `--dry-run --write-daemon-state`, and expecte …\n  607 | \n» 608 | `systemd-runtime-verify.mjs` is read-only. It uses `systemctl --user show` to verify runtime state for Stay-Alive services and timers. Missing local units are review warnings by default for developmen …\n  609 | \n  610 | Runtime recovery v1: `failed-service-packet.mjs` is read-only and builds a failure packet from `systemd-runtime-verify`, recent user journal lines, and matching recent run artifacts. `inspect-service- …\n  611 | ",
+      "original_severity": "CRITICAL",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "`systemd-runtime-verify.mjs` is read-only. It uses `systemctl --user show` to verify runtime state for Stay-Alive services and timers. Missing local units are review warnings by default for development machines; `--requi",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P6",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 610,
+      "pattern": "systemd.*service",
+      "matched_text": "systemd-runtime-verify`, recent user journal lines, and matching recent run artifacts. `inspect-service-failure.mjs` writes a local-only `service_failure_inspec",
+      "description": "Skill instructs persistent modification to system startup.",
+      "confidence": 0.85,
+      "context": "  607 | \n  608 | `systemd-runtime-verify.mjs` is read-only. It uses `systemctl --user show` to verify runtime state for Stay-Alive services and timers. Missing local units are review warnings by default for developmen …\n  609 | \n» 610 | Runtime recovery v1: `failed-service-packet.mjs` is read-only and builds a failure packet from `systemd-runtime-verify`, recent user journal lines, and matching recent run artifacts. `inspect-service- …\n  611 | \n  612 | `checkpoint.mjs` embeds `control_audit`, `life_state_verification`, `action_verification`, `draft_state_verification`, `run_verification`, `daemon_state_verification`, `artifact_inventory`, `runtime_s …\n  613 | ",
+      "original_severity": "CRITICAL",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "Runtime recovery v1: `failed-service-packet.mjs` is read-only and builds a failure packet from `systemd-runtime-verify`, recent user journal lines, and matching recent run artifacts. `inspect-service-failure.mjs` writes ",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 531,
+      "pattern": "(?i)\\bdo\\s+not\\s+fork\\s+",
+      "matched_text": "Do not fork ",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  528 | \n  529 | `retrieve-memory.mjs` is the read path for synced long-term memories. It resolves the same backend, performs a read-only search, and returns relevant memories without writing a ledger. `run-cycle.mjs` …\n  530 | \n» 531 | Memory backend compatibility rule: core Stay-Alive cycle/proposal logic must depend on the Memory Contract, not on LanceDB or any specific memory plugin. `auto` selects `memory-pro-cli` when OpenClaw  …\n  532 | \n  533 | BotLand compatibility rule: core Stay-Alive cycle/action logic must depend on the BotLand Contract, not scattered raw CLI command assumptions. `botland-adapter/contract.mjs` defines stable intents suc …\n  534 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "Memory backend compatibility rule: core Stay-Alive cycle/proposal logic must depend on the Memory Contract, not on LanceDB or any specific memory plugin. `auto` selects `memory-pro-cli` when OpenClaw `memory-lancedb-pro`",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 535,
+      "pattern": "(?i)\\bdo\\s+not\\s+fork\\s+",
+      "matched_text": "Do not fork ",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  532 | \n  533 | BotLand compatibility rule: core Stay-Alive cycle/action logic must depend on the BotLand Contract, not scattered raw CLI command assumptions. `botland-adapter/contract.mjs` defines stable intents suc …\n  534 | \n» 535 | If BotLand server or CLI changes, update the adapter driver/capability probe first. Do not fork `run-cycle.mjs`, bypass `apply-action.mjs`, or call raw write commands from unattended cycles.\n  536 | \n  537 | Commitment continuity v1: `run-cycle.mjs` can emit `commitment_updates[]` from commitment-like direct messages, reflect review snapshots, and lifecycle review candidates for formal commitments. `revie …\n  538 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "If BotLand server or CLI changes, update the adapter driver/capability probe first. Do not fork `run-cycle.mjs`, bypass `apply-action.mjs`, or call raw write commands from unattended cycles.",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

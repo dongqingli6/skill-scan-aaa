@@ -1,0 +1,23 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\letta\\creating-letta-code-channels",
+  "skill_name": "creating-letta-code-channels",
+  "files_scanned": [
+    "references\\first-party-channels.md",
+    "references\\testing.md",
+    "references\\user-plugins.md",
+    "scripts\\scaffold-user-channel-plugin.ts",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 5,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

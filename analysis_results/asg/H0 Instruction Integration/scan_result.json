@@ -1,0 +1,21 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\h0-instruction-integration\\H0 Instruction Integration",
+  "skill_name": "H0 Instruction Integration",
+  "files_scanned": [
+    "references\\instruction-targets.md",
+    "scripts\\upsert_h0_block.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

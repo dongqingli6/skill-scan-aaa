@@ -137,6 +137,44 @@
       font-family: ui-monospace, Consolas, monospace;
     }
     .score-big-max { font-size: 16px; opacity: 0.7; }
+
+    /* 4 模式状态总览栅格 */
+    .mo-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    }
+    @media (max-width: 900px) { .mo-grid { grid-template-columns: repeat(2, 1fr); } }
+    .mo-card {
+      padding: 14px 16px; border-radius: 8px; background: #0a1428;
+      border: 1px solid #1e293b; display: flex; flex-direction: column; gap: 10px;
+    }
+    .mo-card.mo-warn { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.04); }
+    .mo-card.mo-mid  { border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.04); }
+    .mo-card.mo-ok   { border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.04); }
+    .mo-card.mo-off  { border-color: #1e293b; background: #050b18; opacity: 0.65; }
+    .mo-head { display: flex; align-items: center; gap: 10px; }
+    .mo-icon { font-size: 22px; }
+    .mo-titles { display: flex; flex-direction: column; }
+    .mo-title { color: #e2e8f0; font-size: 14px; font-weight: 700; }
+    .mo-en { color: #64748b; font-size: 10px; letter-spacing: 0.5px; }
+    .mo-state {
+      display: inline-block; padding: 3px 9px; border-radius: 3px;
+      border: 1.5px solid; font-size: 12px; font-weight: 600; align-self: flex-start;
+    }
+    .mo-summary { color: #cbd5e1; font-size: 12.5px; line-height: 1.55; }
+    .mo-off .mo-summary { color: #64748b; }
+    .mo-action {
+      display: inline-block; margin-top: auto; padding: 6px 12px;
+      border-radius: 4px; text-decoration: none; font-size: 12.5px; font-weight: 600;
+      border: 1px solid; transition: all 0.15s;
+    }
+    .mo-action-off  { border-color: #38bdf8; color: #38bdf8; background: rgba(56,189,248,0.08); }
+    .mo-action-off:hover  { background: rgba(56,189,248,0.18); }
+    .mo-action-ok   { border-color: #22c55e; color: #22c55e; }
+    .mo-action-mid  { border-color: #fbbf24; color: #fbbf24; }
+    .mo-action-warn { border-color: #ef4444; color: #ef4444; }
+    .mo-action-ok:hover, .mo-action-mid:hover, .mo-action-warn:hover {
+      background: rgba(148,163,184,0.06);
+    }
     .score-bar-wrap { flex: 1; min-width: 260px; }
     .score-bar-track {
       position: relative; height: 12px; border-radius: 6px; overflow: hidden;
@@ -423,6 +461,66 @@
     }
     .dyn-flow-note strong { color: #fcd34d; }
 
+    /* Claude 自述运行结果 — Mode-3 的核心证据 */
+    .cse-block {
+      background: linear-gradient(135deg, #1a0f2e 0%, #0e1426 100%);
+      border: 1.5px solid #7c3aed; border-radius: 10px;
+      padding: 16px 20px; margin: 14px 0;
+    }
+    .cse-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .cse-icon { font-size: 20px; }
+    .cse-title { color: #c4b5fd; font-size: 16px; font-weight: 700; flex: 1; letter-spacing: 0.3px; }
+    .cse-source { color: #64748b; font-size: 11px; border: 1px solid #334155; padding: 2px 8px; border-radius: 3px; background: #0e1a2f; }
+    .cse-hints { padding: 8px 0; display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .cse-hint { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1.5px solid; }
+    .cse-safe { color: #4ade80; border-color: #22c55e; background: rgba(34,197,94,0.1); }
+    .cse-warn { color: #fcd34d; border-color: #fbbf24; background: rgba(251,191,36,0.1); }
+    .cse-mal  { color: #fca5a5; border-color: #ef4444; background: rgba(239,68,68,0.1); }
+    .cse-body {
+      background: #07101f; border-radius: 6px; padding: 14px 16px;
+      color: #e2e8f0; font-size: 13.5px; line-height: 1.8;
+      white-space: pre-wrap; word-wrap: break-word; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-height: 600px; overflow-y: auto;
+    }
+    .cse-body code { background: #1e293b; padding: 1px 6px; border-radius: 3px; color: #fbbf24; font-family: Consolas, Menlo, monospace; font-size: 12.5px; }
+    .cse-h { color: #c4b5fd; font-size: 14.5px; font-weight: 700; display: block; margin: 10px 0 4px; }
+    .cse-note {
+      margin-top: 10px; padding: 10px 14px; font-size: 12.5px; color: #cbd5e1;
+      background: rgba(124,58,237,0.08); border-left: 3px solid #7c3aed; border-radius: 4px;
+    }
+    .cse-note strong { color: #c4b5fd; }
+
+    /* Anthropic 平台拒绝 — floor #5 专用渲染 */
+    .anthropic-refusal {
+      background: linear-gradient(135deg, #2a0a0a 0%, #1f0e0e 100%);
+      border: 2px solid #ef4444; border-radius: 10px;
+      padding: 16px 20px; margin: 14px 0;
+    }
+    .ar-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .ar-icon { font-size: 24px; }
+    .ar-title { color: #fca5a5; font-size: 17px; font-weight: 800; flex: 1; }
+    .ar-badge {
+      background: #ef4444; color: #fff; padding: 4px 12px; border-radius: 4px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+    }
+    .ar-explain {
+      color: #fecaca; font-size: 13.5px; line-height: 1.85;
+      background: rgba(0,0,0,0.25); padding: 12px 16px; border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    .ar-explain strong { color: #fff; }
+    .ar-explain code {
+      background: #1e0d0d; padding: 1px 8px; border-radius: 3px;
+      color: #fbbf24; font-family: Consolas, Menlo, monospace; font-size: 12px;
+    }
+    .ar-excerpt { color: #94a3b8; font-size: 12px; }
+    .ar-excerpt strong { color: #fca5a5; }
+    .ar-excerpt pre {
+      margin-top: 6px; padding: 10px 12px; background: #0a0303; border-radius: 4px;
+      color: #cbd5e1; font-size: 11.5px; line-height: 1.5; white-space: pre-wrap;
+      word-wrap: break-word; max-height: 200px; overflow-y: auto;
+    }
+
     /* 脚本输出 + syscall 证据 block */
     .dyn-block {
       background: #07101f; border: 1px solid #1e293b; border-radius: 10px;
@@ -452,6 +550,36 @@
     }
     .syscall-tag.read { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid #ef4444; }
     .syscall-tag.conn { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid #f59e0b; }
+    .syscall-tag.conn-real { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid #ef4444; }
+    .syscall-tag.conn-infra { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid #64748b; }
+    .dyn-infra-note {
+      margin: 0 0 12px 0; padding: 10px 14px; font-size: 13px;
+      color: #cbd5e1; background: rgba(100,116,139,0.1);
+      border-left: 3px solid #64748b; border-radius: 6px;
+    }
+    .dyn-infra-note strong { color: #cbd5e1; }
+    .dyn-infra-note code { background: #1e293b; padding: 1px 6px; border-radius: 3px; color: #94a3b8; font-size: 12px; }
+
+    /* 敏感路径明细 */
+    .dyn-paths-section { margin-bottom: 12px; }
+    .dyn-paths-section:last-of-type { margin-bottom: 0; }
+    .dyn-paths-head {
+      font-size: 13px; color: #cbd5e1; margin-bottom: 6px;
+    }
+    .dyn-paths-head strong { color: #fca5a5; }
+    .dyn-paths-list {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .dyn-paths-list li {
+      background: #0a1424; padding: 6px 10px; border-radius: 5px;
+      border-left: 3px solid #ef4444;
+    }
+    .dyn-paths-list.writes li { border-left-color: #f59e0b; }
+    .dyn-paths-list li code {
+      background: transparent; color: #cbd5e1; font-size: 12px;
+      font-family: ui-monospace, Consolas, monospace; word-break: break-all;
+    }
 
     .empty-note { color: #64748b; font-style: italic; padding: 12px 0; }
     .muted { color: #64748b; }
@@ -469,6 +597,8 @@
     <nav class="topnav">
       <a class="nav-tab" href="/">扫描</a>
       <a class="nav-tab active" href="/results">扫描结果</a>
+      
+      <a class="nav-tab" href="/scr-bench">组合性风险</a>
       {{ public_badge }}
     </nav>
 
@@ -501,6 +631,14 @@
 
     <section class="panel">
       <div class="panel-head">
+        <span class="panel-icon">📊</span>
+        <h2 class="panel-title">扫描模式总览<span class="en">SCAN STATUS · 4 MODES</span></h2>
+      </div>
+      {{ mode_overview }}
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
         <span class="panel-icon">🛡</span>
         <h2 class="panel-title">风险类别检测<span class="en">17 ASG STATIC RULES</span></h2>
         <span class="panel-extra"><strong>{{ total_findings_label }}</strong></span>
@@ -508,7 +646,7 @@
       {{ category_grid }}
     </section>
 
-    <section class="panel">
+    <section class="panel" id="static-hits-panel">
       <div class="panel-head">
         <span class="panel-icon">🔬</span>
         <h2 class="panel-title">静态命中明细<span class="en">STATIC HITS · WITH CONTEXT</span></h2>
@@ -516,12 +654,20 @@
       {{ static_hits }}
     </section>
 
-    <section class="panel">
+    <section class="panel" id="ssd-panel">
       <div class="panel-head">
-        <span class="panel-icon">⚙️</span>
-        <h2 class="panel-title">动态执行详情<span class="en">DYNAMIC EXECUTION · VM DOCKER</span></h2>
+        <span class="panel-icon">🧠</span>
+        <h2 class="panel-title">AI 语义审计<span class="en">SEMANTIC AUDIT · 4-DIMENSION PARALLEL</span></h2>
       </div>
-      {{ dynamic_detail }}
+      {{ ssd_detail }}
+    </section>
+
+    <section class="panel" id="dynamic-panel-mode3">
+      <div class="panel-head">
+        <span class="panel-icon">🤖</span>
+        <h2 class="panel-title">Mode-3 动态执行（论文同款）<span class="en">MODE-3 · AGENT IN DOCKER · OPENCODE+DS / CLAUDE</span></h2>
+      </div>
+      {{ dynamic_detail_mode3 }}
     </section>
 
     <section class="panel">
@@ -530,14 +676,6 @@
         <h2 class="panel-title">目录结构<span class="en">FILE TREE</span></h2>
       </div>
       {{ file_tree }}
-    </section>
-
-    <section class="panel">
-      <div class="panel-head">
-        <span class="panel-icon">⚠️</span>
-        <h2 class="panel-title">风险评估<span class="en">RISK ASSESSMENT</span></h2>
-      </div>
-      {{ risks }}
     </section>
 
   </main>

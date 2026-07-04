@@ -1,0 +1,197 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:44.927044+00:00",
+  "skill_name": "linear",
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\linear",
+  "skill_contents": {
+    "file_count": 4,
+    "total_bytes": 22313,
+    "files": [
+      {
+        "path": "assets/linear-small.svg",
+        "size_bytes": 472,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/linear.png",
+        "size_bytes": 16604,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE",
+        "size_bytes": 773,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 4464,
+        "kind": "text",
+        "content_preview": "---\nname: linear-cli\ndescription: Manage Linear issues from the command line using the linear cli. This skill allows automating linear management.\n---\n\n# Linear CLI\n\nA CLI to manage Linear issues from the command line, with git and jj integration.\n\n## Prerequisites\n\nThe `linear` command must be available on PATH. To check:\n\n```bash\nlinear --version\n```\n\nIf not installed, follow the instructions at:\nhttps://github.com/schpet/linear-cli?tab=readme-ov-file#install\n\n## Best Practices for Markdown Content\n\nWhen working with issue descriptions or comment bodies that contain markdown, **always prefer using file-based flags** instead of passing content as command-line arguments:\n\n- Use `--description-file` for `issue create` and `issue update` commands\n- Use `--body-file` for `comment add` and `comment update` commands\n\n**Why use file-based flags:**\n\n- Ensures proper formatting in the Linear web UI\n- Avoids shell escaping issues with newlines and special characters\n- Prevents literal `\\n` sequences from appearing in markdown\n- Makes it easier to work with multi-line content\n\n**Example workflow:**\n\n```bash\n# Write markdown to a temporary file\ncat > /tmp/description.md <<'EOF'\n## Summary\n\n- First item\n- Second item\n\n## Details\n\nThis is a detailed description with proper formatting.\nEOF\n\n# Create issue using the file\nlinear issue create --title \"My Issue\" --description-file /tmp/description.md\n\n# Or for comments\nlinear issue comment add ENG-123 --body-file /tmp/comment.md\n```\n\n**Only use inline flags** (`--description`, `--body`) for simple, single-line content.\n\n## Available Commands\n\n```\nlinear auth               # Manage Linear authentication\nlinear issue              # Manage Linear issues\nlinear team               # Manage Linear teams\nlinear project            # Manage Linear projects\nlinear project-update     # Manage project status updates\nlinear cycle              # Manage Linear team cycles\nlinear milestone          # Manage Linear project milestones\nlinear initiative         # Manage Linear initiatives\nlinear initiative-update  # Manage initiative status updates (timeline posts)\nlinear label              # Manage Linear issue labels\nlinear document           # Manage Linear documents\nlinear config             # Interactively generate .linear.toml configuration\nlinear schema             # Print the GraphQL schema to stdout\nlinear api                # Make a raw GraphQL API request\n```\n\n## Discovering Options\n\nTo see available subcommands and flags, run `--help` on any command:\n\n```bash\nlinear --help\nlinear issue --help\nlinear issue list --help\nlinear issue create --help\n```\n\nEach command has detailed help output describing all available flags and options.\n\n## Using the Linear GraphQL API Directly\n\n**Prefer the CLI for all supported operations.** The `api` command should only be used as a fallback for queries not covered by the CLI.\n\n### Check the schema for available types and fields\n\nWrite the schema to a tempfile, then search it:\n\n```bash\nlinear schema -o \"${TMPDIR:-/tmp}/linear-schema.graphql\"\ngrep -i \"cycle\" \"${TMPDIR:-/tmp}/linear-schema.graphql\"\ngrep -A 30 \"^type Issue \" \"${TMPDIR:-/tmp}/linear-schema.graphql\"\n```\n\n### Make a GraphQL request\n\n**Important:** GraphQL queries containing non-null type markers (e.g. `String` followed by an exclamation mark) must be passed via heredoc stdin to avoid escaping issues. Simple queries without those markers can be passed inline.\n\n```bash\n# Simple query (no type markers, so inline is fine)\nlinear api '{ viewer { id name email } }'\n\n# Query with variables — use heredoc to avoid escaping issues\nlinear api --variable teamId=abc123 <<'GRAPHQL'\nquery($teamId: String!) { team(id: $teamId) { name } }\nGRAPHQL\n\n# Search issues by text\nlinear api --variable term=onboarding <<'GRAPHQL'\nquery($term: String!) { searchIssues(term: $term, first: 20) { nodes { identifier title state { name } } } }\nGRAPHQL\n\n# Pipe to jq for filtering\nlinear api '{ issues(first: 5) { nodes { identifier title } } }' | ",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: linear-cli\ndescription: Manage Linear issues from the command line using the linear cli. This skill allows automating linear management.\n---\n\n# Linear CLI\n\nA CLI to manage Linear issues from the command line, with git and jj integration.\n\n## Prerequisites\n\nThe `linear` command must be available on PATH. To check:\n\n```bash\nlinear --version\n```\n\nIf not installed, follow the instructions at:\nhttps://github.com/schpet/linear-cli?tab=readme-ov-file#install\n\n## Best Practices for Markdown Content\n\nWhen working with issue descriptions or comment bodies that contain markdown, **always prefer using file-based flags** instead of passing content as command-line arguments:\n\n- Use `--description-file` for `issue create` and `issue update` commands\n- Use `--body-file` for `comment add` and `comment update` commands\n\n**Why use file-based flags:**\n\n- Ensures proper formatting in the Linear web UI\n- Avoids shell escaping issues with newlines and special characters\n- Prevents literal `\\n` sequences from appearing in markdown\n- Makes it easier to work with multi-line content\n\n**Example workflow:**\n\n```bash\n# Write markdown to a temporary file\ncat > /tmp/description.md <<'EOF'\n## Summary\n\n- First item\n- Second item\n\n## Details\n\nThis is a detailed description with proper formatting.\nEOF\n\n# Create issue using the file\nlinear issue create --title \"My Issue\" --description-file /tmp/description.md\n\n# Or for comments\nlinear issue comment add ENG-123 --body-file /tmp/comment.md\n```\n\n**Only use inline flags** (`--description`, `--body`) for simple, single-line content.\n\n## Available Commands\n\n```\nlinear auth               # Manage Linear authentication\nlinear issue              # Manage Linear issues\nlinear team               # Manage Linear teams\nlinear project            # Manage Linear projects\nlinear project-update     # Manage project status updates\nlinear cycle              # Manage Linear team cycles\nlinear milestone          # Manage Linear project milestones\nlinear initiative         # Manage Linear initiatives\nlinear initiative-update  # Manage initiative status updates (timeline posts)\nlinear label              # Manage Linear issue labels\nlinear document           # Manage Linear documents\nlinear config             # Interactively generate .linear.toml configuration\nlinear schema             # Print the GraphQL schema to stdout\nlinear api                # Make a raw GraphQL API request\n```\n\n## Discovering Options\n\nTo see available subcommands and flags, run `--help` on any command:\n\n```bash\nlinear --help\nlinear issue --help\nlinear issue list --help\nlinear issue create --help\n```\n\nEach command has detailed help output describing all available flags and options.\n\n## Using the Linear GraphQL API Directly\n\n**Prefer the CLI for all supported operations.** The `api` command should only be used as a fallback for queries not covered by the CLI.\n\n### Check the schema for available types and fields\n\nWrite the schema to a tempfile, then search it:\n\n```bash\nlinear schema -o \"${TMPDIR:-/tmp}/linear-schema.graphql\"\ngrep -i \"cycle\" \"${TMPDIR:-/tmp}/linear-schema.graphql\"\ngrep -A 30 \"^type Issue \" \"${TMPDIR:-/tmp}/linear-schema.graphql\"\n```\n\n### Make a GraphQL request\n\n**Important:** GraphQL queries containing non-null type markers (e.g. `String` followed by an exclamation mark) must be passed via heredoc stdin to avoid escaping issues. Simple queries without those markers can be passed inline.\n\n```bash\n# Simple query (no type markers, so inline is fine)\nlinear api '{ viewer { id name email } }'\n\n# Query with variables — use heredoc to avoid escaping issues\nlinear api --variable teamId=abc123 <<'GRAPHQL'\nquery($teamId: String!) { team(id: $teamId) { name } }\nGRAPHQL\n\n# Search issues by text\nlinear api --variable term=onboarding <<'GRAPHQL'\nquery($term: String!) { searchIssues(term: $term, first: 20) { nodes { identifier title state { name } } } }\nGRAPHQL\n\n# Pipe to jq for filtering\nlinear api '{ issues(first: 5) { nodes { identifier title } } }' | "
+  },
+  "layer_1_static_scan": {
+    "total_findings": 1,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "INFO": 1
+    },
+    "by_pattern": {
+      "E1": 1
+    },
+    "by_kill_chain_phase": {
+      "exfil": 1
+    },
+    "rule_ids_hit": [
+      "E1"
+    ],
+    "files_scanned_count": 1
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 1
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "exfil"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 3.48,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 132,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  129 | For cases where you need full HTTP control, use `linear auth token`:\n  130 | \n  131 | ```bash\n» 132 | curl -s -X POST https://api.linear.app/graphql \\\n  133 |   -H \"Content-Type: application/json\" \\\n  134 |   -H \"Authorization: $(linear auth token)\" \\\n  135 |   -d '{\"query\": \"{ viewer { id } }\"}'",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -s -X POST https://api.linear.app/graphql \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    }
+  ]
+}

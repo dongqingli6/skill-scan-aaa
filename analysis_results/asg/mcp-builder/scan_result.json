@@ -1,0 +1,130 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\mcp-builder",
+  "skill_name": "mcp-builder",
+  "files_scanned": [
+    "LICENSE.txt",
+    "reference\\evaluation.md",
+    "reference\\mcp_best_practices.md",
+    "reference\\node_mcp_server.md",
+    "reference\\python_mcp_server.md",
+    "scripts\\connections.py",
+    "scripts\\evaluation.py",
+    "scripts\\requirements.txt",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 9,
+  "total_findings": 5,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 5
+  },
+  "by_pattern": {
+    "E4": 1,
+    "E2": 1,
+    "P8": 3
+  },
+  "by_kill_chain_phase": {
+    "recon": 1,
+    "cred_access": 1,
+    "impact": 3
+  },
+  "rule_ids_hit": [
+    "E2",
+    "E4",
+    "P8"
+  ],
+  "findings": [
+    {
+      "rule_id": "E4",
+      "severity": "LOW",
+      "kill_chain_phase": "recon",
+      "file": "reference\\node_mcp_server.md",
+      "line": 568,
+      "pattern": "nmap",
+      "matched_text": "nMap",
+      "description": "Network socket usage or port scanning.",
+      "confidence": 0.85,
+      "context": "  565 |     \"skipLibCheck\": true,\n  566 |     \"forceConsistentCasingInFileNames\": true,\n  567 |     \"declaration\": true,\n» 568 |     \"declarationMap\": true,\n  569 |     \"sourceMap\": true,\n  570 |     \"allowSyntheticDefaultImports\": true\n  571 |   },",
+      "original_severity": "LOW",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "\"declarationMap\": true,",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "E2",
+      "severity": "LOW",
+      "kill_chain_phase": "cred_access",
+      "file": "reference\\node_mcp_server.md",
+      "line": 700,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.EXAMPLE_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  697 | // Main function\n  698 | async function main() {\n  699 |   // Verify environment variables if needed\n» 700 |   if (!process.env.EXAMPLE_API_KEY) {\n  701 |     console.error(\"ERROR: EXAMPLE_API_KEY environment variable is required\");\n  702 |     process.exit(1);\n  703 |   }",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "if (!process.env.EXAMPLE_API_KEY) {",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "P8",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "reference\\node_mcp_server.md",
+      "line": 462,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "Always use async",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  459 | \n  460 | ## Async/Await Best Practices\n  461 | \n» 462 | Always use async/await for network requests and I/O operations:\n  463 | \n  464 | ```typescript\n  465 | // Good: Async network request",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "Always use async/await for network requests and I/O operations:",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "P8",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "reference\\node_mcp_server.md",
+      "line": 485,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "Always use try",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  482 | 3. **Avoid `any`**: Use proper types or `unknown` instead of `any`\n  483 | 4. **Zod for Runtime Validation**: Use Zod schemas to validate external data\n  484 | 5. **Type Guards**: Create type guard functions for complex type checking\n» 485 | 6. **Error Handling**: Always use try-catch with proper error type checking\n  486 | 7. **Null Safety**: Use optional chaining (`?.`) and nullish coalescing (`??`)\n  487 | \n  488 | ```typescript",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "6. **Error Handling**: Always use try-catch with proper error type checking",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "P8",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "reference\\python_mcp_server.md",
+      "line": 274,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "Always use async",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  271 | \n  272 | ## Async/Await Best Practices\n  273 | \n» 274 | Always use async/await for network requests and I/O operations:\n  275 | \n  276 | ```python\n  277 | # Good: Async network request",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "Always use async/await for network requests and I/O operations:",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

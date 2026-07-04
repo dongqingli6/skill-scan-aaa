@@ -1,0 +1,62 @@
+[
+  {
+    "name": "create-techboss",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 11.6
+  },
+  {
+    "name": "pdf",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 8.5
+  },
+  {
+    "name": "threejs-particle-canvas",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 8.9
+  },
+  {
+    "name": "h0-instruction-integration",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 4.9
+  },
+  {
+    "name": "argument-selfloop",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 4.7
+  },
+  {
+    "name": "nlp-sentiment",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 5.6
+  },
+  {
+    "name": "managing-models",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 4.7
+  },
+  {
+    "name": "collect-skill",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 7.2
+  },
+  {
+    "name": "benign-claude-api",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 7.1
+  },
+  {
+    "name": "benign-docx",
+    "status": "completed",
+    "pulled": true,
+    "elapsed_s": 10.0
+  }
+]

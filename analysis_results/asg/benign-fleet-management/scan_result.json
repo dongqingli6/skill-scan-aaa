@@ -1,0 +1,29 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-fleet-management",
+  "skill_name": "benign-fleet-management",
+  "files_scanned": [
+    "LICENSE.txt",
+    "reference\\agent-calibration.md",
+    "reference\\canary-deployments.md",
+    "reference\\cli-commands.md",
+    "reference\\fleet-config.md",
+    "reference\\import-export.md",
+    "reference\\multi-tenancy.md",
+    "reference\\sdk-usage.md",
+    "reference\\self-diagnosis.md",
+    "reference\\template-mode.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 11,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

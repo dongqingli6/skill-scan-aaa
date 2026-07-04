@@ -1,0 +1,20 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\bf5c36c3000c720ebed38a04ceef792e109b212e_20260626_194036",
+  "skill_name": "bf5c36c3000c720ebed38a04ceef792e109b212e_20260626_194036",
+  "files_scanned": [
+    "scripts\\run.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

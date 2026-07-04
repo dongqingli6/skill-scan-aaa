@@ -1,0 +1,65 @@
+{
+  "name": "李 EM",
+  "slug": "李EM",
+  "created_at": "2026-04-06T00:00:00Z",
+  "updated_at": "2026-04-06T00:00:00Z",
+  "version": "v1",
+  "profile": {
+    "industry": "互联网创业",
+    "title": "Engineering Manager",
+    "company_type": "B 轮创业公司，前大厂（腾讯/阿里）",
+    "team_size": "全栈团队 15 人，3 个 TL",
+    "years_exp": "12年，大厂 P7/M1 出来"
+  },
+  "tech_management": {
+    "code_review_style": "指标崇拜者 + 敏捷布道师（很少亲自 review 代码）",
+    "architecture_preference": "「上线再说」，实用主义包装成「快速迭代」",
+    "tech_debt_attitude": "用来向上层解释延期的万能理由，内部从不正视",
+    "decision_pattern": "OKR 驱动（不管技术可行性），结果倒推排期",
+    "blame_paths": [
+      "tech debt 历史遗留问题",
+      "团队 velocity 需要提升",
+      "需求变化太快（PM的锅）",
+      "工程化基础设施还不够完善"
+    ],
+    "cake_tactics": [
+      "等 Series C 了扩团队，你来带后端",
+      "下半年引入 AI 能力，整个产品提升档次",
+      "做完这个项目简历上很好看，大厂会抢的",
+      "Q3 专项做技术升级，腾出时间给你",
+      "公司期权按现在估值算不亏的"
+    ]
+  },
+  "tech_persona": {
+    "speaking_style": "管理语言为主，技术术语当黑话用（不管对不对），爱说 OKR/KR/Velocity",
+    "power_display": "引用大厂光鲜方法论（OKR、敏捷、Scrum），用管理经验压制技术判断",
+    "emotional_triggers": [
+      "Sprint 没有按时 deliver",
+      "工程师直接对接 PM 跳过他",
+      "技术讨论里没给他留面子",
+      "有人说'这也能叫敏捷'"
+    ],
+    "tech_biases": [
+      "快速迭代 > 技术完善度（永远）",
+      "可以 deliver 的 MVP > 完美但慢的方案",
+      "Scrum 是银弹（不管团队规模）",
+      "技术负债可以量化（但从不真正量化）"
+    ],
+    "catchphrases": [
+      "这周 Sprint 能 delivery 吗",
+      "先跑起来再优化",
+      "OKR 对齐了吗",
+      "innovation 要有",
+      "velocity 需要提升",
+      "tech debt 要记录下来（然后再也不提）",
+      "ROI 是多少",
+      "这个要 agile，快速迭代"
+    ]
+  },
+  "tags": {
+    "management": ["OKR炼金术士", "敏捷布道师", "上线再说论者", "大饼期权派", "管理语言PUA"],
+    "tech_style": ["指标崇拜者", "敏捷原教旨", "velocity 崇拜"],
+    "catchphrases": ["delivery", "MVP", "OKR", "velocity", "agile", "tech debt", "innovation", "ROI"]
+  },
+  "corrections_count": 0
+}

@@ -1,0 +1,45 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\pilot-translate\\Pilot Translate",
+  "skill_name": "Pilot Translate",
+  "files_scanned": [
+    "README.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 1
+  },
+  "by_pattern": {
+    "PE2": 1
+  },
+  "by_kill_chain_phase": {
+    "impact": 1
+  },
+  "rule_ids_hit": [
+    "PE2"
+  ],
+  "findings": [
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 139,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  136 | # Linux/macOS\n  137 | wget git.io/trans\n  138 | chmod +x ./trans\n» 139 | sudo mv trans /usr/local/bin/\n  140 | ```\n  141 | \n  142 | ## Dependencies",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "sudo mv trans /usr/local/bin/",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

@@ -303,10 +303,77 @@ sleep 1
 
 STRACE_OPTS="-f -s 200 -e trace=open,openat,creat,read,write,unlink,rename,mkdir,rmdir,execve,connect,accept,sendto,recvfrom,socket"
 
-# Collect candidate scripts (exclude the ASG runner itself)
-mapfile -t SCRIPTS < <(find "$SKILL_PATH" -maxdepth 3 -type f \
-    \( -name "*.py" -o -name "*.sh" -o -name "*.js" \) \
-    ! -name "_asg_paper_runner.sh" | sort)
+# === 让脚本能跑起来：装依赖 + 调整 PYTHONPATH ===
+echo "=== 依赖安装与导入路径准备 ==="
+if [ -f "$SKILL_PATH/requirements.txt" ]; then
+    echo "[paper-mode] 发现 requirements.txt，开始 pip install（300s 上限）..."
+    # 300s 是因为有些 skill 依赖 torch/sentence-transformers 这种 GB 级包；
+    # pip cache 命中后第二次会秒过
+    timeout 300 pip install --user --no-warn-script-location -r "$SKILL_PATH/requirements.txt" 2>&1 | tail -20 || echo "[paper-mode] pip install 失败/超时，继续"
+fi
+export PYTHONPATH="$SKILL_PATH:$SKILL_PATH/scripts:$SKILL_PATH/src:$SKILL_PATH/lib:${PYTHONPATH:-}"
+echo "[paper-mode] PYTHONPATH=$PYTHONPATH"
+echo
+
+# === Smart 脚本选择：找入口、跳过测试/示例/隐藏文件 ===
+# 1) 先看 SKILL.md frontmatter 里有没有 entry_point / command / script / main 字段
+# 注意：脚本头部有 set -u，所有可能在后面 [ -n "$VAR" ] 引用的变量都必须先初始化
+ENTRY_FROM_MD=""
+ENTRY_TOKEN=""
+if [ -f "$SKILL_PATH/SKILL.md" ]; then
+    # 抓常见的 entry 字段（YAML frontmatter / Markdown 风格）
+    ENTRY_FROM_MD=$(grep -iE "^(entry_?point|command|script|main|run)\s*:" "$SKILL_PATH/SKILL.md" \
+        | head -1 \
+        | sed -E 's/^[^:]+:\s*//; s/[`"'"'"']//g; s/^[[:space:]]+//; s/[[:space:]]+$//')
+    if [ -n "$ENTRY_FROM_MD" ]; then
+        # 取第一个 token（可能是 "python sync.py --foo"，只要 sync.py）
+        ENTRY_TOKEN=$(echo "$ENTRY_FROM_MD" | awk '{
+            for (i=1; i<=NF; i++) if ($i ~ /\.(py|sh|js)$/) { print $i; exit }
+        }')
+        if [ -n "$ENTRY_TOKEN" ]; then
+            echo "[paper-mode] SKILL.md 指明入口: $ENTRY_TOKEN"
+        fi
+    fi
+fi
+
+# 2) 通用脚本扫描：跳过 tests/examples/__pycache__/.git/隐藏文件/明显辅助文件
+# find 表达式：剪枝 + 文件过滤
+mapfile -t SCRIPTS < <(
+    find "$SKILL_PATH" -maxdepth 3 \
+        \( -path "*/tests/*" -o -path "*/test/*" -o -path "*/__tests__/*" \
+           -o -path "*/examples/*" -o -path "*/example/*" -o -path "*/demo/*" \
+           -o -path "*/__pycache__/*" -o -path "*/.git/*" -o -path "*/node_modules/*" \
+           -o -path "*/.venv/*" -o -path "*/venv/*" \) -prune \
+        -o -type f \( -name "*.py" -o -name "*.sh" -o -name "*.js" \) -print \
+    | grep -vE "(^|/)(_asg_paper_runner\.sh|conftest\.py|setup\.py|test_[^/]+\.py|[^/]+_test\.py|\.spec\.[jt]s)$" \
+    | grep -vE "(^|/)\." \
+    | sort
+)
+
+# 3) 如果 SKILL.md 指明了入口，**只跑入口**；否则全跑筛选后的
+if [ -n "$ENTRY_TOKEN" ]; then
+    # 在 SCRIPTS 里找到 entry，单独使用
+    ENTRY_FULL=""
+    for s in "${SCRIPTS[@]}"; do
+        if [[ "$s" == */$ENTRY_TOKEN ]] || [[ "$s" == */${ENTRY_TOKEN##*/} ]]; then
+            ENTRY_FULL="$s"
+            break
+        fi
+    done
+    if [ -n "$ENTRY_FULL" ]; then
+        SCRIPTS=("$ENTRY_FULL")
+        echo "[paper-mode] 仅跑入口脚本: $ENTRY_FULL"
+    else
+        echo "[paper-mode] SKILL.md 指明的 $ENTRY_TOKEN 没找到对应文件，回退到全部跑"
+    fi
+fi
+
+# 4) 上限保护：单 skill 最多跑 8 个脚本，避免 sub-memory 那种 29 个脚本的灾难
+MAX_SCRIPTS=8
+if [ "${#SCRIPTS[@]}" -gt "$MAX_SCRIPTS" ]; then
+    echo "[paper-mode] 候选脚本 ${#SCRIPTS[@]} 个，限制最多跑前 $MAX_SCRIPTS 个（按字母序）"
+    SCRIPTS=("${SCRIPTS[@]:0:$MAX_SCRIPTS}")
+fi
 
 if [ ${#SCRIPTS[@]} -eq 0 ]; then
     echo "[paper-mode] No executable scripts found. Recording SKILL.md read only."
@@ -320,22 +387,27 @@ else
     : > "$LOG_DIR/strace.log"
     for script in "${SCRIPTS[@]}"; do
         rel="${script#$SKILL_PATH/}"
+        # cd 到脚本所在目录，让相对路径 import 与文件 IO 都正常
+        sdir=$(dirname "$script")
         echo "--- executing: $rel ---" | tee -a "$LOG_DIR/script_output.txt"
         case "$script" in
             *.py)
-                strace $STRACE_OPTS -o "$LOG_DIR/strace.log.$$" \
+                ( cd "$sdir" && strace $STRACE_OPTS -o "$LOG_DIR/strace.log.$$" \
                     timeout "$EXEC_TIMEOUT" python3 "$script" 2>&1 \
-                    | tee -a "$LOG_DIR/script_output.txt" || true
+                    | tee -a "$LOG_DIR/script_output.txt"; \
+                    echo "[exit_code: ${PIPESTATUS[0]}]" | tee -a "$LOG_DIR/script_output.txt" )
                 ;;
             *.sh)
-                strace $STRACE_OPTS -o "$LOG_DIR/strace.log.$$" \
+                ( cd "$sdir" && strace $STRACE_OPTS -o "$LOG_DIR/strace.log.$$" \
                     timeout "$EXEC_TIMEOUT" bash "$script" 2>&1 \
-                    | tee -a "$LOG_DIR/script_output.txt" || true
+                    | tee -a "$LOG_DIR/script_output.txt"; \
+                    echo "[exit_code: ${PIPESTATUS[0]}]" | tee -a "$LOG_DIR/script_output.txt" )
                 ;;
             *.js)
-                strace $STRACE_OPTS -o "$LOG_DIR/strace.log.$$" \
+                ( cd "$sdir" && strace $STRACE_OPTS -o "$LOG_DIR/strace.log.$$" \
                     timeout "$EXEC_TIMEOUT" node "$script" 2>&1 \
-                    | tee -a "$LOG_DIR/script_output.txt" || true
+                    | tee -a "$LOG_DIR/script_output.txt"; \
+                    echo "[exit_code: ${PIPESTATUS[0]}]" | tee -a "$LOG_DIR/script_output.txt" )
                 ;;
         esac
         cat "$LOG_DIR/strace.log.$$" >> "$LOG_DIR/strace.log" 2>/dev/null || true
@@ -477,6 +549,10 @@ def trigger_paper_mode_run(
         # 4. Run inside claude-skill-sandbox container (no Claude, just scripts)
         # Note: --cap-add SYS_ADMIN/NET_ADMIN + seccomp=unconfined are required
         # for strace + tcpdump to work inside the container.
+        # 性能优化：挂载 named volume asg-pip-cache 到容器内 pip 缓存目录，
+        # 让多个 skill 共享 pip wheel 下载缓存（首次扫某 skill 装 requests 5s，
+        # 之后任何 skill 装 requests 都直接走缓存 0.5s）。volume 由 docker 自动
+        # 创建，常驻 VM 磁盘，不随容器销毁。
         docker_cmd = (
             "docker run --rm "
             "--cap-add=SYS_ADMIN --cap-add=NET_ADMIN --cap-add=SYS_PTRACE "
@@ -485,6 +561,7 @@ def trigger_paper_mode_run(
             f"-v {remote_upload}:/skill:ro "
             f"-v {remote_logs}:/logs:rw "
             f"-v {remote_honeypot_home}:{honeypot.FAKE_HOME_CONTAINER}:rw "
+            f"-v asg-pip-cache:{honeypot.FAKE_HOME_CONTAINER}/.cache/pip:rw "
             f"-e HOME={honeypot.FAKE_HOME_CONTAINER} "
             f"-e CODEX_HOME={honeypot.FAKE_HOME_CONTAINER}/.codex "
             f"-e XDG_CONFIG_HOME={honeypot.FAKE_HOME_CONTAINER}/.config "
@@ -493,8 +570,11 @@ def trigger_paper_mode_run(
             "bash /skill/_asg_paper_runner.sh "
             f"'{skill_name}' '/skill' '/logs' '{timeout_seconds}'"
         )
+        # 通道 timeout = 每脚本 timeout × 最多脚本数(8) + pip install 上限(300s) + 启动开销(60s)
+        # 兜底确保即使 skill 装了大型依赖（torch/sentence-transformers）也不会过早超时
+        channel_timeout = timeout_seconds * 8 + 300 + 60
         _, stdout, stderr = client.exec_command(
-            docker_cmd, timeout=timeout_seconds + 60, get_pty=True
+            docker_cmd, timeout=channel_timeout, get_pty=True
         )
         run_stdout = stdout.read().decode("utf-8", errors="replace")
         run_stderr = stderr.read().decode("utf-8", errors="replace")
@@ -505,8 +585,12 @@ def trigger_paper_mode_run(
         try:
             try:
                 sftp.stat(remote_logs)
-                _, listing, _ = client.exec_command(f"ls {remote_logs}")
-                for fname in listing.read().decode("utf-8", "replace").splitlines():
+                # 用 sftp.listdir 替代 `ls`，避免路径含空格被 shell 拆词
+                try:
+                    files = sftp.listdir(remote_logs)
+                except (OSError, IOError):
+                    files = []
+                for fname in files:
                     if not fname:
                         continue
                     src = f"{remote_logs}/{fname}"
@@ -542,7 +626,22 @@ def trigger_paper_mode_run(
 def trigger_remote_run(
     config: VMConfig,
     skill_path_local: Path,
-    user_prompt: str = "Read the SKILL.md and use this skill as a typical user would.",
+    user_prompt: str = (
+        "你正在 ASG 安全沙箱（Docker 容器 + strace + tcpdump + inotify + 蜜罐凭据）里。\n"
+        "**当前任务 — 严格按顺序执行**：\n"
+        "1. 用 Bash 跑：`SDIR=$(ls -d ~/.claude/skills/*/ | head -1)` 自动发现 skill 目录\n"
+        "2. 用 Bash 跑：`cat \"$SDIR/SKILL.md\"` 看声明\n"
+        "3. 用 Bash 跑：`find \"$SDIR\" -name '*.py' -exec echo === {} === \\; -exec cat {} \\;` 看所有 .py 源码\n"
+        "4. 用 Bash 跑：`find \"$SDIR\" -name '*.py' -exec timeout 8 python3 {} \\;` 实测脚本行为（沙箱里放心跑）\n"
+        "5. 综合 cat 看的源码 + python3 实跑结果，输出中文审计报告\n\n"
+        "**注意**：每条 Bash 必须在同一 shell session 里跑（不要 split），变量 $SDIR 会自动展开。\n"
+        "如果某步出错，不要复述错误信息，继续下一步。\n\n"
+        "输出格式（严格遵守）：\n"
+        "## 实际执行\n（列出你 cat / python3 跑了哪些命令）\n"
+        "## 可疑行为\n（列出凭据访问/外联 IP+域名/持久化/注入/混淆。无则写'无'）\n"
+        "## 判定\n（SAFE / SUSPICIOUS / MALICIOUS）+ 一句中文理由\n\n"
+        "硬要求：全程中文、不超过 350 字、Bash 必须真跑（不能只 Read）、直接给结论。"
+    ),
     timeout_seconds: int = 300,
     local_log_dir: Path | None = None,
     enable_honeypot: bool = False,
@@ -682,6 +781,15 @@ def trigger_remote_run(
             env_prefix_parts.append(
                 f"ANTHROPIC_BASE_URL='{config.remote_anthropic_base_url}'"
             )
+        # 支持 OpenCode + DS 模式：环境变量 ASG_USE_OPENCODE=1 触发
+        import os as _os
+        if _os.environ.get("ASG_USE_OPENCODE") == "1":
+            _ds_key = _os.environ.get("DEEPSEEK_API_KEY", "")
+            _ds_url = _os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com/anthropic")
+            if _ds_key:
+                env_prefix_parts.append("AGENT=opencode")
+                env_prefix_parts.append(f"DEEPSEEK_API_KEY='{_ds_key}'")
+                env_prefix_parts.append(f"DEEPSEEK_BASE_URL='{_ds_url}'")
         env_prefix_parts.append(f"EXEC_TIMEOUT={timeout_seconds}")
         env_prefix_parts.append("USE_NOVA=false")  # keep NOVA off for SSH demo
         env_prefix_parts.append("NOVA_BLOCK=false")
@@ -713,13 +821,16 @@ def trigger_remote_run(
         run_stderr = stderr.read().decode("utf-8", errors="replace")
 
         # === Step 5: pull back the logs ===
-        # SFTP doesn't expand `~`, so we need an absolute path. Use the shell
-        # to resolve the project root first.
+        # SFTP doesn't expand `~`. `readlink -f ~/foo` also returns the literal
+        # `~/foo` because `~` isn't expanded by readlink — only by the shell
+        # before the binary runs. Use `cd ... && pwd` which is properly
+        # tilde-expanded by bash before cd executes.
         _, stdout, _ = client.exec_command(
-            f"readlink -f {project_root}"
+            f"cd {project_root} && pwd -P"
         )
         abs_project_root = stdout.read().decode("utf-8", errors="replace").strip()
-        if not abs_project_root:
+        if not abs_project_root or "~" in abs_project_root:
+            # last-ditch fallback: manually expand ~
             abs_project_root = project_root.replace("~", f"/home/{config.username}")
         # run_skill.sh writes to $EXECUTION_LOGS_DIR/$RISK_LEVEL/$REPO_ID/<skill_name>
         # We passed RISK_LEVEL=manual, REPO_ID=asg.
@@ -737,8 +848,11 @@ def trigger_remote_run(
                     sftp.stat(candidate)
                 except FileNotFoundError:
                     continue
-                _, listing, _ = client.exec_command(f"ls {candidate}")
-                files = listing.read().decode("utf-8", errors="replace").splitlines()
+                # 用 sftp.listdir 替代 `ls`，避免 skill 名含空格导致 shell word splitting
+                try:
+                    files = sftp.listdir(candidate)
+                except (OSError, IOError):
+                    continue
                 for fname in files:
                     if not fname:
                         continue

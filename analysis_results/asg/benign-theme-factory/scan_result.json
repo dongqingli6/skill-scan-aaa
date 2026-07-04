@@ -1,0 +1,30 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-theme-factory",
+  "skill_name": "benign-theme-factory",
+  "files_scanned": [
+    "LICENSE.txt",
+    "SKILL.md",
+    "themes\\arctic-frost.md",
+    "themes\\botanical-garden.md",
+    "themes\\desert-rose.md",
+    "themes\\forest-canopy.md",
+    "themes\\golden-hour.md",
+    "themes\\midnight-galaxy.md",
+    "themes\\modern-minimalist.md",
+    "themes\\ocean-depths.md",
+    "themes\\sunset-boulevard.md",
+    "themes\\tech-innovation.md"
+  ],
+  "files_scanned_count": 12,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

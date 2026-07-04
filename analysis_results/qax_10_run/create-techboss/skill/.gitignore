@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+
+# 本地运行时生成的文件
+techbosses-registry.json
+
+# 用户生成的 boss skill 目录（安装到 skills-dir 后的产物）
+# 如果你把 techboss-skill 本身作为 skills-dir，排除其中创建的老板目录
+# 按需取消注释：
+# 王*/
+# 张*/
+# 李*/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*~
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 敏感数据（防止意外提交真实老板数据）
+*_private.json
+*_real.json
+secrets.json

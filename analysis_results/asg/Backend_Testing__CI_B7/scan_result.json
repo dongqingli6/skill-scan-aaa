@@ -1,0 +1,20 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\Backend_Testing__CI_B7",
+  "skill_name": "Backend_Testing__CI_B7",
+  "files_scanned": [
+    "scripts\\test_security.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

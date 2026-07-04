@@ -43,6 +43,7 @@ from asg import (
     honeypot,
     risk_scorer,
     rules,
+    skill_graph,
     vm_evidence,
 )
 
@@ -75,6 +76,8 @@ def _runtime_layer_from_vm_record(vm_record: dict[str, Any] | None) -> dict[str,
         "strace": vm_record.get("strace", {}),
         "tcpdump": vm_record.get("tcpdump", {}),
         "filesystem": vm_record.get("filesystem", {}),
+        "inotify": vm_record.get("inotify", {}),
+        "anthropic_refusal": vm_record.get("anthropic_refusal", {}),
         "nova": vm_record.get("nova", {}),
         "honeypot": {
             "touched": vm_record.get("honeypot_evidence", {}).get("touched", False),
@@ -86,13 +89,24 @@ def _runtime_layer_from_vm_record(vm_record: dict[str, Any] | None) -> dict[str,
 
 
 def _find_existing_vm_evidence_dir(skill_name: str, output_dir: Path) -> Path | None:
-    """Reuse already-pulled VM evidence when scan-all-samples is rerun."""
+    """Reuse already-pulled VM evidence when scan-all-samples is rerun.
+
+    Accepts vm_paper_logs (strace/pcap/honeypot present) and vm_ssh_logs
+    (mode-3 Claude conversation in ssh_run_stdout.log — usable even when
+    strace.log etc are missing because the container TEST_DIR_MOUNT bug
+    used to drop them on the ephemeral container fs).
+    """
     skill_out = output_dir / skill_name
     for dirname in ("vm_paper_logs", "vm_ssh_logs"):
         candidate = skill_out / dirname
         if not candidate.is_dir():
             continue
-        if any((candidate / name).exists() for name in ("strace.log", "claude_output.txt", "network.pcap")):
+        primary_evidence = any(
+            (candidate / name).exists()
+            for name in ("strace.log", "claude_output.txt", "network.pcap")
+        )
+        mode3_fallback = (candidate / "ssh_run_stdout.log").exists()
+        if primary_evidence or mode3_fallback:
             return candidate
     return None
 
@@ -349,18 +363,44 @@ def analyze_skill(
         prev_rt = prev.get("layer_5_runtime") or {}
         if not layer_5_runtime.get("present") and prev_rt.get("present"):
             layer_5_runtime = prev_rt
+        # === Mode-2 / Mode-3 双槽合并：保留之前跑的另一个模式 ===
+        # layer_5_runtime_mode2 = paper-mode 证据
+        # layer_5_runtime_mode3 = Claude in Docker 证据
+        # 两者独立保存，互不覆盖；UI 分别渲染。
+        prev_m2 = prev.get("layer_5_runtime_mode2") or {}
+        prev_m3 = prev.get("layer_5_runtime_mode3") or {}
+        # 用变量先存，下面写 asg_report 时合并
+        cur_mode = layer_5_runtime.get("mode")
+        if cur_mode == "paper_no_claude":
+            new_m2 = layer_5_runtime
+            new_m3 = prev_m3
+        elif cur_mode == "agent_in_the_loop":
+            new_m3 = layer_5_runtime
+            new_m2 = prev_m2
+        else:
+            new_m2 = prev_m2
+            new_m3 = prev_m3
         # Layer 4: 本次没开 honeypot 但旧的开过 → 保留旧的（防止 honeypot 数据被清空）
         prev_hp = prev.get("layer_4_honeypot") or {}
         if not honeypot_record.get("enabled") and prev_hp.get("enabled"):
             honeypot_record = prev_hp
+    else:
+        cur_mode = layer_5_runtime.get("mode")
+        new_m2 = layer_5_runtime if cur_mode == "paper_no_claude" else {}
+        new_m3 = layer_5_runtime if cur_mode == "agent_in_the_loop" else {}
 
     # === Composite risk scoring ===
+    # layer_5_runtime 给 risk_scorer 用「合并视图」：优先 Mode-3（含 floor #5
+    # Anthropic 拒绝信号），如果 Mode-3 未跑则用 Mode-2 的脚本裸跑信号。
+    runtime_for_score = (new_m3 if new_m3.get("present") else
+                         new_m2 if new_m2.get("present") else
+                         layer_5_runtime)
     risk = risk_scorer.compute_risk(
         scan_result=scan_result,
         chain_result=chain_result,
         agent_eval=agent_eval if agent_eval.get("tested") else None,
         honeypot_result=honeypot_record if enable_honeypot else None,
-        layer_5_runtime=layer_5_runtime,
+        layer_5_runtime=runtime_for_score,
     )
 
     asg_report = {
@@ -381,6 +421,8 @@ def analyze_skill(
         "layer_3_agent_eval": agent_eval,
         "layer_4_honeypot": honeypot_record,
         "layer_5_runtime": layer_5_runtime,
+        "layer_5_runtime_mode2": new_m2,
+        "layer_5_runtime_mode3": new_m3,
         "composite_risk": risk,
         "findings": scan_result["findings"],
     }
@@ -549,6 +591,46 @@ def _cmd_scan(args: argparse.Namespace) -> int:
         claude_model=args.claude_model,
         vm_evidence_dir=vm_dir,
     )
+
+    # --- 可选: SSD (SkillSieve §4.3) 4 子任务 LLM 审计 ---
+    ssd_ran = False
+    if getattr(args, "enable_ssd", False):
+        score = report["composite_risk"]["composite_score"]
+        # 区间过滤
+        gate_range = getattr(args, "ssd_when_score_between", None)
+        in_range = True
+        if gate_range:
+            try:
+                lo, hi = [float(x) for x in gate_range.split(",")]
+                in_range = lo <= score <= hi
+            except (ValueError, AttributeError):
+                in_range = True
+        if in_range:
+            ssd_ran = _run_ssd_for_skill(
+                report=report,
+                skill_path=Path(args.skill_path),
+                out=out,
+                prefer=getattr(args, "ssd_llm", "fast"),
+                mode=getattr(args, "ssd_mode", "single"),
+                borderline_low=getattr(args, "ssd_borderline_low", 0.35),
+                borderline_high=getattr(args, "ssd_borderline_high", 0.7),
+            )
+            # L1 review：让 LLM 复核每条静态命中是 TP/FP，防止误判
+            if not getattr(args, "no_l1_review", False):
+                _run_l1_review_for_skill(
+                    report=report,
+                    skill_path=Path(args.skill_path),
+                    out=out,
+                    prefer=getattr(args, "ssd_llm", "fast"),
+                )
+            # 可疑 + 有脚本 → 自动触发 Mode-3 沙箱动态执行
+            if getattr(args, "auto_dynamic_on_suspicious", False):
+                _maybe_auto_dynamic_run(
+                    report=report,
+                    skill_path=Path(args.skill_path),
+                    out=out,
+                )
+
     html_path = REPO_ROOT / "asg" / "dashboard.html"
     dashboard_builder.build_from_results(
         out, html_path, only_skill=report["skill_name"]
@@ -567,12 +649,383 @@ def _cmd_scan(args: argparse.Namespace) -> int:
             "honeypot_leaked": report["layer_4_honeypot"]["any_honeypot_leaked"],
             "S_runtime": report["composite_risk"].get("sub_scores", {}).get("S_runtime", 0.0),
             "runtime_score_delta": report["composite_risk"].get("runtime_score_delta", 0.0),
+            "ssd_ran": ssd_ran,
+            "ssd_R2": report.get("layer_2_ssd", {}).get("R2") if ssd_ran else None,
+            "ssd_verdict": report.get("layer_2_ssd", {}).get("verdict") if ssd_ran else None,
             "report_path": str(out / report["skill_name"] / "asg_report.json"),
         },
         indent=2,
         ensure_ascii=False,
     ))
     return 0
+
+
+def _maybe_auto_dynamic_run(
+    report: dict[str, Any],
+    skill_path: Path,
+    out: Path,
+) -> bool:
+    """可疑 + 有脚本 → 自动触发 Mode-3 Claude Docker 沙箱执行。
+       触发条件（全部满足）：
+         1. SSD verdict ∈ {SUSPICIOUS, MALICIOUS}
+         2. skill 含可执行脚本（.py / .sh / .js）
+         3. 还没跑过 Mode-3
+    """
+    # 条件 1: verdict
+    cr = report.get("composite_risk") or {}
+    verdict = cr.get("verdict", "SAFE")
+    if verdict not in ("SUSPICIOUS", "MALICIOUS", "CRITICAL_MALICIOUS"):
+        print("[auto-dynamic] skipped: verdict=SAFE")
+        return False
+    # 条件 2: 有脚本
+    has_script = False
+    for p in skill_path.rglob("*"):
+        if p.is_file() and p.suffix.lower() in (".py", ".sh", ".js", ".ts"):
+            has_script = True
+            break
+    if not has_script:
+        print("[auto-dynamic] skipped: no executable scripts")
+        return False
+    # 条件 3: 还没跑过 Mode-3
+    if (report.get("layer_5_runtime") or {}).get("present"):
+        print("[auto-dynamic] skipped: layer_5_runtime already present")
+        return False
+    # 触发 Mode-3
+    print(f"[auto-dynamic] verdict={verdict} + has scripts → triggering Mode-3...")
+    try:
+        from asg import vm_ssh
+        cfg_path = Path("asg/vm_config.json")
+        if not cfg_path.exists():
+            print(f"[auto-dynamic] skipped: {cfg_path} not found")
+            return False
+        cfg = vm_ssh.VMConfig.from_json(cfg_path)
+        ssh_log_dir = out / report["skill_name"] / "vm_ssh_logs"
+        ssh_log_dir.mkdir(parents=True, exist_ok=True)
+        result = vm_ssh.trigger_remote_run(
+            config=cfg,
+            skill_path_local=skill_path,
+            timeout_seconds=300,
+            local_log_dir=ssh_log_dir,
+            enable_honeypot=True,
+        )
+        status = result.get("status")
+        print(f"[auto-dynamic] Mode-3 status={status}")
+        if status in ("completed", "completed_no_logs"):
+            # 重新 analyze_skill 把 layer_5 拉进 report
+            re_report = analyze_skill(
+                skill_path=skill_path,
+                output_dir=out,
+                enable_claude=False,
+                enable_honeypot=True,
+                vm_evidence_dir=ssh_log_dir,
+            )
+            report["layer_5_runtime"] = re_report.get("layer_5_runtime", {})
+            report["composite_risk"] = re_report.get("composite_risk", {})
+            # 写回
+            (out / report["skill_name"] / "asg_report.json").write_text(
+                json.dumps(report, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            return True
+    except Exception as exc:
+        print(f"[auto-dynamic] failed: {type(exc).__name__}: {exc}")
+    return False
+
+
+def _run_l1_review_for_skill(
+    report: dict[str, Any],
+    skill_path: Path,
+    out: Path,
+    prefer: str = "fast",
+) -> bool:
+    """让 LLM 复核每条静态命中（TP/FP/UNCERTAIN），写回 findings[].llm_review，
+    并把 FP 的 finding 在 risk_scorer 复算时降权。"""
+    try:
+        from asg.ssd_runner import review_l1_findings
+    except ImportError:
+        return False
+
+    findings = report.get("findings") or []
+    if not findings:
+        return False
+
+    # 收集 SKILL.md + 至多 8 个脚本（复用 SSD 的打包逻辑）
+    skill_md_path = None
+    for p in skill_path.rglob("*"):
+        if p.is_file() and p.name.lower() == "skill.md":
+            skill_md_path = p
+            break
+    if not skill_md_path:
+        return False
+    try:
+        skill_md = skill_md_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    extras: list[tuple[str, str]] = []
+    for p in sorted(skill_path.rglob("*")):
+        if not p.is_file() or p == skill_md_path:
+            continue
+        if p.suffix.lower() not in {".py", ".sh", ".js", ".ts", ".md",
+                                     ".yaml", ".yml", ".json"}:
+            continue
+        try:
+            extras.append((str(p.relative_to(skill_path)),
+                            p.read_text(encoding="utf-8", errors="replace")))
+        except OSError:
+            pass
+        if len(extras) >= 8:
+            break
+
+    review = review_l1_findings(skill_md, extras, findings, prefer=prefer)
+    if not review.get("tested"):
+        report["l1_review_meta"] = {
+            "tested": False,
+            "skipped_reason": review.get("skipped_reason"),
+        }
+        return False
+
+    # 把每条 review 挂回对应的 finding（通过 file+line+rule_id 匹配）
+    review_map = {
+        (r["file"], r["line"], r["rule_id"]): r
+        for r in review.get("reviews", [])
+    }
+    fp_count = 0
+    for f in findings:
+        key = (f.get("file"), f.get("line"), f.get("rule_id"))
+        r = review_map.get(key)
+        if r:
+            f["llm_review"] = {
+                "verdict": r["verdict"],
+                "confidence": r["confidence"],
+                "reason": r["reason"],
+            }
+            if r["verdict"] == "FP":
+                fp_count += 1
+                # 给 finding 加 ai_downgraded 标记 + 复用 risk_scorer 已支持的
+                # downgraded 字段，让评分自动过滤
+                f["ai_downgraded"] = True
+                f["downgraded"] = True
+                f["downgrade_reason"] = f"AI 复核标 FP: {r['reason'][:120]}"
+                f["ai_downgrade_reason"] = r["reason"][:120]
+
+    report["l1_review_meta"] = {
+        "tested": True,
+        "model": review.get("model"),
+        "llm_provider": review.get("llm_provider"),
+        "total_reviewed": review.get("total_reviewed", 0),
+        "total_findings": review.get("total_findings", 0),
+        "tp_count": review.get("tp_count", 0),
+        "fp_count": review.get("fp_count", 0),
+        "uncertain_count": review.get("uncertain_count", 0),
+        "api_calls": review.get("api_calls", 0),
+    }
+
+    # AI 标 FP 后，重算 composite_score：如果有 FP 被识别且原 verdict 是
+    # SUSPICIOUS/MALICIOUS 是因为静态触发，降级 composite_score。
+    if fp_count > 0:
+        from asg import attack_chain, risk_scorer
+        scan_result = json.loads(
+            (out / report["skill_name"] / "scan_result.json").read_text(encoding="utf-8")
+        )
+        # 把 ai_downgraded 标记同步到 scan_result.findings
+        sr_finds = scan_result.get("findings", [])
+        fp_keys = {
+            (f.get("file"), f.get("line"), f.get("rule_id"))
+            for f in findings if f.get("ai_downgraded")
+        }
+        for f in sr_finds:
+            key = (f.get("file"), f.get("line"), f.get("rule_id"))
+            if key in fp_keys:
+                f["ai_downgraded"] = True
+                f["downgraded"] = True
+                f["downgrade_reason"] = "AI 复核标 FP"
+        # 关键修复：scan_result.by_severity / by_pattern 是基于全部 finding 算的，
+        # downgrade 字段不会自动影响它们 → 必须基于 not downgraded 重算
+        live_finds = [f for f in sr_finds if not f.get("downgraded")]
+        from collections import Counter
+        scan_result["by_severity"] = dict(Counter(
+            (f.get("severity") or "INFO") for f in live_finds
+        ))
+        # 保证所有等级都有键
+        for sev in ("CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"):
+            scan_result["by_severity"].setdefault(sev, 0)
+        scan_result["by_pattern"] = dict(Counter(
+            (f.get("rule_id") or "UNKNOWN") for f in live_finds
+        ))
+        scan_result["total_findings"] = len(live_finds)
+        # 重算 chain（attack_chain 也应该忽略 downgraded）
+        scan_result_for_chain = dict(scan_result)
+        scan_result_for_chain["findings"] = live_finds
+        chain_result = attack_chain.analyze(scan_result_for_chain)
+        risk = risk_scorer.compute_risk(
+            scan_result=scan_result,
+            chain_result=chain_result,
+            agent_eval=report.get("layer_3_agent_eval") if report.get("layer_3_agent_eval", {}).get("tested") else None,
+            honeypot_result=report.get("layer_4_honeypot") if report.get("layer_4_honeypot", {}).get("enabled") else None,
+            layer_5_runtime=report.get("layer_5_runtime"),
+        )
+        # 保留 SSD 的升级（不被 L1 review 抹掉）
+        cr_old = report["composite_risk"]
+        ssd_pre = cr_old.get("composite_score_pre_ssd")
+        if ssd_pre is not None:
+            # SSD 已经升级过，AI review 降的是静态层。这里取 max(新静态分, SSD 升级后)
+            # 因为 SSD 升级是基于 LLM 判定，不应被 L1 review 抹掉
+            risk["composite_score"] = max(risk["composite_score"],
+                                           cr_old.get("composite_score", 0))
+        else:
+            cr_old.setdefault("score_notes", []).append(
+                f"L1 review: {fp_count} 条命中被 AI 标为 FP，"
+                f"composite_score {cr_old.get('composite_score')} → {risk['composite_score']}"
+            )
+            # 保留 score_notes
+            risk["score_notes"] = cr_old.get("score_notes", [])
+            report["composite_risk"] = risk
+        report["layer_1_static_scan"]["ai_downgraded_count"] = fp_count
+
+    # 写回
+    report_path = out / report["skill_name"] / "asg_report.json"
+    report_path.write_text(
+        json.dumps(report, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    return True
+
+
+def _run_ssd_for_skill(
+    report: dict[str, Any],
+    skill_path: Path,
+    out: Path,
+    prefer: str = "fast",
+    mode: str = "single",
+    borderline_low: float = 0.35,
+    borderline_high: float = 0.7,
+) -> bool:
+    """跑 SSD 4 子任务 + 把结果合并进 asg_report.json 并升级 verdict。
+       mode="single": 用 prefer 指定的单家 LLM
+       mode="triage": DeepSeek 全量 + borderline 区间升级到 Claude
+    返回 True 表示成功跑了 SSD。"""
+    try:
+        from asg.ssd_runner import run_ssd, run_ssd_triage
+    except ImportError:
+        return False
+
+    # 收集 SKILL.md + extra files (max 8)
+    skill_md_path = None
+    for p in skill_path.rglob("*"):
+        if p.is_file() and p.name.lower() == "skill.md":
+            skill_md_path = p
+            break
+    if not skill_md_path:
+        return False
+    try:
+        skill_md = skill_md_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    extras: list[tuple[str, str]] = []
+    for p in sorted(skill_path.rglob("*")):
+        if not p.is_file() or p == skill_md_path:
+            continue
+        if p.suffix.lower() not in {".py", ".sh", ".js", ".ts", ".md",
+                                     ".yaml", ".yml", ".json"}:
+            continue
+        try:
+            extras.append((str(p.relative_to(skill_path)),
+                            p.read_text(encoding="utf-8", errors="replace")))
+        except OSError:
+            pass
+        if len(extras) >= 8:
+            break
+
+    l1_findings = report.get("findings", [])
+    if mode == "triage":
+        ssd = run_ssd_triage(
+            skill_md, extras, l1_findings,
+            borderline_low=borderline_low,
+            borderline_high=borderline_high,
+        )
+    else:
+        ssd = run_ssd(skill_md, extras, l1_findings, prefer=prefer)
+    if not ssd.get("tested"):
+        return False
+
+    # 合并 SSD 结果到 report
+    report["layer_2_ssd"] = ssd
+
+    # 升降 verdict（双向）：
+    #   - R2 ≥ 0.7 → MALICIOUS，R2 ≥ 0.4 → SUSPICIOUS（升级，无条件）
+    #   - R2 < 0.2 且静态 composite_score < 25 → 允许从 SUSPICIOUS 降到 SAFE
+    #     （避免对真实证据强的样本误降；R2 阈值保守）
+    cr = report["composite_risk"]
+    verdict_order = ["SAFE", "SUSPICIOUS", "MALICIOUS", "CRITICAL_MALICIOUS"]
+    cur_idx = verdict_order.index(cr["verdict"]) if cr["verdict"] in verdict_order else 0
+    ssd_verdict = ssd["verdict"]
+    ssd_idx = verdict_order.index(ssd_verdict) if ssd_verdict in verdict_order else 0
+    r2 = ssd.get("R2", 0)
+    cur_score = cr.get("composite_score", 0)
+
+    # === 新：任一子任务 MALICIOUS（risk ≥ 0.7）强制升级 ===
+    # 即使整体 R2 加权后仍 SAFE，单维度强信号也应升级 verdict
+    subtask_risks = [t.get("risk_score", 0.0)
+                     for t in (ssd.get("subtasks") or {}).values()
+                     if isinstance(t.get("risk_score"), (int, float))]
+    max_subtask_risk = max(subtask_risks, default=0.0)
+    if max_subtask_risk >= 0.7 and ssd_idx < 2:  # 升 verdict 时 ssd_idx 还是 SAFE/SUSP
+        # 强升至 SUSPICIOUS（保守，不直接到 MALICIOUS），分数贡献 max_subtask * 30
+        forced_contrib = round(max_subtask_risk * 30, 2)
+        forced_score = max(round(cur_score + forced_contrib, 2), 20.0)
+        cr["composite_score_pre_subtask_boost"] = cur_score
+        cr["composite_score"] = min(forced_score, 100.0)
+        cr["verdict"] = "SUSPICIOUS" if max_subtask_risk < 0.85 else "MALICIOUS"
+        cr.setdefault("score_notes", []).append(
+            f"子任务强信号: max_subtask_risk={max_subtask_risk} ≥ 0.7 → "
+            f"强升 {cur_score} → {cr['composite_score']} (+{forced_contrib} from subtask × 30)"
+        )
+        cur_score = cr["composite_score"]
+        cur_idx = verdict_order.index(cr["verdict"])
+
+    if ssd_idx > cur_idx:
+        # SSD 升级时把 R2 加进 composite_score：贡献最多 25 分
+        # （对应 risk_scorer 里 w_llm_verdict=0.25 的权重）。
+        ssd_contrib = round(r2 * 25, 2)
+        new_score = max(round(cur_score + ssd_contrib, 2), cur_score)
+        cr["composite_score_pre_ssd"] = cur_score
+        cr["composite_score"] = min(new_score, 100.0)
+        cr["verdict"] = ssd_verdict
+        # triage 模式 + escalated 时标注两家是否分歧
+        provider_tag = ssd["llm_provider"]
+        if ssd.get("mode") == "triage":
+            provider_tag = (
+                f"triage(DS+Claude{'，分歧' if ssd.get('disagreement') else '，一致'})"
+                if ssd.get("escalated") else "triage(仅DS)"
+            )
+        cr.setdefault("score_notes", []).append(
+            f"SSD upgrade: R2={r2} ({provider_tag}) → "
+            f"{ssd_verdict}, score {cur_score} → {cr['composite_score']} "
+            f"(+{ssd_contrib} from R2×25)"
+        )
+    elif (cr["verdict"] == "SUSPICIOUS" and r2 < 0.2 and cur_score < 25
+          and ssd["llm_provider"] != "env"):
+        # SSD 降级：LLM 看了 SKILL.md+scripts 全文判 SAFE 且静态分数中等以下，
+        # 把 SUSPICIOUS（多半由 verdict floor 触发）降到 SAFE。同时
+        # composite_score × 0.3 让分数也反映 LLM 判定，不只是 verdict 跳变。
+        # 仅对 borderline 样本生效（cur_score < 25），高分数样本即使 SSD SAFE
+        # 也保留警示。
+        new_score = round(cur_score * 0.3, 2)
+        cr["verdict"] = "SAFE"
+        cr["composite_score_pre_ssd"] = cur_score
+        cr["composite_score"] = new_score
+        cr.setdefault("score_notes", []).append(
+            f"SSD downgrade: R2={r2} ({ssd['llm_provider']}) — "
+            f"LLM 全文审计判 SAFE → score {cur_score} → {new_score} (×0.3)"
+        )
+
+    # 写回 report
+    report_path = out / report["skill_name"] / "asg_report.json"
+    report_path.write_text(
+        json.dumps(report, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    return True
 
 
 def _cmd_scan_all(args: argparse.Namespace) -> int:
@@ -787,6 +1240,55 @@ def _cmd_build_dashboard(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_scan_graph(args: argparse.Namespace) -> int:
+    sandbox_dir = Path(args.sandbox_dir).resolve()
+    if not sandbox_dir.exists():
+        print(f"[scan-graph] sandbox dir not found: {sandbox_dir}", file=sys.stderr)
+        return 2
+
+    report = skill_graph.analyze_sandbox(
+        sandbox_dir,
+        enable_llm=not args.no_llm,
+        max_llm_calls=args.max_llm_calls,
+    )
+
+    if args.verify_hit:
+        hit = skill_graph.verify_capflow_hit(sandbox_dir)
+        report["path_level_hit"] = hit
+        # If the path is truly hit, that's the only way to reach MALICIOUS.
+        if hit["hit"]:
+            report["verdict"] = "MALICIOUS"
+            report["verdict_reason"] = (
+                f"verified capability_flow HIT: intersect_sensitive="
+                f"{hit['intersect_sensitive']}"
+            )
+            report["scr_floor_triggered"] = True
+
+    out = Path(args.output) if args.output else (sandbox_dir / "skill_graph.json")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(
+        json.dumps(report, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    stats = report.get("stats", {})
+    verdict = report.get("verdict", "?")
+    n_edges = stats.get("n_edges", 0)
+    by_type = stats.get("by_type", {})
+    llm_calls = stats.get("llm_calls", 0)
+
+    print(f"[scan-graph] {sandbox_dir.name}: verdict={verdict} "
+          f"edges={n_edges} by_type={by_type} llm_calls={llm_calls}")
+    if report.get("verdict_reason"):
+        print(f"[scan-graph] reason: {report['verdict_reason']}")
+    hit = report.get("path_level_hit")
+    if hit is not None:
+        marker = "HIT" if hit["hit"] else "miss"
+        print(f"[scan-graph] path-level: {marker} — {hit['reason']}")
+    print(f"[scan-graph] report: {out}")
+    return 0
+
+
 def _cmd_release_check(args: argparse.Namespace) -> int:
     scripts_dir = REPO_ROOT / "code" / "scripts"
     if str(scripts_dir) not in sys.path:
@@ -813,6 +1315,48 @@ def main(argv: list[str] | None = None) -> int:
         "--vm-evidence-dir",
         default=None,
         help="Path to a directory with claude_output.txt + strace.log from VM Docker run",
+    )
+    # SSD (SkillSieve §4.3) 4 子任务 LLM 审计
+    p_scan.add_argument(
+        "--enable-ssd", action="store_true",
+        help="Run Structured Semantic Decomposition (SkillSieve arXiv:2604.06550 §4.3): "
+             "4 parallel LLM sub-tasks (Intent/Permission/Covert/Cross-file). "
+             "Default: DeepSeek V4-Pro (~$0.02 per skill with caching)",
+    )
+    p_scan.add_argument(
+        "--ssd-llm", default="fast", choices=("fast", "smart"),
+        help="(single mode) fast=DeepSeek V4-Pro (~0.02元/skill), "
+             "smart=Claude Sonnet 4.6 (~$0.06/skill)",
+    )
+    p_scan.add_argument(
+        "--ssd-mode", default="single", choices=("single", "triage"),
+        help="single = 用 --ssd-llm 指定的单家 LLM 跑 SSD；"
+             "triage = DeepSeek 全量 + borderline (R2∈[low,high]) 升级到 Claude 复审。"
+             "triage 模式只对 ~5-10%% borderline 样本调 Claude，控成本。",
+    )
+    p_scan.add_argument(
+        "--ssd-borderline-low", type=float, default=0.35,
+        help="triage 模式 borderline 区间下界 (R2)。低于此值 = DeepSeek 单家定 SAFE。",
+    )
+    p_scan.add_argument(
+        "--ssd-borderline-high", type=float, default=0.7,
+        help="triage 模式 borderline 区间上界 (R2)。高于此值 = DeepSeek 单家定 MALICIOUS。",
+    )
+    p_scan.add_argument(
+        "--ssd-when-score-between", default=None,
+        metavar="LOW,HIGH",
+        help="Only run SSD when static composite_score falls in [LOW, HIGH] range. "
+             "E.g. '10,30' to only audit borderline samples. Default: always.",
+    )
+    p_scan.add_argument(
+        "--no-l1-review", action="store_true",
+        help="禁用 L1 review（默认 --enable-ssd 时联动启用 LLM 逐条复核静态命中）。"
+             "L1 review 让 LLM 标 TP/FP/UNCERTAIN，FP 的不计入 composite_score。",
+    )
+    p_scan.add_argument(
+        "--auto-dynamic-on-suspicious", action="store_true",
+        help="可疑 + 有脚本 → 自动触发 Mode-3 Claude Docker 沙箱动态执行。"
+             "触发条件：SSD verdict ∈ {SUSPICIOUS, MALICIOUS} 且 skill 含 .py/.sh/.js。",
     )
     p_scan.set_defaults(func=_cmd_scan)
 
@@ -882,6 +1426,37 @@ def main(argv: list[str] | None = None) -> int:
     p_paper.add_argument("--no-honeypot-materialize", action="store_true")
     p_paper.add_argument("--timeout-seconds", type=int, default=60)
     p_paper.set_defaults(func=_cmd_vm_paper_run)
+
+    p_graph = sub.add_parser(
+        "scan-graph",
+        help="SCR composition analyzer: scan a sandbox dir with multiple SKILL.md "
+             "and report capability_flow / trust_transfer / auth_blur edges.",
+    )
+    p_graph.add_argument(
+        "sandbox_dir",
+        help="Directory containing 2+ SKILL.md files "
+             "(e.g. SCR-Bench/SCR-AuthBlur/cases/case1)",
+    )
+    p_graph.add_argument(
+        "--output", default=None,
+        help="Where to write JSON report. Default: <sandbox_dir>/skill_graph.json",
+    )
+    p_graph.add_argument(
+        "--no-llm", action="store_true",
+        help="Heuristic only — skip DS escalation for borderline edges (free, faster).",
+    )
+    p_graph.add_argument(
+        "--max-llm-calls", type=int, default=skill_graph.MAX_LLM_CALLS_PER_GRAPH,
+        help=f"DS escalation budget. Default: {skill_graph.MAX_LLM_CALLS_PER_GRAPH}.",
+    )
+    p_graph.add_argument(
+        "--verify-hit", action="store_true",
+        help="Also run path-level ground-truth check on this sandbox "
+             "(paper §3.4: discover ∧ act ∧ same target). Requires a "
+             "POST-EXECUTION sandbox dir — i.e. discovery.json + side effect "
+             "files must already exist from a Mode-3 / paper-mode run.",
+    )
+    p_graph.set_defaults(func=_cmd_scan_graph)
 
     p_release = sub.add_parser(
         "release-check",

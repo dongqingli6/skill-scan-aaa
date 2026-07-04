@@ -87,11 +87,24 @@ VERDICT_LINE_RE = re.compile(
     r"^\s*VERDICT\s*[:：]\s*(SAFE|SUSPICIOUS|MALICIOUS|CRITICAL[_\s-]?MALICIOUS)",
     re.IGNORECASE | re.MULTILINE,
 )
+# 中文 markdown 报告：## 判定 / ## 总结 / ## 综合判定 ... **MALICIOUS** / 判定为 MALICIOUS / 判定: MALICIOUS
+VERDICT_CN_RE = re.compile(
+    r"(?:#{1,3}\s*(?:最终)?(?:综合)?(?:风险)?判定|##?\s*(?:总结|结论)|判定(?:结果)?(?:为|是)?)"
+    r"[\s\S]{0,150}?[*`'\"「【〈]*(SAFE|SUSPICIOUS|MALICIOUS|CRITICAL[_\s-]?MALICIOUS)",
+    re.IGNORECASE,
+)
 
 
 def _extract_verdict(text: str) -> str | None:
-    """Pull the structured VERDICT line out of Claude's response, if present."""
+    """Pull the structured VERDICT line out of Claude's response, if present.
+
+    支持两种格式：
+      1. 英文：VERDICT: SAFE|SUSPICIOUS|MALICIOUS
+      2. 中文 markdown：## 判定 + **MALICIOUS** 或 判定: MALICIOUS
+    """
     m = VERDICT_LINE_RE.search(text)
+    if not m:
+        m = VERDICT_CN_RE.search(text)
     if not m:
         return None
     raw = m.group(1).upper().replace(" ", "_").replace("-", "_")
@@ -152,30 +165,79 @@ def _extract_json_audit(text: str) -> dict[str, Any] | None:
         return None
     if not isinstance(obj, dict):
         return None
-    verdict = str(obj.get("verdict", "")).upper()
-    if verdict not in {"SAFE", "SUSPICIOUS", "MALICIOUS"}:
-        return None
-    risks = obj.get("risks") or []
-    if not isinstance(risks, list):
-        risks = []
-    # Normalize each risk
+    # 容忍 Claude 用变体 schema 的情况：除 verdict 外接受 overall_rating/rating/severity
+    # 等同义键；找不到时根据 issues/risks 内严重度推断。
+    verdict_raw = (
+        obj.get("verdict") or obj.get("overall_rating") or obj.get("rating")
+        or obj.get("severity") or ""
+    )
+    verdict = str(verdict_raw).upper()
+    # 把常见非标准词映射回三档
+    _VERDICT_ALIASES = {
+        "LOW": "SAFE", "BENIGN": "SAFE", "OK": "SAFE", "PASS": "SAFE", "CLEAN": "SAFE",
+        "MEDIUM": "SUSPICIOUS", "WARN": "SUSPICIOUS", "WARNING": "SUSPICIOUS",
+        "MODERATE": "SUSPICIOUS", "REVIEW": "SUSPICIOUS",
+        "HIGH": "MALICIOUS", "CRITICAL": "MALICIOUS", "DANGER": "MALICIOUS",
+        "FAIL": "MALICIOUS", "MALICIOUS_HIGH": "MALICIOUS",
+    }
+    verdict = _VERDICT_ALIASES.get(verdict, verdict)
+    # 容忍 risks 用 issues / findings / problems 命名
+    risks_raw = obj.get("risks") or obj.get("issues") or obj.get("findings") or obj.get("problems") or []
+    if not isinstance(risks_raw, list):
+        risks_raw = []
+    # 标准化每条 risk（容忍各种字段别名）
     normalized_risks = []
-    for r in risks:
+    for r in risks_raw:
         if not isinstance(r, dict):
             continue
+        # 兼容字段别名
+        sev = str(r.get("severity", r.get("level", r.get("priority", "MEDIUM")))).upper()
+        sev = _VERDICT_ALIASES.get(sev, sev)
+        # severity 映射回 CRITICAL/HIGH/MEDIUM/LOW（用于显示）
+        if sev == "SAFE": sev = "LOW"
+        if sev == "MALICIOUS": sev = "CRITICAL"
+        if sev == "SUSPICIOUS": sev = "MEDIUM"
+        category = str(r.get("category", r.get("type", r.get("kind", "其他"))))
+        title = str(r.get("title", r.get("issue", r.get("name", "")))).strip()[:80]
+        file = str(r.get("file", r.get("location", r.get("path", "")))).strip()[:200]
+        # location 可能是 "file:line" 形式，拆出来
+        line = 0
+        if isinstance(r.get("line"), int):
+            line = r["line"]
+        elif ":" in file and file.rsplit(":", 1)[-1].isdigit():
+            file, line_s = file.rsplit(":", 1)
+            line = int(line_s)
+        snippet = str(r.get("code_snippet", r.get("snippet", r.get("code", "")))).strip()[:400]
+        desc = str(r.get("description", r.get("detail", r.get("details", r.get("explanation", ""))))).strip()
+        rec = str(r.get("recommendation", r.get("fix", r.get("remediation", r.get("suggested_fix", ""))))).strip()
         normalized_risks.append({
-            "severity": str(r.get("severity", "MEDIUM")).upper(),
-            "category": str(r.get("category", "其他")),
-            "title": str(r.get("title", "")).strip()[:80],
-            "file": str(r.get("file", "")).strip()[:200],
-            "line": int(r["line"]) if isinstance(r.get("line"), int) else 0,
-            "code_snippet": str(r.get("code_snippet", "")).strip()[:400],
-            "description": str(r.get("description", "")).strip(),
-            "recommendation": str(r.get("recommendation", "")).strip(),
+            "severity": sev,
+            "category": category,
+            "title": title,
+            "file": file,
+            "line": line,
+            "code_snippet": snippet,
+            "description": desc,
+            "recommendation": rec,
         })
+    # 兜底：verdict 仍非标准时，按 risks 严重度推断
+    if verdict not in {"SAFE", "SUSPICIOUS", "MALICIOUS"}:
+        if any(r["severity"] == "CRITICAL" for r in normalized_risks):
+            verdict = "MALICIOUS"
+        elif any(r["severity"] in ("HIGH", "MEDIUM") for r in normalized_risks):
+            verdict = "SUSPICIOUS"
+        elif normalized_risks:
+            verdict = "SUSPICIOUS"
+        else:
+            verdict = "SAFE"
+    # summary_cn 也容忍变体
+    summary = str(
+        obj.get("summary_cn") or obj.get("summary") or obj.get("description")
+        or obj.get("overall_summary") or ""
+    ).strip()
     return {
         "verdict": verdict,
-        "summary_cn": str(obj.get("summary_cn", "")).strip(),
+        "summary_cn": summary,
         "risks": normalized_risks,
     }
 

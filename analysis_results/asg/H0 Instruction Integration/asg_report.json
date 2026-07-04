@@ -1,0 +1,219 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:47:25.530087+00:00",
+  "skill_name": "H0 Instruction Integration",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\h0-instruction-integration\\H0 Instruction Integration",
+  "skill_contents": {
+    "file_count": 3,
+    "total_bytes": 6177,
+    "files": [
+      {
+        "path": "references/instruction-targets.md",
+        "size_bytes": 954,
+        "kind": "text",
+        "content_preview": "# Instruction File Targets\n\nUse these paths when integrating a top-positioned managed `h0` block.\n\n## Primary targets\n\n1. `AGENTS.md`\n2. `CLAUDE.md`\n3. `.claude/CLAUDE.md`\n\n## Agent-specific related files (only when user requests broader integration)\n\n### Codex\n\n- Repo guidance: `AGENTS.md`\n- User guidance: `~/.codex/AGENTS.md` (or `AGENTS.override.md` variants)\n\n### Claude Code\n\n- Repo guidance: `CLAUDE.md` or `.claude/CLAUDE.md`\n- User guidance: `~/.claude/CLAUDE.md`\n\n### OpenCode\n\n- Repo guidance commonly in `AGENTS.md` and rule files referenced by\n  `opencode.json` `instructions`\n- User guidance via `~/.config/opencode/opencode.json` `instructions` paths\n\n### GitHub Copilot\n\n- Agent instructions: `AGENTS.md` (nearest scope)\n- Copilot custom instructions (optional): `.github/copilot-instructions.md`\n\n## Placement rule\n\n- Place `h0` block near top, after title/frontmatter.\n- Never replace whole file.\n- Preserve local structure and style.\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/upsert_h0_block.py",
+        "size_bytes": 2773,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\n\"\"\"Upsert a managed h0 block near the top of an instruction file.\n\nUsage:\n  python upsert_h0_block.py --file AGENTS.md\n  python upsert_h0_block.py --file CLAUDE.md --dry-run\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport sys\nfrom pathlib import Path\n\nBEGIN = \"<!-- h0:begin -->\"\nEND = \"<!-- h0:end -->\"\n\nBLOCK = \"\"\"<!-- h0:begin -->\n## h0 Integration\n- h0 provides memory, tool discovery, and codemode execution.\n- Use installed h0 skills: h0-bootstrap, h0-memory-operations,\n  h0-codemode-operations, h0-instruction-integration.\n- Before non-trivial work, retrieve likely-relevant memory via h0.\n- Store only reusable, non-sensitive memories after work.\n- Use tools search/describe before codemode execute.\n- If setup looks unhealthy, run h0 doctor.\n<!-- h0:end -->\n\"\"\"\n\n\ndef find_frontmatter_end(lines: list[str]) -> int:\n    if not lines:\n        return 0\n    if lines[0].strip() != \"---\":\n        return 0\n    for idx in range(1, len(lines)):\n        if lines[idx].strip() == \"---\":\n            return idx + 1\n    return 0\n\n\ndef upsert(content: str) -> str:\n    if BEGIN in content and END in content:\n        start = content.index(BEGIN)\n        end = content.index(END) + len(END)\n        prefix = content[:start]\n        suffix = content[end:]\n        if suffix.startswith(\"\\n\"):\n            suffix = suffix[1:]\n        return f\"{prefix}{BLOCK}\\n{suffix}\".rstrip() + \"\\n\"\n\n    lines = content.splitlines()\n    insert_at = find_frontmatter_end(lines)\n\n    if insert_at == 0 and lines and lines[0].startswith(\"#\"):\n        insert_at = 1\n\n    head = lines[:insert_at]\n    tail = lines[insert_at:]\n\n    out_lines = []\n    out_lines.extend(head)\n    if out_lines and out_lines[-1].strip() != \"\":\n        out_lines.append(\"\")\n    out_lines.extend(BLOCK.strip(\"\\n\").splitlines())\n    out_lines.append(\"\")\n    if tail and tail[0].strip() != \"\":\n        out_lines.append(\"\")\n    out_lines.extend(tail)\n\n    return \"\\n\".join(out_lines).rstrip() + \"\\n\"\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--file\", required=True)\n    parser.add_argument(\"--dry-run\", action=\"store_true\")\n    args = parser.parse_args()\n\n    path = Path(args.file)\n    if not path.exists():\n        print(f\"error: file not found: {path}\", file=sys.stderr)\n        return 1\n\n    original = path.read_text(encoding=\"utf-8\")\n    updated = upsert(original)\n\n    if args.dry_run:\n        changed = \"yes\" if original != updated else \"no\"\n        print(f\"would_update: {changed}\")\n        return 0\n\n    if original != updated:\n        path.write_text(updated, encoding=\"utf-8\")\n        print(f\"updated: {path}\")\n    else:\n        print(f\"unchanged: {path}\")\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 2450,
+        "kind": "text",
+        "content_preview": "---\nname: h0-instruction-integration\ndescription: Update AGENTS.md and CLAUDE.md files to integrate h0 guidance non-destructively. Use when adding or refreshing concise top-of-file h0 workflow rules and references to installed h0 skills.\n---\n\n# h0 Instruction Integration\n\nIntegrate `h0` guidance into instruction files without replacing existing\ncontent.\n\n## Use when\n\n- `h0` has been installed or updated and instruction files need alignment.\n- User asks to make agents aware of h0 capabilities/workflows.\n\n## Do not use when\n\n- Task does not involve instruction files.\n- User explicitly requests no file modifications.\n\n## Target files\n\nDiscover and prioritize:\n\n1. `AGENTS.md` (repo root and relevant ancestor scopes)\n2. `CLAUDE.md` and `.claude/CLAUDE.md`\n\nUse ecosystem-specific references only if requested; keep primary integration in\nagent instruction files.\n\nUse `references/instruction-targets.md` for concrete path candidates by client.\n\n## Insertion policy\n\n1. Insert concise `h0` block near top of file.\n2. If managed block exists, update it in place.\n3. Preserve all non-`h0` content.\n4. Keep existing file tone/structure.\n5. Prefer insertion right after title/frontmatter so `h0` guidance stays near\n   top for retrieval.\n\n## Managed block format\n\nUse markers to allow safe updates:\n\n```md\n<!-- h0:begin -->\n## h0 Integration\n- h0 provides memory, tool discovery, and codemode execution.\n- Use installed h0 skills: h0-bootstrap, h0-memory-operations,\n  h0-codemode-operations, h0-instruction-integration.\n- Before non-trivial work, retrieve likely-relevant memory via h0.\n- Store only reusable, non-sensitive memories after work.\n- Use tools search/describe before codemode execute.\n- If setup looks unhealthy, run h0 doctor.\n<!-- h0:end -->\n```\n\nKeep this block concise and high-signal.\n\n## What to do\n\n- Do place `h0` block near top for retrieval.\n- Do adapt heading level to the file's existing style.\n- Do keep bullets actionable and short.\n\n## What not to do\n\n- Do not overwrite full files.\n- Do not duplicate the block repeatedly.\n- Do not add long procedural checklists to always-on sections.\n\n## Validation\n\nAfter update, confirm:\n\n1. File still parses/reads as valid markdown.\n2. `h0` block appears once and near top.\n3. Existing non-`h0` instructions are preserved.\n\nUse the bundled helper script when deterministic editing is preferred:\n\n```bash\npython \"${CLAUDE_SKILL_DIR}/scripts/upsert_h0_block.py\" --file AGENTS.md\n```\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: h0-instruction-integration\ndescription: Update AGENTS.md and CLAUDE.md files to integrate h0 guidance non-destructively. Use when adding or refreshing concise top-of-file h0 workflow rules and references to installed h0 skills.\n---\n\n# h0 Instruction Integration\n\nIntegrate `h0` guidance into instruction files without replacing existing\ncontent.\n\n## Use when\n\n- `h0` has been installed or updated and instruction files need alignment.\n- User asks to make agents aware of h0 capabilities/workflows.\n\n## Do not use when\n\n- Task does not involve instruction files.\n- User explicitly requests no file modifications.\n\n## Target files\n\nDiscover and prioritize:\n\n1. `AGENTS.md` (repo root and relevant ancestor scopes)\n2. `CLAUDE.md` and `.claude/CLAUDE.md`\n\nUse ecosystem-specific references only if requested; keep primary integration in\nagent instruction files.\n\nUse `references/instruction-targets.md` for concrete path candidates by client.\n\n## Insertion policy\n\n1. Insert concise `h0` block near top of file.\n2. If managed block exists, update it in place.\n3. Preserve all non-`h0` content.\n4. Keep existing file tone/structure.\n5. Prefer insertion right after title/frontmatter so `h0` guidance stays near\n   top for retrieval.\n\n## Managed block format\n\nUse markers to allow safe updates:\n\n```md\n<!-- h0:begin -->\n## h0 Integration\n- h0 provides memory, tool discovery, and codemode execution.\n- Use installed h0 skills: h0-bootstrap, h0-memory-operations,\n  h0-codemode-operations, h0-instruction-integration.\n- Before non-trivial work, retrieve likely-relevant memory via h0.\n- Store only reusable, non-sensitive memories after work.\n- Use tools search/describe before codemode execute.\n- If setup looks unhealthy, run h0 doctor.\n<!-- h0:end -->\n```\n\nKeep this block concise and high-signal.\n\n## What to do\n\n- Do place `h0` block near top for retrieval.\n- Do adapt heading level to the file's existing style.\n- Do keep bullets actionable and short.\n\n## What not to do\n\n- Do not overwrite full files.\n- Do not duplicate the block repeatedly.\n- Do not add long procedural checklists to always-on sections.\n\n## Validation\n\nAfter update, confirm:\n\n1. File still parses/reads as valid markdown.\n2. `h0` block appears once and near top.\n3. Existing non-`h0` instructions are preserved.\n\nUse the bundled helper script when deterministic editing is preferred:\n\n```bash\npython \"${CLAUDE_SKILL_DIR}/scripts/upsert_h0_block.py\" --file AGENTS.md\n```\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 3
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.0,
+    "verdict": "SAFE",
+    "mean_confidence": 0.95,
+    "subtasks": {
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该技能包仅按要求在AGENTS. md/CLAUDE.",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "D": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该技能包仅包含本地文件修改脚本与静态参考文件，未发现任何外部网络请求、凭据泄露或越权操作，行为合法。",
+        "finding": null,
+        "task_name": "cross_file_consistency"
+      },
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该技能包仅向指令文件插入标准h0管理块，无隐蔽行为。",
+        "finding": null,
+        "task_name": "covert_behavior"
+      },
+      "B": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该 skill 仅用于向指令文件插入一个固定的 h0 集成指南块，脚本无网络访问、无敏感环境变量读取，行为与声明功能完全一致。",
+        "finding": null,
+        "task_name": "permission_justification"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.0 confidence=0.95 都高置信 → DeepSeek 单家定论"
+  }
+}

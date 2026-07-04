@@ -1,0 +1,20 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\12306-train-assistant",
+  "skill_name": "12306-train-assistant",
+  "files_scanned": [
+    "_meta.json",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

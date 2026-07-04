@@ -1,0 +1,23 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-ai-news",
+  "skill_name": "benign-ai-news",
+  "files_scanned": [
+    "references\\sources.md",
+    "scripts\\fetch-news.ts",
+    "scripts\\fetch-transcript.ts",
+    "scripts\\package.json",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 5,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

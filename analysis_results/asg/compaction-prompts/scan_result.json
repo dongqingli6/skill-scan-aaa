@@ -1,0 +1,85 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\letta\\compaction-prompts",
+  "skill_name": "compaction-prompts",
+  "files_scanned": [
+    "references\\prompt-patterns.md",
+    "scripts\\update-compaction-prompt.ts",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 1,
+    "LOW": 1
+  },
+  "by_pattern": {
+    "E2": 2,
+    "E1": 1
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 2,
+    "exfil": 1
+  },
+  "rule_ids_hit": [
+    "E1",
+    "E2"
+  ],
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\update-compaction-prompt.ts",
+      "line": 91,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.LETTA_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  88 | \n  89 |   const dryRun = args[\"dry-run\"] === true;\n  90 | \n» 91 |   const apiKey = process.env.LETTA_API_KEY;\n  92 |   if (!dryRun && !apiKey) throw new Error(\"Set LETTA_API_KEY\");\n  93 | \n  94 |   const agentId = String(args[\"agent-id\"] || process.env.AGENT_ID || \"\");",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "const apiKey = process.env.LETTA_API_KEY;",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E2",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "SKILL.md",
+      "line": 132,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.LETTA_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  129 | ```typescript\n  130 | const baseUrl = process.env.LETTA_BASE_URL ?? \"https://api.letta.com\";\n  131 | const agentId = process.env.AGENT_ID!;\n» 132 | const apiKey = process.env.LETTA_API_KEY!;\n  133 | \n  134 | const currentResponse = await fetch(`${baseUrl}/v1/agents/${agentId}`, {\n  135 |   headers: { Authorization: `Bearer ${apiKey}` },",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "skill_md_instruction",
+      "snippet": "const apiKey = process.env.LETTA_API_KEY!;",
+      "downgraded": false,
+      "downgrade_reason": "Bumped to HIGH: co-located with real E1 exfiltration in same file"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 184,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -sS -X PATCH",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  181 |       clip_chars: 50000\n  182 |   }) }' > /tmp/compaction-patch.json\n  183 | \n» 184 | curl -sS -X PATCH \"$BASE_URL/v1/agents/$AGENT_ID\" \\\n  185 |   -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  186 |   -H \"Content-Type: application/json\" \\\n  187 |   --data-binary @/tmp/compaction-patch.json",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -sS -X PATCH \"$BASE_URL/v1/agents/$AGENT_ID\" \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

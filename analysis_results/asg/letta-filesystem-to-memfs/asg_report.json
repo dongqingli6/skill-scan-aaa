@@ -1,0 +1,210 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:40.981993+00:00",
+  "skill_name": "letta-filesystem-to-memfs",
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\letta\\letta-filesystem-to-memfs",
+  "skill_contents": {
+    "file_count": 6,
+    "total_bytes": 39349,
+    "files": [
+      {
+        "path": "LICENSE",
+        "size_bytes": 1320,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "references/design.md",
+        "size_bytes": 3300,
+        "kind": "text",
+        "content_preview": "# Design notes\n\n## Why not write full PDFs into `system/`?\n\nEverything in `system/` is pinned into the agent prompt. Full PDFs there recreate the old context-overflow problem. Keep only a corpus index in `system/` and store chunks outside `system/`.\n\n## Semantic search\n\nThe deprecated Filesystem did automatic embeddings for `search_file`. MemFS does not embed documents by itself. Use the bundled CLI's QMD subcommands to index generated markdown chunks locally.\n\nRecommended search stack:\n\n- `rg` or `search_corpus.py` for exact terms and grep-like workflows.\n- `letta_fs_to_memfs.py qmd search` for QMD keyword lookup over one corpus.\n- `letta_fs_to_memfs.py qmd vsearch` for semantic lookup over one corpus.\n- `letta_fs_to_memfs.py qmd query` for hybrid keyword + vector retrieval over one corpus.\n\nOnly use an external vector DB if the product needs server-side search outside the agent's local MemFS checkout.\n\n## QMD collection strategy\n\nThe CLI creates one QMD collection per `(memory_dir, corpus)` pair. The default collection name is deterministic:\n\n```txt\nmemfs-<corpus>-<hash8(memory_dir)>\n```\n\nThe collection mask only indexes chunk files:\n\n```txt\ndocuments/<corpus>/**/chunks/*.md\n```\n\nThis avoids the noisy behavior of indexing manifests, pinned system indexes, and unrelated memory files. Use `--collection` only when you need a custom stable name.\n\nThe CLI also hardens QMD runtime launch by unsetting `BUN_INSTALL` and preferring the Node binary next to the `qmd` executable. This avoids Bun sqlite extension failures and broken Homebrew Node installs.\n\n## Frontmatter rules\n\nMemFS markdown files should include YAML frontmatter. Safe keys:\n\n- `description`\n- `limit`\n- `metadata`\n- `read_only` only if set by server/user; do not invent it during migration.\n\n## Recommended corpus strategy\n\nFor each old folder:\n\n1. Create one corpus with the old folder name.\n2. Ingest the old folder path directly with `--source /path/to/folder`, or pass individual files/URLs.\n3. Push MemFS changes.\n4. Run `letta_fs_to_memfs.py qmd setup` so QMD indexes the generated markdown chunks.\n5. Update the application or agent workflow to query QMD/grep over MemFS and read relevant chunk files by path.\n\nRe-ingesting a document with the same slug replaces that document's chunk directory. This prevents stale chunks from surviving after chunk-size changes or improved extraction.\n\n## Useful CLI patterns\n\nIngest a directory but only PDFs and markdown:\n\n```bash\nuv run --with pymupdf scripts/letta_fs_to_memfs.py ingest \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs \\\n  --source ./docs \\\n  --glob \"**/*.pdf\" \\\n  --glob \"**/*.md\"\n```\n\nSkip generated/vendor folders:\n\n```bash\nuv run --with pymupdf scripts/letta_fs_to_memfs.py ingest \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs \\\n  --source ./docs \\\n  --exclude \"**/vendor/**\" \\\n  --exclude \"**/dist/**\"\n```\n\nQMD lifecycle:\n\n```bash\nuv run scripts/letta_fs_to_memfs.py qmd setup --memory-dir \"$MEMORY_DIR\" --corpus product-docs\nuv run scripts/letta_fs_to_memfs.py qmd reindex --memory-dir \"$MEMORY_DIR\" --corpus product-docs\nuv run scripts/letta_fs_to_memfs.py qmd query --memory-dir \"$MEMORY_DIR\" --corpus product-docs \"refund policy\"\n```\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/ingest_documents.py",
+        "size_bytes": 263,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"Compatibility wrapper for letta_fs_to_memfs.py ingest.\"\"\"\n\nfrom __future__ import annotations\n\nimport sys\n\nfrom letta_fs_to_memfs import main\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main([\"ingest\", *sys.argv[1:]]))\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/letta_fs_to_memfs.py",
+        "size_bytes": 28887,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"Migrate deprecated Letta Filesystem folders/files to MemFS + QMD.\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport fnmatch\nimport hashlib\nimport json\nimport math\nimport mimetypes\nimport os\nimport re\nimport shutil\nimport subprocess\nimport sys\nimport tempfile\nimport urllib.parse\nimport urllib.request\nfrom collections import Counter\nfrom dataclasses import dataclass\nfrom pathlib import Path\n\nSUPPORTED_SUFFIXES = {\n    \".pdf\",\n    \".md\",\n    \".markdown\",\n    \".txt\",\n    \".text\",\n    \".json\",\n    \".csv\",\n    \".log\",\n    \".html\",\n    \".xml\",\n}\n\nDEFAULT_EXCLUDES = [\n    \".git/**\",\n    \"**/.git/**\",\n    \"node_modules/**\",\n    \"**/node_modules/**\",\n    \".venv/**\",\n    \"**/.venv/**\",\n    \"__pycache__/**\",\n    \"**/__pycache__/**\",\n]\n\nTOKEN_RE = re.compile(r\"[a-zA-Z0-9_]{2,}\")\n\n\n@dataclass\nclass SourceDoc:\n    source: str\n    local_path: Path\n    title: str\n    slug: str\n    kind: str\n    sha256: str\n    text: str\n\n\n@dataclass\nclass Chunk:\n    index: int\n    text: str\n    char_start: int\n    char_end: int\n\n\n@dataclass\nclass IngestResult:\n    corpus: str\n    documents: int\n    chunks: int\n    corpus_dir: Path\n    system_index: Path | None\n\n\ndef slugify(value: str) -> str:\n    value = value.lower().strip()\n    value = re.sub(r\"\\.(pdf|md|markdown|txt|text|json|csv|log|html|xml)$\", \"\", value, flags=re.IGNORECASE)\n    value = re.sub(r\"[^a-z0-9]+\", \"-\", value)\n    value = re.sub(r\"-+\", \"-\", value).strip(\"-\")\n    return value[:80] or \"document\"\n\n\ndef sha256_file(path: Path) -> str:\n    h = hashlib.sha256()\n    with path.open(\"rb\") as f:\n        for block in iter(lambda: f.read(1024 * 1024), b\"\"):\n            h.update(block)\n    return h.hexdigest()\n\n\ndef yaml_scalar(value) -> str:\n    if value is None:\n        return \"null\"\n    if isinstance(value, bool):\n        return \"true\" if value else \"false\"\n    if isinstance(value, (int, float)):\n        return str(value)\n    return json.dumps(str(value), ensure_ascii=False)\n\n\ndef frontmatter(description: str, metadata: dict) -> str:\n    lines = [\"---\", f\"description: {yaml_scalar(description)}\", \"metadata:\"]\n    for key in sorted(metadata):\n        lines.append(f\"  {key}: {yaml_scalar(metadata[key])}\")\n    lines.append(\"---\")\n    return \"\\n\".join(lines) + \"\\n\\n\"\n\n\ndef strip_frontmatter(text: str) -> str:\n    if text.startswith(\"---\\n\"):\n        end = text.find(\"\\n---\\n\", 4)\n        if end != -1:\n            return text[end + 5 :]\n    return text\n\n\ndef unique_slug(base: str, used: set[str]) -> str:\n    slug = slugify(base)\n    candidate = slug\n    i = 2\n    while candidate in used:\n        candidate = f\"{slug}-{i}\"\n        i += 1\n    used.add(candidate)\n    return candidate\n\n\ndef unique_path(path: Path) -> Path:\n    if not path.exists():\n        return path\n    stem = path.stem\n    suffix = path.suffix\n    i = 2\n    while True:\n        candidate = path.with_name(f\"{stem}-{i}{suffix}\")\n        if not candidate.exists():\n            return candidate\n        i += 1\n\n\ndef download_source(url: str, tmpdir: Path, max_download_mb: float) -> Path:\n    parsed = urllib.parse.urlparse(url)\n    name = Path(parsed.path).name or \"download\"\n    if Path(name).suffix.lower() not in SUPPORTED_SUFFIXES:\n        name += \".pdf\"\n    dest = unique_path(tmpdir / name)\n    max_bytes = int(max_download_mb * 1024 * 1024) if max_download_mb and max_download_mb > 0 else 0\n    req = urllib.request.Request(url, headers={\"User-Agent\": \"letta-fs-to-memfs/1.0\"})\n    with urllib.request.urlopen(req, timeout=60) as resp, dest.open(\"wb\") as f:\n        length = resp.headers.get(\"Content-Length\")\n        if max_bytes and length and int(length) > max_bytes:\n            raise SystemExit(f\"Download too large ({int(length)} bytes > {max_bytes} bytes): {url}\")\n        total = 0\n        while True:\n            block = resp.read(1024 * 1024)\n            if not block:\n                break\n            total += len(block)\n            if max_bytes and total > max_bytes:\n                raise SystemExit(f\"Download",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/search_corpus.py",
+        "size_bytes": 263,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"Compatibility wrapper for letta_fs_to_memfs.py search.\"\"\"\n\nfrom __future__ import annotations\n\nimport sys\n\nfrom letta_fs_to_memfs import main\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main([\"search\", *sys.argv[1:]]))\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 5316,
+        "kind": "text",
+        "content_preview": "---\nname: letta-filesystem-to-memfs\ndescription: Migrates deprecated Letta Filesystem folders/files to MemFS using markdown document corpora, chunking, local lexical search, and QMD semantic search via the memfs-search skill. Use when replacing folders.files.upload, working with PDFs or document QA, or emulating open_file, grep_file, and search_file behavior.\nlicense: MIT\n---\n\n# Letta Filesystem to MemFS\n\nUse this skill when a user wants the old Letta Filesystem behavior: upload documents, chunk them, attach them to an agent, and let the agent search/open them.\n\nMemFS is not the same product. It is git-backed markdown memory. To mimic the old workflow, use the bundled CLI:\n\n1. Extract PDFs/docs to markdown text.\n2. Chunk the text into stable markdown files under `documents/<corpus>/<doc>/chunks/`.\n3. Write a small pinned index under `system/filesystem/<corpus>.md`.\n4. Index only the corpus chunk files in QMD for semantic search.\n5. Review the MemFS git diff. Commit only if asked.\n\n## Quick workflow\n\n```bash\n# Set this to the skill directory shown in the skill load header.\nSKILL_DIR=\"/path/to/letta-filesystem-to-memfs\"\n\n# From any directory. MEMORY_DIR should point at the target agent's memfs repo.\nuv run --with pymupdf \\\n  \"$SKILL_DIR/scripts/letta_fs_to_memfs.py\" ingest \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs \\\n  --source ./docs/ \\\n  --source ./guide.pdf \\\n  --source https://arxiv.org/pdf/2310.08560\n\ncd \"$MEMORY_DIR\"\ngit status --short\ngit diff --stat\n```\n\nSearch the chunk corpus lexically:\n\n```bash\nuv run \"$SKILL_DIR/scripts/letta_fs_to_memfs.py\" search \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs \\\n  \"memory hierarchy\" \\\n  -n 5\n```\n\nSemantic search with QMD. The CLI creates a corpus-scoped QMD collection over chunk files only:\n\n```bash\nuv run \"$SKILL_DIR/scripts/letta_fs_to_memfs.py\" qmd setup \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs\n\nuv run \"$SKILL_DIR/scripts/letta_fs_to_memfs.py\" qmd query \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs \\\n  \"memory hierarchy\" \\\n  -n 5\n```\n\nUse `qmd reindex` after changing corpus files, and `qmd search` / `qmd vsearch` when you specifically want keyword-only or vector-only search.\n\n## Layout\n\nThe ingest script writes:\n\n```txt\nsystem/filesystem/<corpus>.md\n  Pinned index and operating instructions for the corpus.\n\ndocuments/<corpus>/manifest.md\n  Corpus manifest.\n\ndocuments/<corpus>/<doc-slug>/manifest.md\n  Per-document metadata and chunk table.\n\ndocuments/<corpus>/<doc-slug>/chunks/chunk-0001.md\n  Chunk content with frontmatter metadata.\n\ndocuments/<corpus>/chunks.jsonl\n  Machine-readable chunk export for custom indexing or debugging.\n```\n\n## Old API mapping\n\n| Old Filesystem | MemFS mimic |\n|---|---|\n| `folders.create` | `--corpus <name>` creates `documents/<corpus>/` |\n| `folders.files.upload` | `letta_fs_to_memfs.py ingest --source <file-or-directory-or-url>` |\n| OCR/chunk/embed job | Extract + chunk locally; `qmd setup` / `qmd reindex` for semantic search |\n| `agents.folders.attach` | Enable MemFS, then review and sync repo changes when appropriate |\n| `open_file` | Read chunk markdown files by path |\n| `grep_file` | `rg` or `letta_fs_to_memfs.py search` |\n| `search_file` | `letta_fs_to_memfs.py qmd query` over the corpus chunk collection |\n\n## Heuristics\n\n- Use `system/filesystem/<corpus>.md` for the small always-visible index only.\n- Do not pin full documents into `system/`; it will bloat the prompt.\n- Keep chunks outside `system/`, usually under `documents/<corpus>/...`.\n- Passing a directory to `--source` recursively ingests supported files (`.pdf`, `.md`, `.txt`, `.json`, `.csv`, `.html`, `.xml`).\n- Use `--glob` / `--exclude` for messy directories. Defaults exclude `.git`, `node_modules`, `.venv`, and `__pycache__`.\n- URL downloads default to `--max-download-mb 100`; set `0` for unlimited.\n- Re-ingesting the same document slug replaces that document's old chunk directory, so stale chunks do not survive chunk-size changes.\n- Us",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: letta-filesystem-to-memfs\ndescription: Migrates deprecated Letta Filesystem folders/files to MemFS using markdown document corpora, chunking, local lexical search, and QMD semantic search via the memfs-search skill. Use when replacing folders.files.upload, working with PDFs or document QA, or emulating open_file, grep_file, and search_file behavior.\nlicense: MIT\n---\n\n# Letta Filesystem to MemFS\n\nUse this skill when a user wants the old Letta Filesystem behavior: upload documents, chunk them, attach them to an agent, and let the agent search/open them.\n\nMemFS is not the same product. It is git-backed markdown memory. To mimic the old workflow, use the bundled CLI:\n\n1. Extract PDFs/docs to markdown text.\n2. Chunk the text into stable markdown files under `documents/<corpus>/<doc>/chunks/`.\n3. Write a small pinned index under `system/filesystem/<corpus>.md`.\n4. Index only the corpus chunk files in QMD for semantic search.\n5. Review the MemFS git diff. Commit only if asked.\n\n## Quick workflow\n\n```bash\n# Set this to the skill directory shown in the skill load header.\nSKILL_DIR=\"/path/to/letta-filesystem-to-memfs\"\n\n# From any directory. MEMORY_DIR should point at the target agent's memfs repo.\nuv run --with pymupdf \\\n  \"$SKILL_DIR/scripts/letta_fs_to_memfs.py\" ingest \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs \\\n  --source ./docs/ \\\n  --source ./guide.pdf \\\n  --source https://arxiv.org/pdf/2310.08560\n\ncd \"$MEMORY_DIR\"\ngit status --short\ngit diff --stat\n```\n\nSearch the chunk corpus lexically:\n\n```bash\nuv run \"$SKILL_DIR/scripts/letta_fs_to_memfs.py\" search \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs \\\n  \"memory hierarchy\" \\\n  -n 5\n```\n\nSemantic search with QMD. The CLI creates a corpus-scoped QMD collection over chunk files only:\n\n```bash\nuv run \"$SKILL_DIR/scripts/letta_fs_to_memfs.py\" qmd setup \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs\n\nuv run \"$SKILL_DIR/scripts/letta_fs_to_memfs.py\" qmd query \\\n  --memory-dir \"$MEMORY_DIR\" \\\n  --corpus product-docs \\\n  \"memory hierarchy\" \\\n  -n 5\n```\n\nUse `qmd reindex` after changing corpus files, and `qmd search` / `qmd vsearch` when you specifically want keyword-only or vector-only search.\n\n## Layout\n\nThe ingest script writes:\n\n```txt\nsystem/filesystem/<corpus>.md\n  Pinned index and operating instructions for the corpus.\n\ndocuments/<corpus>/manifest.md\n  Corpus manifest.\n\ndocuments/<corpus>/<doc-slug>/manifest.md\n  Per-document metadata and chunk table.\n\ndocuments/<corpus>/<doc-slug>/chunks/chunk-0001.md\n  Chunk content with frontmatter metadata.\n\ndocuments/<corpus>/chunks.jsonl\n  Machine-readable chunk export for custom indexing or debugging.\n```\n\n## Old API mapping\n\n| Old Filesystem | MemFS mimic |\n|---|---|\n| `folders.create` | `--corpus <name>` creates `documents/<corpus>/` |\n| `folders.files.upload` | `letta_fs_to_memfs.py ingest --source <file-or-directory-or-url>` |\n| OCR/chunk/embed job | Extract + chunk locally; `qmd setup` / `qmd reindex` for semantic search |\n| `agents.folders.attach` | Enable MemFS, then review and sync repo changes when appropriate |\n| `open_file` | Read chunk markdown files by path |\n| `grep_file` | `rg` or `letta_fs_to_memfs.py search` |\n| `search_file` | `letta_fs_to_memfs.py qmd query` over the corpus chunk collection |\n\n## Heuristics\n\n- Use `system/filesystem/<corpus>.md` for the small always-visible index only.\n- Do not pin full documents into `system/`; it will bloat the prompt.\n- Keep chunks outside `system/`, usually under `documents/<corpus>/...`.\n- Passing a directory to `--source` recursively ingests supported files (`.pdf`, `.md`, `.txt`, `.json`, `.csv`, `.html`, `.xml`).\n- Use `--glob` / `--exclude` for messy directories. Defaults exclude `.git`, `node_modules`, `.venv`, and `__pycache__`.\n- URL downloads default to `--max-download-mb 100`; set `0` for unlimited.\n- Re-ingesting the same document slug replaces that document's old chunk directory, so stale chunks do not survive chunk-size changes.\n- Us"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 1,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {
+      "SC1": 1
+    },
+    "by_kill_chain_phase": {
+      "execution": 1
+    },
+    "rule_ids_hit": [
+      "SC1"
+    ],
+    "files_scanned_count": 5
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 1
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "execution"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 5.05,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0875,
+      "S_static_raw": 0.0875,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\letta_fs_to_memfs.py",
+      "line": 598,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  595 | \n  596 | def qmd_run(args: list[str], *, check: bool = True, capture: bool = False) -> subprocess.CompletedProcess[str]:\n  597 |     qmd_bin, env = qmd_env()\n» 598 |     return subprocess.run(\n  599 |         [qmd_bin, *args],\n  600 |         env=env,\n  601 |         text=True,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "return subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

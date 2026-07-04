@@ -1,0 +1,73 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-mcp-builder-2",
+  "skill_name": "benign-mcp-builder-2",
+  "files_scanned": [
+    "LICENSE.txt",
+    "reference\\evaluation.md",
+    "reference\\mcp_best_practices.md",
+    "reference\\node_mcp_server.md",
+    "reference\\python_mcp_server.md",
+    "scripts\\connections.py",
+    "scripts\\evaluation.py",
+    "scripts\\requirements.txt",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 9,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 2
+  },
+  "by_pattern": {
+    "E4": 1,
+    "E2": 1
+  },
+  "by_kill_chain_phase": {
+    "recon": 1,
+    "cred_access": 1
+  },
+  "rule_ids_hit": [
+    "E2",
+    "E4"
+  ],
+  "findings": [
+    {
+      "rule_id": "E4",
+      "severity": "LOW",
+      "kill_chain_phase": "recon",
+      "file": "reference\\node_mcp_server.md",
+      "line": 568,
+      "pattern": "nmap",
+      "matched_text": "nMap",
+      "description": "Network socket usage or port scanning.",
+      "confidence": 0.85,
+      "context": "  565 |     \"skipLibCheck\": true,\n  566 |     \"forceConsistentCasingInFileNames\": true,\n  567 |     \"declaration\": true,\n» 568 |     \"declarationMap\": true,\n  569 |     \"sourceMap\": true,\n  570 |     \"allowSyntheticDefaultImports\": true\n  571 |   },",
+      "original_severity": "LOW",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "\"declarationMap\": true,",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "E2",
+      "severity": "LOW",
+      "kill_chain_phase": "cred_access",
+      "file": "reference\\node_mcp_server.md",
+      "line": 700,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.EXAMPLE_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  697 | // Main function\n  698 | async function main() {\n  699 |   // Verify environment variables if needed\n» 700 |   if (!process.env.EXAMPLE_API_KEY) {\n  701 |     console.error(\"ERROR: EXAMPLE_API_KEY environment variable is required\");\n  702 |     process.exit(1);\n  703 |   }",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "if (!process.env.EXAMPLE_API_KEY) {",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

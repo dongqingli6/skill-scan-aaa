@@ -1,0 +1,282 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T12:04:15.695317+00:00",
+  "skill_name": "benign-jupyter-notebook",
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-jupyter-notebook",
+  "skill_contents": {
+    "file_count": 12,
+    "total_bytes": 31565,
+    "files": [
+      {
+        "path": "agents/openai.yaml",
+        "size_bytes": 331,
+        "kind": "text",
+        "content_preview": "interface:\n  display_name: \"Jupyter Notebooks\"\n  short_description: \"Create Jupyter notebooks for experiments and tutorials\"\n  icon_small: \"./assets/jupyter-small.svg\"\n  icon_large: \"./assets/jupyter.png\"\n  default_prompt: \"Create a Jupyter notebook for this task with clear sections, runnable cells, and concise takeaways.\"\n",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/experiment-template.ipynb",
+        "size_bytes": 2680,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/jupyter-small.svg",
+        "size_bytes": 1046,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/jupyter.png",
+        "size_bytes": 2713,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/tutorial-template.ipynb",
+        "size_bytes": 2597,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE.txt",
+        "size_bytes": 10977,
+        "kind": "text",
+        "content_preview": "Apache License\nVersion 2.0, January 2004\nhttp://www.apache.org/licenses/\n\nTERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n1. Definitions.\n\n   \"License\" shall mean the terms and conditions for use, reproduction,\n   and distribution as defined by Sections 1 through 9 of this document.\n\n   \"Licensor\" shall mean the copyright owner or entity authorized by\n   the copyright owner that is granting the License.\n\n   \"Legal Entity\" shall mean the union of the acting entity and all\n   other entities that control, are controlled by, or are under common\n   control with that entity. For the purposes of this definition,\n   \"control\" means (i) the power, direct or indirect, to cause the\n   direction or management of such entity, whether by contract or\n   otherwise, or (ii) ownership of fifty percent (50%) or more of the\n   outstanding shares, or (iii) beneficial ownership of such entity.\n\n   \"You\" (or \"Your\") shall mean an individual or Legal Entity\n   exercising permissions granted by this License.\n\n   \"Source\" form shall mean the preferred form for making modifications,\n   including but not limited to software source code, documentation\n   source, and configuration files.\n\n   \"Object\" form shall mean any form resulting from mechanical\n   transformation or translation of a Source form, including but\n   not limited to compiled object code, generated documentation,\n   and conversions to other media types.\n\n   \"Work\" shall mean the work of authorship, whether in Source or\n   Object form, made available under the License, as indicated by a\n   copyright notice that is included in or attached to the work\n   (an example is provided in the Appendix below).\n\n   \"Derivative Works\" shall mean any work, whether in Source or Object\n   form, that is based on (or derived from) the Work and for which the\n   editorial revisions, annotations, elaborations, or other modifications\n   represent, as a whole, an original work of authorship. For the purposes\n   of this License, Derivative Works shall not include works that remain\n   separable from, or merely link (or bind by name) to the interfaces of,\n   the Work and Derivative Works thereof.\n\n   \"Contribution\" shall mean any work of authorship, including\n   the original version of the Work and any modifications or additions\n   to that Work or Derivative Works thereof, that is intentionally\n   submitted to Licensor for inclusion in the Work by the copyright owner\n   or by an individual or Legal Entity authorized to submit on behalf of\n   the copyright owner. For the purposes of this definition, \"submitted\"\n   means any form of electronic, verbal, or written communication sent\n   to the Licensor or its representatives, including but not limited to\n   communication on electronic mailing lists, source code control systems,\n   and issue tracking systems that are managed by, or on behalf of, the\n   Licensor for the purpose of discussing and improving the Work, but\n   excluding communication that is conspicuously marked or otherwise\n   designated in writing by the copyright owner as \"Not a Contribution.\"\n\n   \"Contributor\" shall mean Licensor and any individual or Legal Entity\n   on behalf of whom a Contribution has been received by Licensor and\n   subsequently incorporated within the Work.\n\n2. Grant of Copyright License. Subject to the terms and conditions of\n   this License, each Contributor hereby grants to You a perpetual,\n   worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n   copyright license to reproduce, prepare Derivative Works of,\n   publicly display, publicly perform, sublicense, and distribute the\n   Work and such Derivative Works in Source or Object form.\n\n3. Grant of Patent License. Subject to the terms and conditions of\n   this License, each Contributor hereby grants to You a perpetual,\n   worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n   (except as stated in this section) patent license to make, have made,\n   use, offer to sell, sell, import, and otherwise trans",
+        "content_truncated": true
+      },
+      {
+        "path": "references/experiment-patterns.md",
+        "size_bytes": 709,
+        "kind": "text",
+        "content_preview": "# Experiment Patterns\n\nUse this structure for exploratory and experimental work:\n\n- Title and objective: state the question and the success criteria.\n- Setup and reproducibility: import only what you need, set a seed early, and keep configuration in one short cell.\n- Plan: list hypotheses, sweeps, and metrics before running code.\n- Minimal baseline: start with the smallest runnable example and confirm it runs end-to-end before adding complexity.\n- Results and notes: summarize findings in markdown near the relevant code and record key metrics in a small dictionary or table-like structure.\n- Next steps: decide whether to continue, pivot, or stop, and capture follow-up ideas as short bullets.\n",
+        "content_truncated": false
+      },
+      {
+        "path": "references/notebook-structure.md",
+        "size_bytes": 768,
+        "kind": "text",
+        "content_preview": "# Notebook Structure\n\nJupyter notebooks are JSON documents with this high-level shape:\n\n- `nbformat` and `nbformat_minor`\n- `metadata`\n- `cells` (a list of markdown and code cells)\n\nWhen editing `.ipynb` files programmatically:\n\n- Preserve `nbformat` and `nbformat_minor` from the template.\n- Keep `cells` as an ordered list; do not reorder unless intentional.\n- For code cells, set `execution_count` to `null` when unknown.\n- For code cells, set `outputs` to an empty list when scaffolding.\n- For markdown cells, keep `cell_type=\"markdown\"` and `metadata={}`.\n\nPrefer scaffolding from the bundled templates or `new_notebook.py` (for example, `$CODEX_HOME/skills/jupyter-notebook/scripts/new_notebook.py`) instead of hand-authoring raw notebook JSON.\n",
+        "content_truncated": false
+      },
+      {
+        "path": "references/quality-checklist.md",
+        "size_bytes": 583,
+        "kind": "text",
+        "content_preview": "# Quality Checklist\n\nBefore delivering a notebook:\n\n- Run it top-to-bottom at least once (or as much as the environment allows).\n- Ensure early cells set all required state; avoid hidden state from prior runs.\n- Keep outputs tidy. Avoid giant outputs when a short summary works.\n- Prefer small tables, key metrics, or short printouts.\n- Keep the narrative skimmable. Use headings and short bullets, and avoid long paragraphs.\n- Leave helpful TODOs only when necessary, and label them clearly.\n- If execution is not possible, call out the risk and how to validate locally.\n",
+        "content_truncated": false
+      },
+      {
+        "path": "references/tutorial-patterns.md",
+        "size_bytes": 694,
+        "kind": "text",
+        "content_preview": "# Tutorial Patterns\n\nUse this structure for teaching and walkthroughs:\n\n- Audience, prerequisites, and learning goals: say who it is for, list what they should already know, and state what they will be able to do by the end.\n- Outline: provide a short numbered outline so readers can skim.\n- Step-by-step flow: pair a short markdown explanation with a small code cell that runs on its own and a brief interpretation of the result.\n- Exercises: include at least one exercise that reinforces the key concept and provide an answer scaffold in the next cell.\n- Pitfalls and extensions: call out one common mistake and how to fix it, and suggest one optional extension for curious readers.\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/new_notebook.py",
+        "size_bytes": 4216,
+        "kind": "text",
+        "content_preview": "from __future__ import annotations\n\nimport argparse\nimport json\nimport re\nfrom pathlib import Path\nfrom typing import Any\n\n\ndef slugify(text: str) -> str:\n    lowered = text.strip().lower()\n    cleaned = re.sub(r\"[^a-z0-9]+\", \"-\", lowered)\n    collapsed = re.sub(r\"-+\", \"-\", cleaned).strip(\"-\")\n    return collapsed or \"notebook\"\n\n\ndef find_repo_root(start: Path) -> Path:\n    for candidate in (start, *start.parents):\n        if (candidate / \".git\").exists():\n            return candidate\n    return start\n\n\ndef load_template(skill_dir: Path, kind: str) -> dict[str, Any]:\n    asset_name = \"experiment-template.ipynb\" if kind == \"experiment\" else \"tutorial-template.ipynb\"\n    template_path = skill_dir / \"assets\" / asset_name\n    if not template_path.exists():\n        raise SystemExit(f\"Missing template: {template_path}\")\n    with template_path.open(\"r\", encoding=\"utf-8\") as f:\n        data = json.load(f)\n    if not isinstance(data, dict):\n        raise SystemExit(f\"Unexpected template shape: {template_path}\")\n    return data\n\n\ndef update_title(notebook: dict[str, Any], kind: str, title: str) -> None:\n    prefix = \"Experiment\" if kind == \"experiment\" else \"Tutorial\"\n    expected = f\"# {prefix}: {title}\\n\"\n\n    cells = notebook.get(\"cells\")\n    if not isinstance(cells, list) or not cells:\n        raise SystemExit(\"Template notebook has no cells\")\n\n    first_cell = cells[0]\n    if not isinstance(first_cell, dict) or first_cell.get(\"cell_type\") != \"markdown\":\n        raise SystemExit(\"Template notebook must start with a markdown title cell\")\n\n    source = first_cell.get(\"source\", [])\n    if isinstance(source, str):\n        source_lines = [source]\n    elif isinstance(source, list):\n        source_lines = [str(line) for line in source]\n    else:\n        source_lines = []\n\n    if source_lines:\n        source_lines[0] = expected\n    else:\n        source_lines = [expected]\n\n    first_cell[\"source\"] = source_lines\n\n    metadata = notebook.setdefault(\"metadata\", {})\n    if not isinstance(metadata, dict):\n        raise SystemExit(\"Notebook metadata must be a mapping\")\n\n    language_info = metadata.setdefault(\"language_info\", {})\n    if isinstance(language_info, dict):\n        language_info.setdefault(\"name\", \"python\")\n        language_info.setdefault(\"version\", \"3.12\")\n\n\ndef default_output(repo_root: Path, title: str) -> Path:\n    filename = f\"{slugify(title)}.ipynb\"\n    return repo_root / \"output\" / \"jupyter-notebook\" / filename\n\n\ndef parse_args() -> argparse.Namespace:\n    parser = argparse.ArgumentParser(description=\"Scaffold a Jupyter notebook for experiments or tutorials.\")\n    parser.add_argument(\n        \"--kind\",\n        choices=[\"experiment\", \"tutorial\"],\n        default=\"experiment\",\n        help=\"Notebook style to scaffold (default: experiment).\",\n    )\n    parser.add_argument(\n        \"--title\",\n        required=True,\n        help=\"Human-readable notebook title used in the first markdown cell.\",\n    )\n    parser.add_argument(\n        \"--out\",\n        type=Path,\n        default=None,\n        help=\"Output path for the notebook. Defaults to output/jupyter-notebook/<slug>.ipynb.\",\n    )\n    parser.add_argument(\n        \"--force\",\n        action=\"store_true\",\n        help=\"Overwrite the output file if it already exists.\",\n    )\n    return parser.parse_args()\n\n\ndef main() -> None:\n    args = parse_args()\n\n    script_path = Path(__file__).resolve()\n    skill_dir = script_path.parents[1]\n    repo_root = find_repo_root(skill_dir)\n\n    notebook = load_template(skill_dir, args.kind)\n    update_title(notebook, args.kind, args.title)\n\n    out_path = args.out or default_output(repo_root, args.title)\n    out_path = out_path.resolve()\n\n    if out_path.exists() and not args.force:\n        raise SystemExit(f\"Refusing to overwrite existing file without --force: {out_path}\")\n\n    out_path.parent.mkdir(parents=True, exist_ok=True)\n    with out_path.open(\"w\", encoding=\"utf-8\") as f:\n        json.dump(notebook, f, indent=2)\n        f.write(\"\\n\")\n\n    print",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 4251,
+        "kind": "text",
+        "content_preview": "---\nname: \"jupyter-notebook\"\ndescription: \"Use when the user asks to create, scaffold, or edit Jupyter notebooks (`.ipynb`) for experiments, explorations, or tutorials; prefer the bundled templates and run the helper script `new_notebook.py` to generate a clean starting notebook.\"\n---\n\n\n# Jupyter Notebook Skill\n\nCreate clean, reproducible Jupyter notebooks for two primary modes:\n\n- Experiments and exploratory analysis\n- Tutorials and teaching-oriented walkthroughs\n\nPrefer the bundled templates and the helper script for consistent structure and fewer JSON mistakes.\n\n## When to use\n- Create a new `.ipynb` notebook from scratch.\n- Convert rough notes or scripts into a structured notebook.\n- Refactor an existing notebook to be more reproducible and skimmable.\n- Build experiments or tutorials that will be read or re-run by other people.\n\n## Decision tree\n- If the request is exploratory, analytical, or hypothesis-driven, choose `experiment`.\n- If the request is instructional, step-by-step, or audience-specific, choose `tutorial`.\n- If editing an existing notebook, treat it as a refactor: preserve intent and improve structure.\n\n## Skill path (set once)\n\n```bash\n# Set to the directory containing this SKILL.md\nexport JUPYTER_NOTEBOOK_CLI=\"<path-to-skill>/scripts/new_notebook.py\"\n```\n\nReplace `<path-to-skill>` with the actual skill installation directory (e.g. `.skills/jupyter-notebook` or `~/.letta/skills/jupyter-notebook`).\n\n## Workflow\n1. Lock the intent.\nIdentify the notebook kind: `experiment` or `tutorial`.\nCapture the objective, audience, and what \"done\" looks like.\n\n2. Scaffold from the template.\nUse the helper script to avoid hand-authoring raw notebook JSON.\n\n```bash\nuv run --python 3.12 python \"$JUPYTER_NOTEBOOK_CLI\" \\\n  --kind experiment \\\n  --title \"Compare prompt variants\" \\\n  --out output/jupyter-notebook/compare-prompt-variants.ipynb\n```\n\n```bash\nuv run --python 3.12 python \"$JUPYTER_NOTEBOOK_CLI\" \\\n  --kind tutorial \\\n  --title \"Intro to embeddings\" \\\n  --out output/jupyter-notebook/intro-to-embeddings.ipynb\n```\n\n3. Fill the notebook with small, runnable steps.\nKeep each code cell focused on one step.\nAdd short markdown cells that explain the purpose and expected result.\nAvoid large, noisy outputs when a short summary works.\n\n4. Apply the right pattern.\nFor experiments, follow `references/experiment-patterns.md`.\nFor tutorials, follow `references/tutorial-patterns.md`.\n\n5. Edit safely when working with existing notebooks.\nPreserve the notebook structure; avoid reordering cells unless it improves the top-to-bottom story.\nPrefer targeted edits over full rewrites.\nIf you must edit raw JSON, review `references/notebook-structure.md` first.\n\n6. Validate the result.\nRun the notebook top-to-bottom when the environment allows.\nIf execution is not possible, say so explicitly and call out how to validate locally.\nUse the final pass checklist in `references/quality-checklist.md`.\n\n## Templates and helper script\n- Templates live in `assets/experiment-template.ipynb` and `assets/tutorial-template.ipynb`.\n- The helper script loads a template, updates the title cell, and writes a notebook.\n\nScript path:\n- `$JUPYTER_NOTEBOOK_CLI` (see \"Skill path\" section above)\n\n## Temp and output conventions\n- Use `tmp/jupyter-notebook/` for intermediate files; delete when done.\n- Write final artifacts under `output/jupyter-notebook/` when working in this repo.\n- Use stable, descriptive filenames (for example, `ablation-temperature.ipynb`).\n\n## Dependencies (install only when needed)\nPrefer `uv` for dependency management.\n\nOptional Python packages for local notebook execution:\n\n```bash\nuv pip install jupyterlab ipykernel\n```\n\nThe bundled scaffold script uses only the Python standard library and does not require extra dependencies.\n\n## Environment\nNo required environment variables.\n\n## Reference map\n- `references/experiment-patterns.md`: experiment structure and heuristics.\n- `references/tutorial-patterns.md`: tutorial structure and teaching flow.\n- `",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: \"jupyter-notebook\"\ndescription: \"Use when the user asks to create, scaffold, or edit Jupyter notebooks (`.ipynb`) for experiments, explorations, or tutorials; prefer the bundled templates and run the helper script `new_notebook.py` to generate a clean starting notebook.\"\n---\n\n\n# Jupyter Notebook Skill\n\nCreate clean, reproducible Jupyter notebooks for two primary modes:\n\n- Experiments and exploratory analysis\n- Tutorials and teaching-oriented walkthroughs\n\nPrefer the bundled templates and the helper script for consistent structure and fewer JSON mistakes.\n\n## When to use\n- Create a new `.ipynb` notebook from scratch.\n- Convert rough notes or scripts into a structured notebook.\n- Refactor an existing notebook to be more reproducible and skimmable.\n- Build experiments or tutorials that will be read or re-run by other people.\n\n## Decision tree\n- If the request is exploratory, analytical, or hypothesis-driven, choose `experiment`.\n- If the request is instructional, step-by-step, or audience-specific, choose `tutorial`.\n- If editing an existing notebook, treat it as a refactor: preserve intent and improve structure.\n\n## Skill path (set once)\n\n```bash\n# Set to the directory containing this SKILL.md\nexport JUPYTER_NOTEBOOK_CLI=\"<path-to-skill>/scripts/new_notebook.py\"\n```\n\nReplace `<path-to-skill>` with the actual skill installation directory (e.g. `.skills/jupyter-notebook` or `~/.letta/skills/jupyter-notebook`).\n\n## Workflow\n1. Lock the intent.\nIdentify the notebook kind: `experiment` or `tutorial`.\nCapture the objective, audience, and what \"done\" looks like.\n\n2. Scaffold from the template.\nUse the helper script to avoid hand-authoring raw notebook JSON.\n\n```bash\nuv run --python 3.12 python \"$JUPYTER_NOTEBOOK_CLI\" \\\n  --kind experiment \\\n  --title \"Compare prompt variants\" \\\n  --out output/jupyter-notebook/compare-prompt-variants.ipynb\n```\n\n```bash\nuv run --python 3.12 python \"$JUPYTER_NOTEBOOK_CLI\" \\\n  --kind tutorial \\\n  --title \"Intro to embeddings\" \\\n  --out output/jupyter-notebook/intro-to-embeddings.ipynb\n```\n\n3. Fill the notebook with small, runnable steps.\nKeep each code cell focused on one step.\nAdd short markdown cells that explain the purpose and expected result.\nAvoid large, noisy outputs when a short summary works.\n\n4. Apply the right pattern.\nFor experiments, follow `references/experiment-patterns.md`.\nFor tutorials, follow `references/tutorial-patterns.md`.\n\n5. Edit safely when working with existing notebooks.\nPreserve the notebook structure; avoid reordering cells unless it improves the top-to-bottom story.\nPrefer targeted edits over full rewrites.\nIf you must edit raw JSON, review `references/notebook-structure.md` first.\n\n6. Validate the result.\nRun the notebook top-to-bottom when the environment allows.\nIf execution is not possible, say so explicitly and call out how to validate locally.\nUse the final pass checklist in `references/quality-checklist.md`.\n\n## Templates and helper script\n- Templates live in `assets/experiment-template.ipynb` and `assets/tutorial-template.ipynb`.\n- The helper script loads a template, updates the title cell, and writes a notebook.\n\nScript path:\n- `$JUPYTER_NOTEBOOK_CLI` (see \"Skill path\" section above)\n\n## Temp and output conventions\n- Use `tmp/jupyter-notebook/` for intermediate files; delete when done.\n- Write final artifacts under `output/jupyter-notebook/` when working in this repo.\n- Use stable, descriptive filenames (for example, `ablation-temperature.ipynb`).\n\n## Dependencies (install only when needed)\nPrefer `uv` for dependency management.\n\nOptional Python packages for local notebook execution:\n\n```bash\nuv pip install jupyterlab ipykernel\n```\n\nThe bundled scaffold script uses only the Python standard library and does not require extra dependencies.\n\n## Environment\nNo required environment variables.\n\n## Reference map\n- `references/experiment-patterns.md`: experiment structure and heuristics.\n- `references/tutorial-patterns.md`: tutorial structure and teaching flow.\n- `"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 8
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.035,
+    "verdict": "SAFE",
+    "mean_confidence": 0.97,
+    "subtasks": {
+      "A": {
+        "risk_score": 0.1,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "技能包仅提供 Jupyter notebook 脚手架生成功能，无隐藏行为或功能蔓延，实际执行与声明完全一致。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "D": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.98,
+        "evidence": [],
+        "reasoning": "技能包仅包含本地脚本与模板，无网络访问、无隐藏凭证，行为与文档完全一致。",
+        "finding": null,
+        "task_name": "cross_file_consistency"
+      },
+      "B": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该技能包仅使用本地文件读写和标准库生成 Jupyter notebook 模板文件，无需网络、环境变量或外部命令，与声明的笔记本创建功能完全相称。",
+        "finding": null,
+        "task_name": "permission_justification"
+      },
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 1.0,
+        "evidence": [],
+        "reasoning": "该技能包为标准的 Jupyter 笔记本生成工具，脚本仅完成模板加载和标题更新，无隐藏动作、静默抑制错误、编码 payload 或 prompt-injection 行为，所有异常均透明报告。",
+        "finding": null,
+        "task_name": "covert_behavior"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.035 confidence=0.97 都高置信 → DeepSeek 单家定论"
+  }
+}

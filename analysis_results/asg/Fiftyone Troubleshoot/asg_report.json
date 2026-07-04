@@ -1,0 +1,288 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:46:50.485401+00:00",
+  "skill_name": "Fiftyone Troubleshoot",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\fiftyone-troubleshoot\\Fiftyone Troubleshoot",
+  "skill_contents": {
+    "file_count": 2,
+    "total_bytes": 17177,
+    "files": [
+      {
+        "path": "README.md",
+        "size_bytes": 1210,
+        "kind": "text",
+        "content_preview": "# Troubleshoot\n\nDiagnose and fix common FiftyOne issues: dataset persistence, App connectivity, MongoDB errors, video codecs, and more.\n\n## Install\n\n```bash\ncurl -sL skil.sh | sh -s -- voxel51/fiftyone-skills\n```\n\nWhen prompted, select **fiftyone-troubleshoot** from the menu.\n\n## Requirements\n\n- [FiftyOne](https://docs.voxel51.com/getting_started/install.html)\n\n## Usage\n\nAsk your AI assistant:\n\n```\n\"My dataset disappeared after restarting, how do I get it back?\"\n\"The FiftyOne App won't open, it just hangs\"\n\"I'm getting a MongoDB connection error\"\n\"Video samples show a codec error in the App\"\n\"My operator is registered but not showing up in the App\"\n```\n\nThe skill identifies the root cause, explains what went wrong and why, proposes a fix, and waits for your confirmation before applying anything.\n\n## Covered issues\n\n- Dataset persistence and MongoDB connectivity\n- App launch failures and port conflicts\n- Plugin and operator not appearing\n- Video codec incompatibilities\n- Notebook connectivity (`fo.launch_app` in Jupyter)\n- Performance issues with large datasets\n\n## See also\n\n- [FiftyOne FAQ](https://docs.voxel51.com/faq/index.html)\n- [Discord community](https://discord.gg/fiftyone-community)\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 15967,
+        "kind": "text",
+        "content_preview": "---\nname: fiftyone-troubleshoot\ndescription: Diagnose and fix common FiftyOne issues automatically. Use when a dataset disappeared, the App won't open, changes aren't saving, MongoDB errors occur, video codecs fail, notebook connectivity breaks, operators are missing, or any recurring FiftyOne pain point needs solving.\n---\n\n# FiftyOne Troubleshoot\n\n## Overview\n\nDiagnose and fix common FiftyOne pain points. Match the user's symptom to the [Issue Index](#issue-index), explain the root cause and proposed fix, get approval, then apply.\n\n> Shell commands in this skill are written for macOS/Linux. On Windows (non-WSL), adapt using PowerShell equivalents or use WSL.\n\nDesigned to grow: add new issues at the bottom as they are encountered.\n\n## Prerequisites\n\n- FiftyOne installed: `pip install fiftyone`\n- MCP server running (optional, for plugin-related fixes)\n\n## Key Directives\n\n### 1. Always explain, propose, and confirm before acting\n**NEVER run a fix without first:**\n1. Explaining what is wrong and why\n2. Describing what the fix will do\n3. Asking the user to confirm: *\"Should I apply this fix?\"*\n\nWait for explicit user confirmation before executing anything that modifies files, config, or data.\n\n### 2. Never touch user datasets — FiftyOne is the source of truth\n- Except when given explicit and direct instructions by the user:\n    - NEVER modify, edit, delete, or clone user datasets as part of troubleshooting\n    - NEVER call `fo.delete_dataset()`\n    - NEVER truncate, wipe, or alter dataset contents or sample fields to diagnose an issue\n- Use FiftyOne's read-only API to inspect state: `fo.list_datasets()`, `fo.load_dataset()`, `len(dataset)`, `dataset.get_field_schema()` — these are safe\n- FiftyOne's state (datasets, fields, brain runs) is the ground truth; read it, never rewrite it to \"fix\" a problem\n\n### 3. Never directly manipulate MongoDB\n- NEVER use `pymongo`, `db.drop_collection()`, or raw MongoDB shell commands\n- All data operations must go through the FiftyOne Python API\n\n### 4. Never modify config or files silently\n- NEVER change `database_uri`, `database_name`, or any config file without showing what will change and getting approval\n- NEVER append to shell profiles (`.zshrc`, `.bash_profile`, virtualenv `activate`) without showing the exact line change and getting explicit user confirmation to apply\n\n### 5. Restart processes after env / config changes\nAny fix that sets an environment variable or modifies a config file only takes effect for **new** processes. Already-running App servers, service managers, and Python scripts will NOT pick up the change.\n- After setting `FIFTYONE_DATABASE_NAME` or similar env vars, identify and restart any running FiftyOne processes\n- Check with: `ps aux | grep fiftyone`\n- Stop stale processes: `pkill -f \"fiftyone\"` (confirm with user first)\n\n### 6. Always verify after fixing\nRun the [Health Check](#health-check) after every fix to confirm the environment is operational.\n\n---\n\n## Workflow\n\n1. **Diagnose** — run the Diagnostic Quick-Check\n2. **Explain** — describe the root cause in plain language\n3. **Propose** — show the fix and what it will change\n4. **Confirm** — ask the user: *\"Should I apply this?\"*\n5. **Execute** — apply the fix only after approval\n6. **Verify** — run the Health Check\n\n---\n\n## Diagnostic Quick-Check\n\nHandles connection failures gracefully — always produce useful output:\n\n```python\nimport sys\n\nprint(f\"Python:  {sys.executable}\")\nprint(f\"Version: {sys.version.split()[0]}\")\n\ntry:\n    import fiftyone as fo\n    print(f\"FiftyOne: {fo.__version__}\")\n    print(f\"Database: {fo.config.database_name}\")\n    print(f\"DB URI:   {fo.config.database_uri or '(internal MongoDB)'}\")\nexcept ImportError:\n    print(\"ERROR: fiftyone not installed — check Python environment, if needed run: pip install fiftyone\")\n    sys.exit(1)\n\ntry:\n    print(f\"Datasets: {fo.list_datasets()}\")\n    print(\"Connection: OK\")\nexcept Exception as e:\n    print(f\"Connection ERROR: {e}\")\n    print(\"→ Match this error to",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: fiftyone-troubleshoot\ndescription: Diagnose and fix common FiftyOne issues automatically. Use when a dataset disappeared, the App won't open, changes aren't saving, MongoDB errors occur, video codecs fail, notebook connectivity breaks, operators are missing, or any recurring FiftyOne pain point needs solving.\n---\n\n# FiftyOne Troubleshoot\n\n## Overview\n\nDiagnose and fix common FiftyOne pain points. Match the user's symptom to the [Issue Index](#issue-index), explain the root cause and proposed fix, get approval, then apply.\n\n> Shell commands in this skill are written for macOS/Linux. On Windows (non-WSL), adapt using PowerShell equivalents or use WSL.\n\nDesigned to grow: add new issues at the bottom as they are encountered.\n\n## Prerequisites\n\n- FiftyOne installed: `pip install fiftyone`\n- MCP server running (optional, for plugin-related fixes)\n\n## Key Directives\n\n### 1. Always explain, propose, and confirm before acting\n**NEVER run a fix without first:**\n1. Explaining what is wrong and why\n2. Describing what the fix will do\n3. Asking the user to confirm: *\"Should I apply this fix?\"*\n\nWait for explicit user confirmation before executing anything that modifies files, config, or data.\n\n### 2. Never touch user datasets — FiftyOne is the source of truth\n- Except when given explicit and direct instructions by the user:\n    - NEVER modify, edit, delete, or clone user datasets as part of troubleshooting\n    - NEVER call `fo.delete_dataset()`\n    - NEVER truncate, wipe, or alter dataset contents or sample fields to diagnose an issue\n- Use FiftyOne's read-only API to inspect state: `fo.list_datasets()`, `fo.load_dataset()`, `len(dataset)`, `dataset.get_field_schema()` — these are safe\n- FiftyOne's state (datasets, fields, brain runs) is the ground truth; read it, never rewrite it to \"fix\" a problem\n\n### 3. Never directly manipulate MongoDB\n- NEVER use `pymongo`, `db.drop_collection()`, or raw MongoDB shell commands\n- All data operations must go through the FiftyOne Python API\n\n### 4. Never modify config or files silently\n- NEVER change `database_uri`, `database_name`, or any config file without showing what will change and getting approval\n- NEVER append to shell profiles (`.zshrc`, `.bash_profile`, virtualenv `activate`) without showing the exact line change and getting explicit user confirmation to apply\n\n### 5. Restart processes after env / config changes\nAny fix that sets an environment variable or modifies a config file only takes effect for **new** processes. Already-running App servers, service managers, and Python scripts will NOT pick up the change.\n- After setting `FIFTYONE_DATABASE_NAME` or similar env vars, identify and restart any running FiftyOne processes\n- Check with: `ps aux | grep fiftyone`\n- Stop stale processes: `pkill -f \"fiftyone\"` (confirm with user first)\n\n### 6. Always verify after fixing\nRun the [Health Check](#health-check) after every fix to confirm the environment is operational.\n\n---\n\n## Workflow\n\n1. **Diagnose** — run the Diagnostic Quick-Check\n2. **Explain** — describe the root cause in plain language\n3. **Propose** — show the fix and what it will change\n4. **Confirm** — ask the user: *\"Should I apply this?\"*\n5. **Execute** — apply the fix only after approval\n6. **Verify** — run the Health Check\n\n---\n\n## Diagnostic Quick-Check\n\nHandles connection failures gracefully — always produce useful output:\n\n```python\nimport sys\n\nprint(f\"Python:  {sys.executable}\")\nprint(f\"Version: {sys.version.split()[0]}\")\n\ntry:\n    import fiftyone as fo\n    print(f\"FiftyOne: {fo.__version__}\")\n    print(f\"Database: {fo.config.database_name}\")\n    print(f\"DB URI:   {fo.config.database_uri or '(internal MongoDB)'}\")\nexcept ImportError:\n    print(\"ERROR: fiftyone not installed — check Python environment, if needed run: pip install fiftyone\")\n    sys.exit(1)\n\ntry:\n    print(f\"Datasets: {fo.list_datasets()}\")\n    print(\"Connection: OK\")\nexcept Exception as e:\n    print(f\"Connection ERROR: {e}\")\n    print(\"→ Match this error to"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 2,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 1,
+      "LOW": 1
+    },
+    "by_pattern": {
+      "SC2": 1,
+      "P8": 1
+    },
+    "by_kill_chain_phase": {
+      "execution": 1,
+      "impact": 1
+    },
+    "rule_ids_hit": [
+      "P8",
+      "SC2"
+    ],
+    "files_scanned_count": 2,
+    "ai_downgraded_count": 2
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.9,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": true,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 2
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "execution",
+      "impact"
+    ],
+    "kill_chain_phase_coverage_count": 2
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 5.77,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0625,
+      "S_static_raw": 0.0625,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.3333,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "L1 review: 2 条命中被 AI 标为 FP，composite_score 5.77 → 5.77"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "SC2",
+      "severity": "LOW",
+      "kill_chain_phase": "execution",
+      "file": "README.md",
+      "line": 8,
+      "pattern": "curl[^|]+\\|\\s*(?:bash|sh|zsh)",
+      "matched_text": "curl -sL skil.sh | sh",
+      "description": "Downloading and running external code (curl | bash pattern).",
+      "confidence": 0.85,
+      "context": "   5 | ## Install\n   6 | \n   7 | ```bash\n»  8 | curl -sL skil.sh | sh -s -- voxel51/fiftyone-skills\n   9 | ```\n  10 | \n  11 | When prompted, select **fiftyone-troubleshoot** from the menu.",
+      "original_severity": "CRITICAL",
+      "evidence_type": "capability",
+      "context_type": "markdown_code_block",
+      "snippet": "curl -sL skil.sh | sh -s -- voxel51/fiftyone-skills",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: README中的curl安装命令是正常的安装步骤，属于软件包的文档说明，不是实际执行的恶意外发。",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "README中的curl安装命令是正常的安装步骤，属于软件包的文档说明，不是实际执行的恶意外发。"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "README中的curl安装命令是正常的安装步骤，属于软件包的文档说明，不是实际执行的恶意外发。"
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 31,
+      "pattern": "(?i)\\bthe\\s+(?:source|single\\s+source)\\s+of\\s+truth",
+      "matched_text": "the source of truth",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  28 | \n  29 | Wait for explicit user confirmation before executing anything that modifies files, config, or data.\n  30 | \n» 31 | ### 2. Never touch user datasets — FiftyOne is the source of truth\n  32 | - Except when given explicit and direct instructions by the user:\n  33 |     - NEVER modify, edit, delete, or clone user datasets as part of troubleshooting\n  34 |     - NEVER call `fo.delete_dataset()`",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "### 2. Never touch user datasets — FiftyOne is the source of truth",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 文档中说明FiftyOne数据集是‘source of truth’，属于解释性描述，没有硬编码凭据或危险操作。",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "文档中说明FiftyOne数据集是‘source of truth’，属于解释性描述，没有硬编码凭据或危险操作。"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "文档中说明FiftyOne数据集是‘source of truth’，属于解释性描述，没有硬编码凭据或危险操作。"
+    }
+  ],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.075,
+    "verdict": "SAFE",
+    "mean_confidence": 0.775,
+    "subtasks": {
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该技能专注于 FiftyOne 故障排查，行为与声明一致，仅包含诊断和修复指导，无恶意操作。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "技能包为常规故障排查指南，所有敏感操作均强制要求用户明确确认，无隐蔽行为",
+        "finding": null,
+        "task_name": "covert_behavior"
+      },
+      "B": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.9,
+        "evidence": [],
+        "reasoning": "技能仅使用 FiftyOne 官方 API 和本地环境变量，所有高风险操作均需用户明确确认，无越权行为。",
+        "finding": null,
+        "task_name": "permission_justification"
+      },
+      "D": {
+        "risk_score": 0.5,
+        "rating": "SUSPICIOUS",
+        "confidence": 0.3,
+        "evidence": [],
+        "reasoning": "因此，我们主要finding是README.md中不安全的安装命令。但这是给用户的安装指示，不是给AI代理的？但技能包整体，如果AI代理按照README安装，可能会执行。所以仍应报告。 最终输出。",
+        "task_name": "cross_file_consistency"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.075 confidence=0.775 都高置信 → DeepSeek 单家定论"
+  },
+  "l1_review_meta": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "total_reviewed": 2,
+    "total_findings": 2,
+    "tp_count": 0,
+    "fp_count": 2,
+    "uncertain_count": 0,
+    "api_calls": 1
+  }
+}

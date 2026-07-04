@@ -1,0 +1,39 @@
+{
+  "archetype": {
+    "archetype": "Hybrid",
+    "confidence": 0.65,
+    "paper_archetype_share_percent": null,
+    "has_SC2": false,
+    "has_P1": false,
+    "has_PE1": false
+  },
+  "sophistication": {
+    "level": 2,
+    "label": "Intermediate",
+    "criterion_evasion_present": true,
+    "criterion_shadow_features": true,
+    "criterion_pattern_count": 3
+  },
+  "chains_triggered": [
+    {
+      "chain_id": "P2_SC3_HIJACKER",
+      "name": "Hijacker Obfuscation Pattern",
+      "required_rules": [
+        "P2",
+        "SC3"
+      ],
+      "phase_sequence": [
+        "evasion",
+        "evasion"
+      ],
+      "severity_boost": "CRITICAL",
+      "paper_evidence": "lift=4.18, phi=0.537 — strongest positive in matrix (§4.2)",
+      "description": "Hidden instructions + obfuscated code (advanced evasion)."
+    }
+  ],
+  "chain_count": 1,
+  "kill_chain_phases_covered": [
+    "evasion"
+  ],
+  "kill_chain_phase_coverage_count": 1
+}

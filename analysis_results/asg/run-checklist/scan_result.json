@@ -1,0 +1,29 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\run-checklist\\Run Checklist",
+  "skill_name": "Run Checklist",
+  "files_scanned": [
+    "references\\prerequisites_directory_paths.md",
+    "references\\prerequisites_plugin_update.md",
+    "references\\prerequisites_principles.md",
+    "references\\verification_commands.md",
+    "SKILL.md",
+    "templates\\en\\report_format.md",
+    "templates\\en\\result_format.md",
+    "templates\\en\\tasklist_patterns.md",
+    "templates\\ja\\report_format.md",
+    "templates\\ja\\result_format.md",
+    "templates\\ja\\tasklist_patterns.md"
+  ],
+  "files_scanned_count": 11,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

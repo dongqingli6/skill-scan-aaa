@@ -1,0 +1,674 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:33.795243+00:00",
+  "skill_name": "docx",
+  "skill_path": "C:\\Windows\\Temp\\benign_pool\\skills\\docx",
+  "skill_contents": {
+    "file_count": 50,
+    "total_bytes": 1043654,
+    "files": [
+      {
+        "path": "LICENSE.txt",
+        "size_bytes": 1497,
+        "kind": "text",
+        "content_preview": "© 2025 Anthropic, PBC. All rights reserved.\n\nLICENSE: Use of these materials (including all code, prompts, assets, files,\nand other components of this Skill) is governed by your agreement with\nAnthropic regarding use of Anthropic's services. If no separate agreement\nexists, use is governed by Anthropic's Consumer Terms of Service or\nCommercial Terms of Service, as applicable:\nhttps://www.anthropic.com/legal/consumer-terms\nhttps://www.anthropic.com/legal/commercial-terms\nYour applicable agreement is referred to as the \"Agreement.\" \"Services\" are\nas defined in the Agreement.\n\nADDITIONAL RESTRICTIONS: Notwithstanding anything in the Agreement to the\ncontrary, users may not:\n\n- Extract these materials from the Services or retain copies of these\n  materials outside the Services\n- Reproduce or copy these materials, except for temporary copies created\n  automatically during authorized use of the Services\n- Create derivative works based on these materials\n- Distribute, sublicense, or transfer these materials to any third party\n- Make, offer to sell, sell, or import any inventions embodied in these\n  materials\n- Reverse engineer, decompile, or disassemble these materials\n\nThe receipt, viewing, or possession of these materials does not convey or\nimply any license or right beyond those expressly granted above.\n\nAnthropic retains all right, title, and interest in these materials,\nincluding all copyrights, patents, and other intellectual property rights.\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/__init__.py",
+        "size_bytes": 2,
+        "kind": "text",
+        "content_preview": "\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/accept_changes.py",
+        "size_bytes": 4186,
+        "kind": "text",
+        "content_preview": "\"\"\"Accept all tracked changes in a DOCX file using LibreOffice.\n\nRequires LibreOffice (soffice) to be installed.\n\"\"\"\n\nimport argparse\nimport logging\nimport shutil\nimport subprocess\nfrom pathlib import Path\n\nfrom office.soffice import get_soffice_env\n\nlogger = logging.getLogger(__name__)\n\nLIBREOFFICE_PROFILE = \"/tmp/libreoffice_docx_profile\"\nMACRO_DIR = f\"{LIBREOFFICE_PROFILE}/user/basic/Standard\"\n\nACCEPT_CHANGES_MACRO = \"\"\"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE script:module PUBLIC \"-//OpenOffice.org//DTD OfficeDocument 1.0//EN\" \"module.dtd\">\n<script:module xmlns:script=\"http://openoffice.org/2000/script\" script:name=\"Module1\" script:language=\"StarBasic\">\n    Sub AcceptAllTrackedChanges()\n        Dim document As Object\n        Dim dispatcher As Object\n\n        document = ThisComponent.CurrentController.Frame\n        dispatcher = createUnoService(\"com.sun.star.frame.DispatchHelper\")\n\n        dispatcher.executeDispatch(document, \".uno:AcceptAllTrackedChanges\", \"\", 0, Array())\n        ThisComponent.store()\n        ThisComponent.close(True)\n    End Sub\n</script:module>\"\"\"\n\n\ndef accept_changes(\n    input_file: str,\n    output_file: str,\n) -> tuple[None, str]:\n    input_path = Path(input_file)\n    output_path = Path(output_file)\n\n    if not input_path.exists():\n        return None, f\"Error: Input file not found: {input_file}\"\n\n    if not input_path.suffix.lower() == \".docx\":\n        return None, f\"Error: Input file is not a DOCX file: {input_file}\"\n\n    try:\n        output_path.parent.mkdir(parents=True, exist_ok=True)\n        shutil.copy2(input_path, output_path)\n    except Exception as e:\n        return None, f\"Error: Failed to copy input file to output location: {e}\"\n\n    if not _setup_libreoffice_macro():\n        return None, \"Error: Failed to setup LibreOffice macro\"\n\n    cmd = [\n        \"soffice\",\n        \"--headless\",\n        f\"-env:UserInstallation=file://{LIBREOFFICE_PROFILE}\",\n        \"--norestore\",\n        \"vnd.sun.star.script:Standard.Module1.AcceptAllTrackedChanges?language=Basic&location=application\",\n        str(output_path.absolute()),\n    ]\n\n    try:\n        result = subprocess.run(\n            cmd,\n            capture_output=True,\n            text=True,\n            timeout=30,\n            check=False,\n            env=get_soffice_env(),\n        )\n    except subprocess.TimeoutExpired:\n        return (\n            None,\n            f\"Successfully accepted all tracked changes: {input_file} -> {output_file}\",\n        )\n\n    if result.returncode != 0:\n        return None, f\"Error: LibreOffice failed: {result.stderr}\"\n\n    return (\n        None,\n        f\"Successfully accepted all tracked changes: {input_file} -> {output_file}\",\n    )\n\n\ndef _setup_libreoffice_macro() -> bool:\n    macro_dir = Path(MACRO_DIR)\n    macro_file = macro_dir / \"Module1.xba\"\n\n    if macro_file.exists() and \"AcceptAllTrackedChanges\" in macro_file.read_text():\n        return True\n\n    if not macro_dir.exists():\n        subprocess.run(\n            [\n                \"soffice\",\n                \"--headless\",\n                f\"-env:UserInstallation=file://{LIBREOFFICE_PROFILE}\",\n                \"--terminate_after_init\",\n            ],\n            capture_output=True,\n            timeout=10,\n            check=False,\n            env=get_soffice_env(),\n        )\n        macro_dir.mkdir(parents=True, exist_ok=True)\n\n    try:\n        macro_file.write_text(ACCEPT_CHANGES_MACRO)\n        return True\n    except Exception as e:\n        logger.warning(f\"Failed to setup LibreOffice macro: {e}\")\n        return False\n\n\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser(\n        description=\"Accept all tracked changes in a DOCX file\"\n    )\n    parser.add_argument(\"input_file\", help=\"Input DOCX file with tracked changes\")\n    parser.add_argument(\n        \"output_file\", help=\"Output DOCX file (clean, no tracked changes)\"\n    )\n    args = parser.parse_args()\n\n    _, message = accept_changes(args.input_file, args.output_file)\n    print(message)\n\n    ",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/comment.py",
+        "size_bytes": 11012,
+        "kind": "text",
+        "content_preview": "\"\"\"Add comments to DOCX documents.\n\nUsage:\n    python comment.py unpacked/ 0 \"Comment text\"\n    python comment.py unpacked/ 1 \"Reply text\" --parent 0\n\nText should be pre-escaped XML (e.g., &amp; for &, &#x2019; for smart quotes).\n\nAfter running, add markers to document.xml:\n  <w:commentRangeStart w:id=\"0\"/>\n  ... commented content ...\n  <w:commentRangeEnd w:id=\"0\"/>\n  <w:r><w:rPr><w:rStyle w:val=\"CommentReference\"/></w:rPr><w:commentReference w:id=\"0\"/></w:r>\n\"\"\"\n\nimport argparse\nimport random\nimport shutil\nimport sys\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nimport defusedxml.minidom\n\nTEMPLATE_DIR = Path(__file__).parent / \"templates\"\nNS = {\n    \"w\": \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\",\n    \"w14\": \"http://schemas.microsoft.com/office/word/2010/wordml\",\n    \"w15\": \"http://schemas.microsoft.com/office/word/2012/wordml\",\n    \"w16cid\": \"http://schemas.microsoft.com/office/word/2016/wordml/cid\",\n    \"w16cex\": \"http://schemas.microsoft.com/office/word/2018/wordml/cex\",\n}\n\nCOMMENT_XML = \"\"\"\\\n<w:comment w:id=\"{id}\" w:author=\"{author}\" w:date=\"{date}\" w:initials=\"{initials}\">\n  <w:p w14:paraId=\"{para_id}\" w14:textId=\"77777777\">\n    <w:r>\n      <w:rPr><w:rStyle w:val=\"CommentReference\"/></w:rPr>\n      <w:annotationRef/>\n    </w:r>\n    <w:r>\n      <w:rPr>\n        <w:color w:val=\"000000\"/>\n        <w:sz w:val=\"20\"/>\n        <w:szCs w:val=\"20\"/>\n      </w:rPr>\n      <w:t>{text}</w:t>\n    </w:r>\n  </w:p>\n</w:comment>\"\"\"\n\nCOMMENT_MARKER_TEMPLATE = \"\"\"\nAdd to document.xml (markers must be direct children of w:p, never inside w:r):\n  <w:commentRangeStart w:id=\"{cid}\"/>\n  <w:r>...</w:r>\n  <w:commentRangeEnd w:id=\"{cid}\"/>\n  <w:r><w:rPr><w:rStyle w:val=\"CommentReference\"/></w:rPr><w:commentReference w:id=\"{cid}\"/></w:r>\"\"\"\n\nREPLY_MARKER_TEMPLATE = \"\"\"\nNest markers inside parent {pid}'s markers (markers must be direct children of w:p, never inside w:r):\n  <w:commentRangeStart w:id=\"{pid}\"/><w:commentRangeStart w:id=\"{cid}\"/>\n  <w:r>...</w:r>\n  <w:commentRangeEnd w:id=\"{cid}\"/><w:commentRangeEnd w:id=\"{pid}\"/>\n  <w:r><w:rPr><w:rStyle w:val=\"CommentReference\"/></w:rPr><w:commentReference w:id=\"{pid}\"/></w:r>\n  <w:r><w:rPr><w:rStyle w:val=\"CommentReference\"/></w:rPr><w:commentReference w:id=\"{cid}\"/></w:r>\"\"\"\n\n\ndef _generate_hex_id() -> str:\n    return f\"{random.randint(0, 0x7FFFFFFE):08X}\"\n\n\nSMART_QUOTE_ENTITIES = {\n    \"\\u201c\": \"&#x201C;\",  \n    \"\\u201d\": \"&#x201D;\",  \n    \"\\u2018\": \"&#x2018;\",  \n    \"\\u2019\": \"&#x2019;\",  \n}\n\n\ndef _encode_smart_quotes(text: str) -> str:\n    for char, entity in SMART_QUOTE_ENTITIES.items():\n        text = text.replace(char, entity)\n    return text\n\n\ndef _append_xml(xml_path: Path, root_tag: str, content: str) -> None:\n    dom = defusedxml.minidom.parseString(xml_path.read_text(encoding=\"utf-8\"))\n    root = dom.getElementsByTagName(root_tag)[0]\n    ns_attrs = \" \".join(f'xmlns:{k}=\"{v}\"' for k, v in NS.items())\n    wrapper_dom = defusedxml.minidom.parseString(f\"<root {ns_attrs}>{content}</root>\")\n    for child in wrapper_dom.documentElement.childNodes:  \n        if child.nodeType == child.ELEMENT_NODE:\n            root.appendChild(dom.importNode(child, True))\n    output = _encode_smart_quotes(dom.toxml(encoding=\"UTF-8\").decode(\"utf-8\"))\n    xml_path.write_text(output, encoding=\"utf-8\")\n\n\ndef _find_para_id(comments_path: Path, comment_id: int) -> str | None:\n    dom = defusedxml.minidom.parseString(comments_path.read_text(encoding=\"utf-8\"))\n    for c in dom.getElementsByTagName(\"w:comment\"):\n        if c.getAttribute(\"w:id\") == str(comment_id):\n            for p in c.getElementsByTagName(\"w:p\"):\n                if pid := p.getAttribute(\"w14:paraId\"):\n                    return pid\n    return None\n\n\ndef _get_next_rid(rels_path: Path) -> int:\n    dom = defusedxml.minidom.parseString(rels_path.read_text(encoding=\"utf-8\"))\n    max_rid = 0\n    for rel in dom.getElementsByTagName(\"Relationship\"):\n        rid = rel.getAttribute(\"Id\")\n        if rid and rid.startswith(\"rId",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/office/helpers/__init__.py",
+        "size_bytes": 0,
+        "kind": "text",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/helpers/merge_runs.py",
+        "size_bytes": 5766,
+        "kind": "text",
+        "content_preview": "\"\"\"Merge adjacent runs with identical formatting in DOCX.\n\nMerges adjacent <w:r> elements that have identical <w:rPr> properties.\nWorks on runs in paragraphs and inside tracked changes (<w:ins>, <w:del>).\n\nAlso:\n- Removes rsid attributes from runs (revision metadata that doesn't affect rendering)\n- Removes proofErr elements (spell/grammar markers that block merging)\n\"\"\"\n\nfrom pathlib import Path\n\nimport defusedxml.minidom\n\n\ndef merge_runs(input_dir: str) -> tuple[int, str]:\n    doc_xml = Path(input_dir) / \"word\" / \"document.xml\"\n\n    if not doc_xml.exists():\n        return 0, f\"Error: {doc_xml} not found\"\n\n    try:\n        dom = defusedxml.minidom.parseString(doc_xml.read_text(encoding=\"utf-8\"))\n        root = dom.documentElement\n\n        _remove_elements(root, \"proofErr\")\n        _strip_run_rsid_attrs(root)\n\n        containers = {run.parentNode for run in _find_elements(root, \"r\")}\n\n        merge_count = 0\n        for container in containers:\n            merge_count += _merge_runs_in(container)\n\n        doc_xml.write_bytes(dom.toxml(encoding=\"UTF-8\"))\n        return merge_count, f\"Merged {merge_count} runs\"\n\n    except Exception as e:\n        return 0, f\"Error: {e}\"\n\n\n\n\ndef _find_elements(root, tag: str) -> list:\n    results = []\n\n    def traverse(node):\n        if node.nodeType == node.ELEMENT_NODE:\n            name = node.localName or node.tagName\n            if name == tag or name.endswith(f\":{tag}\"):\n                results.append(node)\n            for child in node.childNodes:\n                traverse(child)\n\n    traverse(root)\n    return results\n\n\ndef _get_child(parent, tag: str):\n    for child in parent.childNodes:\n        if child.nodeType == child.ELEMENT_NODE:\n            name = child.localName or child.tagName\n            if name == tag or name.endswith(f\":{tag}\"):\n                return child\n    return None\n\n\ndef _get_children(parent, tag: str) -> list:\n    results = []\n    for child in parent.childNodes:\n        if child.nodeType == child.ELEMENT_NODE:\n            name = child.localName or child.tagName\n            if name == tag or name.endswith(f\":{tag}\"):\n                results.append(child)\n    return results\n\n\ndef _is_adjacent(elem1, elem2) -> bool:\n    node = elem1.nextSibling\n    while node:\n        if node == elem2:\n            return True\n        if node.nodeType == node.ELEMENT_NODE:\n            return False\n        if node.nodeType == node.TEXT_NODE and node.data.strip():\n            return False\n        node = node.nextSibling\n    return False\n\n\n\n\ndef _remove_elements(root, tag: str):\n    for elem in _find_elements(root, tag):\n        if elem.parentNode:\n            elem.parentNode.removeChild(elem)\n\n\ndef _strip_run_rsid_attrs(root):\n    for run in _find_elements(root, \"r\"):\n        for attr in list(run.attributes.values()):\n            if \"rsid\" in attr.name.lower():\n                run.removeAttribute(attr.name)\n\n\n\n\ndef _merge_runs_in(container) -> int:\n    merge_count = 0\n    run = _first_child_run(container)\n\n    while run:\n        while True:\n            next_elem = _next_element_sibling(run)\n            if next_elem and _is_run(next_elem) and _can_merge(run, next_elem):\n                _merge_run_content(run, next_elem)\n                container.removeChild(next_elem)\n                merge_count += 1\n            else:\n                break\n\n        _consolidate_text(run)\n        run = _next_sibling_run(run)\n\n    return merge_count\n\n\ndef _first_child_run(container):\n    for child in container.childNodes:\n        if child.nodeType == child.ELEMENT_NODE and _is_run(child):\n            return child\n    return None\n\n\ndef _next_element_sibling(node):\n    sibling = node.nextSibling\n    while sibling:\n        if sibling.nodeType == sibling.ELEMENT_NODE:\n            return sibling\n        sibling = sibling.nextSibling\n    return None\n\n\ndef _next_sibling_run(node):\n    sibling = node.nextSibling\n    while sibling:\n        if sibling.nodeType == sibling.ELEMENT_NODE:\n            if _is_run(sibling):\n    ",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/office/helpers/simplify_redlines.py",
+        "size_bytes": 5951,
+        "kind": "text",
+        "content_preview": "\"\"\"Simplify tracked changes by merging adjacent w:ins or w:del elements.\n\nMerges adjacent <w:ins> elements from the same author into a single element.\nSame for <w:del> elements. This makes heavily-redlined documents easier to\nwork with by reducing the number of tracked change wrappers.\n\nRules:\n- Only merges w:ins with w:ins, w:del with w:del (same element type)\n- Only merges if same author (ignores timestamp differences)\n- Only merges if truly adjacent (only whitespace between them)\n\"\"\"\n\nimport xml.etree.ElementTree as ET\nimport zipfile\nfrom pathlib import Path\n\nimport defusedxml.minidom\n\nWORD_NS = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"\n\n\ndef simplify_redlines(input_dir: str) -> tuple[int, str]:\n    doc_xml = Path(input_dir) / \"word\" / \"document.xml\"\n\n    if not doc_xml.exists():\n        return 0, f\"Error: {doc_xml} not found\"\n\n    try:\n        dom = defusedxml.minidom.parseString(doc_xml.read_text(encoding=\"utf-8\"))\n        root = dom.documentElement\n\n        merge_count = 0\n\n        containers = _find_elements(root, \"p\") + _find_elements(root, \"tc\")\n\n        for container in containers:\n            merge_count += _merge_tracked_changes_in(container, \"ins\")\n            merge_count += _merge_tracked_changes_in(container, \"del\")\n\n        doc_xml.write_bytes(dom.toxml(encoding=\"UTF-8\"))\n        return merge_count, f\"Simplified {merge_count} tracked changes\"\n\n    except Exception as e:\n        return 0, f\"Error: {e}\"\n\n\ndef _merge_tracked_changes_in(container, tag: str) -> int:\n    merge_count = 0\n\n    tracked = [\n        child\n        for child in container.childNodes\n        if child.nodeType == child.ELEMENT_NODE and _is_element(child, tag)\n    ]\n\n    if len(tracked) < 2:\n        return 0\n\n    i = 0\n    while i < len(tracked) - 1:\n        curr = tracked[i]\n        next_elem = tracked[i + 1]\n\n        if _can_merge_tracked(curr, next_elem):\n            _merge_tracked_content(curr, next_elem)\n            container.removeChild(next_elem)\n            tracked.pop(i + 1)\n            merge_count += 1\n        else:\n            i += 1\n\n    return merge_count\n\n\ndef _is_element(node, tag: str) -> bool:\n    name = node.localName or node.tagName\n    return name == tag or name.endswith(f\":{tag}\")\n\n\ndef _get_author(elem) -> str:\n    author = elem.getAttribute(\"w:author\")\n    if not author:\n        for attr in elem.attributes.values():\n            if attr.localName == \"author\" or attr.name.endswith(\":author\"):\n                return attr.value\n    return author\n\n\ndef _can_merge_tracked(elem1, elem2) -> bool:\n    if _get_author(elem1) != _get_author(elem2):\n        return False\n\n    node = elem1.nextSibling\n    while node and node != elem2:\n        if node.nodeType == node.ELEMENT_NODE:\n            return False\n        if node.nodeType == node.TEXT_NODE and node.data.strip():\n            return False\n        node = node.nextSibling\n\n    return True\n\n\ndef _merge_tracked_content(target, source):\n    while source.firstChild:\n        child = source.firstChild\n        source.removeChild(child)\n        target.appendChild(child)\n\n\ndef _find_elements(root, tag: str) -> list:\n    results = []\n\n    def traverse(node):\n        if node.nodeType == node.ELEMENT_NODE:\n            name = node.localName or node.tagName\n            if name == tag or name.endswith(f\":{tag}\"):\n                results.append(node)\n            for child in node.childNodes:\n                traverse(child)\n\n    traverse(root)\n    return results\n\n\ndef get_tracked_change_authors(doc_xml_path: Path) -> dict[str, int]:\n    if not doc_xml_path.exists():\n        return {}\n\n    try:\n        tree = ET.parse(doc_xml_path)\n        root = tree.getroot()\n    except ET.ParseError:\n        return {}\n\n    namespaces = {\"w\": WORD_NS}\n    author_attr = f\"{{{WORD_NS}}}author\"\n\n    authors: dict[str, int] = {}\n    for tag in [\"ins\", \"del\"]:\n        for elem in root.findall(f\".//w:{tag}\", namespaces):\n            author = elem.get(author_attr)\n            if author:\n              ",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/office/pack.py",
+        "size_bytes": 5150,
+        "kind": "text",
+        "content_preview": "\"\"\"Pack a directory into a DOCX, PPTX, or XLSX file.\n\nValidates with auto-repair, condenses XML formatting, and creates the Office file.\n\nUsage:\n    python pack.py <input_directory> <output_file> [--original <file>] [--validate true|false]\n\nExamples:\n    python pack.py unpacked/ output.docx --original input.docx\n    python pack.py unpacked/ output.pptx --validate false\n\"\"\"\n\nimport argparse\nimport sys\nimport shutil\nimport tempfile\nimport zipfile\nfrom pathlib import Path\n\nimport defusedxml.minidom\n\nfrom validators import DOCXSchemaValidator, PPTXSchemaValidator, RedliningValidator\n\ndef pack(\n    input_directory: str,\n    output_file: str,\n    original_file: str | None = None,\n    validate: bool = True,\n    infer_author_func=None,\n) -> tuple[None, str]:\n    input_dir = Path(input_directory)\n    output_path = Path(output_file)\n    suffix = output_path.suffix.lower()\n\n    if not input_dir.is_dir():\n        return None, f\"Error: {input_dir} is not a directory\"\n\n    if suffix not in {\".docx\", \".pptx\", \".xlsx\"}:\n        return None, f\"Error: {output_file} must be a .docx, .pptx, or .xlsx file\"\n\n    if validate and original_file:\n        original_path = Path(original_file)\n        if original_path.exists():\n            success, output = _run_validation(\n                input_dir, original_path, suffix, infer_author_func\n            )\n            if output:\n                print(output)\n            if not success:\n                return None, f\"Error: Validation failed for {input_dir}\"\n\n    with tempfile.TemporaryDirectory() as temp_dir:\n        temp_content_dir = Path(temp_dir) / \"content\"\n        shutil.copytree(input_dir, temp_content_dir)\n\n        for pattern in [\"*.xml\", \"*.rels\"]:\n            for xml_file in temp_content_dir.rglob(pattern):\n                _condense_xml(xml_file)\n\n        output_path.parent.mkdir(parents=True, exist_ok=True)\n        with zipfile.ZipFile(output_path, \"w\", zipfile.ZIP_DEFLATED) as zf:\n            for f in temp_content_dir.rglob(\"*\"):\n                if f.is_file():\n                    zf.write(f, f.relative_to(temp_content_dir))\n\n    return None, f\"Successfully packed {input_dir} to {output_file}\"\n\n\ndef _run_validation(\n    unpacked_dir: Path,\n    original_file: Path,\n    suffix: str,\n    infer_author_func=None,\n) -> tuple[bool, str | None]:\n    output_lines = []\n    validators = []\n\n    if suffix == \".docx\":\n        author = \"Claude\"\n        if infer_author_func:\n            try:\n                author = infer_author_func(unpacked_dir, original_file)\n            except ValueError as e:\n                print(f\"Warning: {e} Using default author 'Claude'.\", file=sys.stderr)\n\n        validators = [\n            DOCXSchemaValidator(unpacked_dir, original_file),\n            RedliningValidator(unpacked_dir, original_file, author=author),\n        ]\n    elif suffix == \".pptx\":\n        validators = [PPTXSchemaValidator(unpacked_dir, original_file)]\n\n    if not validators:\n        return True, None\n\n    total_repairs = sum(v.repair() for v in validators)\n    if total_repairs:\n        output_lines.append(f\"Auto-repaired {total_repairs} issue(s)\")\n\n    success = all(v.validate() for v in validators)\n\n    if success:\n        output_lines.append(\"All validations PASSED!\")\n\n    return success, \"\\n\".join(output_lines) if output_lines else None\n\n\ndef _condense_xml(xml_file: Path) -> None:\n    try:\n        with open(xml_file, encoding=\"utf-8\") as f:\n            dom = defusedxml.minidom.parse(f)\n\n        for element in dom.getElementsByTagName(\"*\"):\n            if element.tagName.endswith(\":t\"):\n                continue\n\n            for child in list(element.childNodes):\n                if (\n                    child.nodeType == child.TEXT_NODE\n                    and child.nodeValue\n                    and child.nodeValue.strip() == \"\"\n                ) or child.nodeType == child.COMMENT_NODE:\n                    element.removeChild(child)\n\n        xml_file.write_bytes(dom.toxml(encoding=\"UTF-8\"))\n    except Exception",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/office/schemas/ecma/fouth-edition/opc-contentTypes.xsd",
+        "size_bytes": 2005,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ecma/fouth-edition/opc-coreProperties.xsd",
+        "size_bytes": 2565,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ecma/fouth-edition/opc-digSig.xsd",
+        "size_bytes": 2905,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ecma/fouth-edition/opc-relationships.xsd",
+        "size_bytes": 1377,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/dml-chart.xsd",
+        "size_bytes": 76483,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/dml-chartDrawing.xsd",
+        "size_bytes": 7102,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/dml-diagram.xsd",
+        "size_bytes": 52387,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/dml-lockedCanvas.xsd",
+        "size_bytes": 635,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/dml-main.xsd",
+        "size_bytes": 155120,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/dml-picture.xsd",
+        "size_bytes": 1254,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/dml-spreadsheetDrawing.xsd",
+        "size_bytes": 9047,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/dml-wordprocessingDrawing.xsd",
+        "size_bytes": 15082,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/pml.xsd",
+        "size_bytes": 85288,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-additionalCharacteristics.xsd",
+        "size_bytes": 1297,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-bibliography.xsd",
+        "size_bytes": 7472,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-commonSimpleTypes.xsd",
+        "size_bytes": 6556,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlDataProperties.xsd",
+        "size_bytes": 1273,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlSchemaProperties.xsd",
+        "size_bytes": 898,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesCustom.xsd",
+        "size_bytes": 2667,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesExtended.xsd",
+        "size_bytes": 3563,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesVariantTypes.xsd",
+        "size_bytes": 7702,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-math.xsd",
+        "size_bytes": 23895,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/shared-relationshipReference.xsd",
+        "size_bytes": 1392,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/sml.xsd",
+        "size_bytes": 246716,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/vml-main.xsd",
+        "size_bytes": 26718,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/vml-officeDrawing.xsd",
+        "size_bytes": 25788,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/vml-presentationDrawing.xsd",
+        "size_bytes": 547,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/vml-spreadsheetDrawing.xsd",
+        "size_bytes": 5820,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/vml-wordprocessingDrawing.xsd",
+        "size_bytes": 4106,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/wml.xsd",
+        "size_bytes": 175013,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/ISO-IEC29500-4_2016/xml.xsd",
+        "size_bytes": 4762,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/mce/mc.xsd",
+        "size_bytes": 3202,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/microsoft/wml-2010.xsd",
+        "size_bytes": 27109,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/microsoft/wml-2012.xsd",
+        "size_bytes": 3812,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/microsoft/wml-2018.xsd",
+        "size_bytes": 915,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/microsoft/wml-cex-2018.xsd",
+        "size_bytes": 1798,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/microsoft/wml-cid-2016.xsd",
+        "size_bytes": 1015,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/microsoft/wml-sdtdatahash-2020.xsd",
+        "size_bytes": 604,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/schemas/microsoft/wml-symex-2015.xsd",
+        "size_bytes": 753,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/office/soffice.py",
+        "size_bytes": 5484,
+        "kind": "text",
+        "content_preview": "\"\"\"\nHelper for running LibreOffice (soffice) in environments where AF_UNIX\nsockets may be blocked (e.g., sandboxed VMs).  Detects the restriction\nat runtime and applies an LD_PRELOAD shim if needed.\n\nUsage:\n    from office.soffice import run_soffice, get_soffice_env\n\n    # Option 1 – run soffice directly\n    result = run_soffice([\"--headless\", \"--convert-to\", \"pdf\", \"input.docx\"])\n\n    # Option 2 – get env dict for your own subprocess calls\n    env = get_soffice_env()\n    subprocess.run([\"soffice\", ...], env=env)\n\"\"\"\n\nimport os\nimport socket\nimport subprocess\nimport tempfile\nfrom pathlib import Path\n\n\ndef get_soffice_env() -> dict:\n    env = os.environ.copy()\n    env[\"SAL_USE_VCLPLUGIN\"] = \"svp\"\n\n    if _needs_shim():\n        shim = _ensure_shim()\n        env[\"LD_PRELOAD\"] = str(shim)\n\n    return env\n\n\ndef run_soffice(args: list[str], **kwargs) -> subprocess.CompletedProcess:\n    env = get_soffice_env()\n    return subprocess.run([\"soffice\"] + args, env=env, **kwargs)\n\n\n\n_SHIM_SO = Path(tempfile.gettempdir()) / \"lo_socket_shim.so\"\n\n\ndef _needs_shim() -> bool:\n    try:\n        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)\n        s.close()\n        return False\n    except OSError:\n        return True\n\n\ndef _ensure_shim() -> Path:\n    if _SHIM_SO.exists():\n        return _SHIM_SO\n\n    src = Path(tempfile.gettempdir()) / \"lo_socket_shim.c\"\n    src.write_text(_SHIM_SOURCE)\n    subprocess.run(\n        [\"gcc\", \"-shared\", \"-fPIC\", \"-o\", str(_SHIM_SO), str(src), \"-ldl\"],\n        check=True,\n        capture_output=True,\n    )\n    src.unlink()\n    return _SHIM_SO\n\n\n\n_SHIM_SOURCE = r\"\"\"\n#define _GNU_SOURCE\n#include <dlfcn.h>\n#include <errno.h>\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/socket.h>\n#include <unistd.h>\n\nstatic int (*real_socket)(int, int, int);\nstatic int (*real_socketpair)(int, int, int, int[2]);\nstatic int (*real_listen)(int, int);\nstatic int (*real_accept)(int, struct sockaddr *, socklen_t *);\nstatic int (*real_close)(int);\nstatic int (*real_read)(int, void *, size_t);\n\n/* Per-FD bookkeeping (FDs >= 1024 are passed through unshimmed). */\nstatic int is_shimmed[1024];\nstatic int peer_of[1024];\nstatic int wake_r[1024];            /* accept() blocks reading this */\nstatic int wake_w[1024];            /* close()  writes to this      */\nstatic int listener_fd = -1;        /* FD that received listen()    */\n\n__attribute__((constructor))\nstatic void init(void) {\n    real_socket     = dlsym(RTLD_NEXT, \"socket\");\n    real_socketpair = dlsym(RTLD_NEXT, \"socketpair\");\n    real_listen     = dlsym(RTLD_NEXT, \"listen\");\n    real_accept     = dlsym(RTLD_NEXT, \"accept\");\n    real_close      = dlsym(RTLD_NEXT, \"close\");\n    real_read       = dlsym(RTLD_NEXT, \"read\");\n    for (int i = 0; i < 1024; i++) {\n        peer_of[i] = -1;\n        wake_r[i]  = -1;\n        wake_w[i]  = -1;\n    }\n}\n\n/* ---- socket ---------------------------------------------------------- */\nint socket(int domain, int type, int protocol) {\n    if (domain == AF_UNIX) {\n        int fd = real_socket(domain, type, protocol);\n        if (fd >= 0) return fd;\n        /* socket(AF_UNIX) blocked – fall back to socketpair(). */\n        int sv[2];\n        if (real_socketpair(domain, type, protocol, sv) == 0) {\n            if (sv[0] >= 0 && sv[0] < 1024) {\n                is_shimmed[sv[0]] = 1;\n                peer_of[sv[0]]    = sv[1];\n                int wp[2];\n                if (pipe(wp) == 0) {\n                    wake_r[sv[0]] = wp[0];\n                    wake_w[sv[0]] = wp[1];\n                }\n            }\n            return sv[0];\n        }\n        errno = EPERM;\n        return -1;\n    }\n    return real_socket(domain, type, protocol);\n}\n\n/* ---- listen ---------------------------------------------------------- */\nint listen(int sockfd, int backlog) {\n    if (sockfd >= 0 && sockfd < 1024 && is_shimmed[sockfd]) {\n        listener_fd = sockfd;\n        return 0;\n    }\n    return real_listen(sockfd, backlog);\n}\n\n/* ---- accept --------------",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/office/unpack.py",
+        "size_bytes": 4184,
+        "kind": "text",
+        "content_preview": "\"\"\"Unpack Office files (DOCX, PPTX, XLSX) for editing.\n\nExtracts the ZIP archive, pretty-prints XML files, and optionally:\n- Merges adjacent runs with identical formatting (DOCX only)\n- Simplifies adjacent tracked changes from same author (DOCX only)\n\nUsage:\n    python unpack.py <office_file> <output_dir> [options]\n\nExamples:\n    python unpack.py document.docx unpacked/\n    python unpack.py presentation.pptx unpacked/\n    python unpack.py document.docx unpacked/ --merge-runs false\n\"\"\"\n\nimport argparse\nimport sys\nimport zipfile\nfrom pathlib import Path\n\nimport defusedxml.minidom\n\nfrom helpers.merge_runs import merge_runs as do_merge_runs\nfrom helpers.simplify_redlines import simplify_redlines as do_simplify_redlines\n\nSMART_QUOTE_REPLACEMENTS = {\n    \"\\u201c\": \"&#x201C;\",  \n    \"\\u201d\": \"&#x201D;\",  \n    \"\\u2018\": \"&#x2018;\",  \n    \"\\u2019\": \"&#x2019;\",  \n}\n\n\ndef unpack(\n    input_file: str,\n    output_directory: str,\n    merge_runs: bool = True,\n    simplify_redlines: bool = True,\n) -> tuple[None, str]:\n    input_path = Path(input_file)\n    output_path = Path(output_directory)\n    suffix = input_path.suffix.lower()\n\n    if not input_path.exists():\n        return None, f\"Error: {input_file} does not exist\"\n\n    if suffix not in {\".docx\", \".pptx\", \".xlsx\"}:\n        return None, f\"Error: {input_file} must be a .docx, .pptx, or .xlsx file\"\n\n    try:\n        output_path.mkdir(parents=True, exist_ok=True)\n\n        with zipfile.ZipFile(input_path, \"r\") as zf:\n            zf.extractall(output_path)\n\n        xml_files = list(output_path.rglob(\"*.xml\")) + list(output_path.rglob(\"*.rels\"))\n        for xml_file in xml_files:\n            _pretty_print_xml(xml_file)\n\n        message = f\"Unpacked {input_file} ({len(xml_files)} XML files)\"\n\n        if suffix == \".docx\":\n            if simplify_redlines:\n                simplify_count, _ = do_simplify_redlines(str(output_path))\n                message += f\", simplified {simplify_count} tracked changes\"\n\n            if merge_runs:\n                merge_count, _ = do_merge_runs(str(output_path))\n                message += f\", merged {merge_count} runs\"\n\n        for xml_file in xml_files:\n            _escape_smart_quotes(xml_file)\n\n        return None, message\n\n    except zipfile.BadZipFile:\n        return None, f\"Error: {input_file} is not a valid Office file\"\n    except Exception as e:\n        return None, f\"Error unpacking: {e}\"\n\n\ndef _pretty_print_xml(xml_file: Path) -> None:\n    try:\n        content = xml_file.read_text(encoding=\"utf-8\")\n        dom = defusedxml.minidom.parseString(content)\n        xml_file.write_bytes(dom.toprettyxml(indent=\"  \", encoding=\"utf-8\"))\n    except Exception:\n        pass  \n\n\ndef _escape_smart_quotes(xml_file: Path) -> None:\n    try:\n        content = xml_file.read_text(encoding=\"utf-8\")\n        for char, entity in SMART_QUOTE_REPLACEMENTS.items():\n            content = content.replace(char, entity)\n        xml_file.write_text(content, encoding=\"utf-8\")\n    except Exception:\n        pass\n\n\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser(\n        description=\"Unpack an Office file (DOCX, PPTX, XLSX) for editing\"\n    )\n    parser.add_argument(\"input_file\", help=\"Office file to unpack\")\n    parser.add_argument(\"output_directory\", help=\"Output directory\")\n    parser.add_argument(\n        \"--merge-runs\",\n        type=lambda x: x.lower() == \"true\",\n        default=True,\n        metavar=\"true|false\",\n        help=\"Merge adjacent runs with identical formatting (DOCX only, default: true)\",\n    )\n    parser.add_argument(\n        \"--simplify-redlines\",\n        type=lambda x: x.lower() == \"true\",\n        default=True,\n        metavar=\"true|false\",\n        help=\"Merge adjacent tracked changes from same author (DOCX only, default: true)\",\n    )\n    args = parser.parse_args()\n\n    _, message = unpack(\n        args.input_file,\n        args.output_directory,\n        merge_runs=args.merge_runs,\n        simplify_redlines=args.simplify_redlines,\n    )\n    print(messa",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/office/validate.py",
+        "size_bytes": 3779,
+        "kind": "text",
+        "content_preview": "\"\"\"\nCommand line tool to validate Office document XML files against XSD schemas and tracked changes.\n\nUsage:\n    python validate.py <path> [--original <original_file>] [--auto-repair] [--author NAME]\n\nThe first argument can be either:\n- An unpacked directory containing the Office document XML files\n- A packed Office file (.docx/.pptx/.xlsx) which will be unpacked to a temp directory\n\nAuto-repair fixes:\n- paraId/durableId values that exceed OOXML limits\n- Missing xml:space=\"preserve\" on w:t elements with whitespace\n\"\"\"\n\nimport argparse\nimport sys\nimport tempfile\nimport zipfile\nfrom pathlib import Path\n\nfrom validators import DOCXSchemaValidator, PPTXSchemaValidator, RedliningValidator\n\n\ndef main():\n    parser = argparse.ArgumentParser(description=\"Validate Office document XML files\")\n    parser.add_argument(\n        \"path\",\n        help=\"Path to unpacked directory or packed Office file (.docx/.pptx/.xlsx)\",\n    )\n    parser.add_argument(\n        \"--original\",\n        required=False,\n        default=None,\n        help=\"Path to original file (.docx/.pptx/.xlsx). If omitted, all XSD errors are reported and redlining validation is skipped.\",\n    )\n    parser.add_argument(\n        \"-v\",\n        \"--verbose\",\n        action=\"store_true\",\n        help=\"Enable verbose output\",\n    )\n    parser.add_argument(\n        \"--auto-repair\",\n        action=\"store_true\",\n        help=\"Automatically repair common issues (hex IDs, whitespace preservation)\",\n    )\n    parser.add_argument(\n        \"--author\",\n        default=\"Claude\",\n        help=\"Author name for redlining validation (default: Claude)\",\n    )\n    args = parser.parse_args()\n\n    path = Path(args.path)\n    assert path.exists(), f\"Error: {path} does not exist\"\n\n    original_file = None\n    if args.original:\n        original_file = Path(args.original)\n        assert original_file.is_file(), f\"Error: {original_file} is not a file\"\n        assert original_file.suffix.lower() in [\".docx\", \".pptx\", \".xlsx\"], (\n            f\"Error: {original_file} must be a .docx, .pptx, or .xlsx file\"\n        )\n\n    file_extension = (original_file or path).suffix.lower()\n    assert file_extension in [\".docx\", \".pptx\", \".xlsx\"], (\n        f\"Error: Cannot determine file type from {path}. Use --original or provide a .docx/.pptx/.xlsx file.\"\n    )\n\n    if path.is_file() and path.suffix.lower() in [\".docx\", \".pptx\", \".xlsx\"]:\n        temp_dir = tempfile.mkdtemp()\n        with zipfile.ZipFile(path, \"r\") as zf:\n            zf.extractall(temp_dir)\n        unpacked_dir = Path(temp_dir)\n    else:\n        assert path.is_dir(), f\"Error: {path} is not a directory or Office file\"\n        unpacked_dir = path\n\n    match file_extension:\n        case \".docx\":\n            validators = [\n                DOCXSchemaValidator(unpacked_dir, original_file, verbose=args.verbose),\n            ]\n            if original_file:\n                validators.append(\n                    RedliningValidator(unpacked_dir, original_file, verbose=args.verbose, author=args.author)  \n                )\n        case \".pptx\":\n            validators = [\n                PPTXSchemaValidator(unpacked_dir, original_file, verbose=args.verbose),\n            ]\n        case _:\n            print(f\"Error: Validation not supported for file type {file_extension}\")\n            sys.exit(1)\n\n    if args.auto_repair:\n        total_repairs = sum(v.repair() for v in validators)\n        if total_repairs:\n            print(f\"Auto-repaired {total_repairs} issue(s)\")\n\n    success = all(v.validate() for v in validators)\n\n    if success:\n        print(\"All validations PASSED!\")\n\n    sys.exit(0 if success else 1)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": true,
+    "skill_md_preview": ""
+  },
+  "layer_1_static_scan": {
+    "total_findings": 9,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 4,
+      "MEDIUM": 1,
+      "LOW": 4
+    },
+    "by_pattern": {
+      "SC1": 6,
+      "E4": 1,
+      "P2": 1,
+      "P8": 1
+    },
+    "by_kill_chain_phase": {
+      "execution": 6,
+      "recon": 1,
+      "evasion": 1,
+      "impact": 1
+    },
+    "rule_ids_hit": [
+      "E4",
+      "P2",
+      "P8",
+      "SC1"
+    ],
+    "files_scanned_count": 17
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Hybrid",
+      "confidence": 0.65,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 3,
+      "label": "Advanced",
+      "criterion_evasion_present": true,
+      "criterion_shadow_features": true,
+      "criterion_pattern_count": 9
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "evasion",
+      "execution",
+      "impact",
+      "recon"
+    ],
+    "kill_chain_phase_coverage_count": 4
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 19.77,
+    "verdict": "SUSPICIOUS",
+    "sub_scores": {
+      "S_static": 0.45,
+      "S_static_raw": 0.45,
+      "S_chain": 0.0,
+      "S_soph": 1.0,
+      "S_phases": 0.6667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\accept_changes.py",
+      "line": 68,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  65 |     ]\n  66 | \n  67 |     try:\n» 68 |         result = subprocess.run(\n  69 |             cmd,\n  70 |             capture_output=True,\n  71 |             text=True,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "result = subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "LOW",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\accept_changes.py",
+      "line": 99,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run(['soffice', ...])",
+      "description": "AST: 调用 subprocess.run 执行已知工具 'soffice'（合法用法）",
+      "confidence": 0.92,
+      "context": "   96 |         return True\n   97 | \n   98 |     if not macro_dir.exists():\n»  99 |         subprocess.run(\n  100 |             [\n  101 |                 \"soffice\",\n  102 |                 \"--headless\",",
+      "original_severity": "LOW",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E4",
+      "severity": "LOW",
+      "kill_chain_phase": "recon",
+      "file": "scripts\\office\\soffice.py",
+      "line": 46,
+      "pattern": "socket\\.(?:connect|gethostbyname|socket)",
+      "matched_text": "socket.socket",
+      "description": "Network socket usage or port scanning.",
+      "confidence": 0.85,
+      "context": "  43 | \n  44 | def _needs_shim() -> bool:\n  45 |     try:\n» 46 |         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)\n  47 |         s.close()\n  48 |         return False\n  49 |     except OSError:",
+      "original_severity": "LOW",
+      "evidence_type": "capability",
+      "context_type": "called_runtime_code",
+      "snippet": "s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\office\\soffice.py",
+      "line": 37,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  34 | \n  35 | def run_soffice(args: list[str], **kwargs) -> subprocess.CompletedProcess:\n  36 |     env = get_soffice_env()\n» 37 |     return subprocess.run([\"soffice\"] + args, env=env, **kwargs)\n  38 | \n  39 | \n  40 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "return subprocess.run([\"soffice\"] + args, env=env, **kwargs)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\office\\soffice.py",
+      "line": 59,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  56 | \n  57 |     src = Path(tempfile.gettempdir()) / \"lo_socket_shim.c\"\n  58 |     src.write_text(_SHIM_SOURCE)\n» 59 |     subprocess.run(\n  60 |         [\"gcc\", \"-shared\", \"-fPIC\", \"-o\", str(_SHIM_SO), str(src), \"-ldl\"],\n  61 |         check=True,\n  62 |         capture_output=True,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "LOW",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\office\\validators\\redlining.py",
+      "line": 138,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run(['git', ...])",
+      "description": "AST: 调用 subprocess.run 执行已知工具 'git'（合法用法）",
+      "confidence": 0.92,
+      "context": "  135 |                 original_file.write_text(original_text, encoding=\"utf-8\")\n  136 |                 modified_file.write_text(modified_text, encoding=\"utf-8\")\n  137 | \n» 138 |                 result = subprocess.run(\n  139 |                     [\n  140 |                         \"git\",\n  141 |                         \"diff\",",
+      "original_severity": "LOW",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "result = subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "LOW",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\office\\validators\\redlining.py",
+      "line": 167,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run(['git', ...])",
+      "description": "AST: 调用 subprocess.run 执行已知工具 'git'（合法用法）",
+      "confidence": 0.92,
+      "context": "  164 |                     if content_lines:\n  165 |                         return \"\\n\".join(content_lines)\n  166 | \n» 167 |                 result = subprocess.run(\n  168 |                     [\n  169 |                         \"git\",\n  170 |                         \"diff\",",
+      "original_severity": "LOW",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "result = subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P2",
+      "severity": "HIGH",
+      "kill_chain_phase": "evasion",
+      "file": "SKILL.md",
+      "line": 537,
+      "pattern": "<!--[^-]*\\b(?:must|always|never|do\\s+not|critical)\\b",
+      "matched_text": "<!-- Comment markers are direct children of w:p, never",
+      "description": "Directives hidden in HTML comments or invisible Unicode.",
+      "confidence": 0.85,
+      "context": "  534 | **CRITICAL: `<w:commentRangeStart>` and `<w:commentRangeEnd>` are siblings of `<w:r>`, never inside `<w:r>`.**\n  535 | \n  536 | ```xml\n» 537 | <!-- Comment markers are direct children of w:p, never inside w:r -->\n  538 | <w:commentRangeStart w:id=\"0\"/>\n  539 | <w:del w:id=\"1\" w:author=\"Claude\" w:date=\"2025-01-01T00:00:00Z\">\n  540 |   <w:r><w:delText>deleted</w:delText></w:r>",
+      "original_severity": "HIGH",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "<!-- Comment markers are direct children of w:p, never inside w:r -->",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 187,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "Always use DXA",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  184 | const borders = { top: border, bottom: border, left: border, right: border };\n  185 | \n  186 | new Table({\n» 187 |   width: { size: 9360, type: WidthType.DXA }, // Always use DXA (percentages break in Google Docs)\n  188 |   columnWidths: [4680, 4680], // Must sum to table width (DXA: 1440 = 1 inch)\n  189 |   rows: [\n  190 |     new TableRow({",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "width: { size: 9360, type: WidthType.DXA }, // Always use DXA (percentages break in Google Docs)",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

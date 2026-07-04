@@ -1,0 +1,88 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\meta\\skill-development",
+  "skill_name": "skill-development",
+  "files_scanned": [
+    "references\\contribution-examples.md",
+    "references\\pr-workflow.md",
+    "references\\progressive-disclosure-research.md",
+    "references\\recognizing-learnings.md",
+    "references\\validation-criteria.md",
+    "scripts\\init_skill.py",
+    "scripts\\package_skill.py",
+    "scripts\\quick_validate.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 9,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 3
+  },
+  "by_pattern": {
+    "P8": 3
+  },
+  "by_kill_chain_phase": {
+    "impact": 3
+  },
+  "rule_ids_hit": [
+    "P8"
+  ],
+  "findings": [
+    {
+      "rule_id": "P8",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "references\\pr-workflow.md",
+      "line": 408,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "Always use feature",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  405 | ## Summary\n  406 | \n  407 | **Key principles:**\n» 408 | 1. Always use feature branches, never commit directly to main\n  409 | 2. Write clear PR descriptions with evidence\n  410 | 3. Keep PRs focused on single improvement\n  411 | 4. Respond constructively to feedback",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "1. Always use feature branches, never commit directly to main",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "P8",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "references\\validation-criteria.md",
+      "line": 178,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "Always use GPT",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  175 | \n  176 | **Example - FAIL:**\n  177 | ```\n» 178 | Approach: Always use GPT-4o-mini for cost savings\n  179 | Tradeoff: Not considered - some tasks need GPT-4o\n  180 | Edge case: Not identified - complex reasoning suffers\n  181 | Documented: No, presented as universal solution",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "Approach: Always use GPT-4o-mini for cost savings",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "P8",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "references\\validation-criteria.md",
+      "line": 445,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "Always use Claude",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  442 | \n  443 | ### Example 2: Needs More Work\n  444 | \n» 445 | **Contribution:** Always use Claude Sonnet instead of GPT-4o\n  446 | \n  447 | **Validation:**\n  448 | - ❌ Only tried on one type of task",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "**Contribution:** Always use Claude Sonnet instead of GPT-4o",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

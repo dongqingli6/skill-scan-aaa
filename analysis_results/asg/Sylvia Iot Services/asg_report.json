@@ -1,0 +1,334 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:55:48.210910+00:00",
+  "skill_name": "Sylvia Iot Services",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\sylvia-iot-services\\Sylvia Iot Services",
+  "skill_contents": {
+    "file_count": 2,
+    "total_bytes": 7581,
+    "files": [
+      {
+        "path": "evals/evals.json",
+        "size_bytes": 3230,
+        "kind": "text",
+        "content_preview": "{\n  \"skill_name\": \"sylvia-iot-services\",\n  \"evals\": [\n    {\n      \"id\": 0,\n      \"prompt\": \"我要開始跑 sylvia-iot-gui-genai 的 E2E 測試，需要把 backend 啟動起來\",\n      \"expected_output\": \"詢問或推斷要用 core 還是 router，然後提供正確的 scripts 下載和 start.sh 指令（不含 GUI，SQLite）\",\n      \"files\": [],\n      \"assertions\": [\n        {\n          \"id\": \"downloads_to_tmp\",\n          \"description\": \"有提到從 GitHub 下載 scripts 到 /tmp\",\n          \"type\": \"grep\",\n          \"pattern\": \"/tmp\"\n        },\n        {\n          \"id\": \"uses_scripts_method\",\n          \"description\": \"使用 scripts 方式（start.sh）而非 compose/kustomize\",\n          \"type\": \"grep\",\n          \"pattern\": \"start\\\\.sh\"\n        },\n        {\n          \"id\": \"no_gui_flag\",\n          \"description\": \"不包含 --gui 選項（E2E 測試不需要）\",\n          \"type\": \"grep_absent\",\n          \"pattern\": \"--gui\"\n        },\n        {\n          \"id\": \"prerequisite_check\",\n          \"description\": \"有提到檢查 Docker 和/或 sqlite3\",\n          \"type\": \"grep\",\n          \"pattern\": \"docker|sqlite3\"\n        }\n      ]\n    },\n    {\n      \"id\": 1,\n      \"prompt\": \"我下午要給客戶展示 sylvia-iot 平台，需要有路由器功能和完整的 GUI，幫我把展示環境架起來\",\n      \"expected_output\": \"使用 scripts 方式，--bin router --with lora-ifroglab,app-demo --gui，提供完整的下載和執行步驟\",\n      \"files\": [],\n      \"assertions\": [\n        {\n          \"id\": \"downloads_to_tmp\",\n          \"description\": \"有提到從 GitHub 下載 scripts 到 /tmp\",\n          \"type\": \"grep\",\n          \"pattern\": \"/tmp\"\n        },\n        {\n          \"id\": \"uses_router_bin\",\n          \"description\": \"使用 --bin router\",\n          \"type\": \"grep\",\n          \"pattern\": \"router\"\n        },\n        {\n          \"id\": \"includes_optional_services\",\n          \"description\": \"包含 lora-ifroglab 和 app-demo\",\n          \"type\": \"grep\",\n          \"pattern\": \"lora-ifroglab\"\n        },\n        {\n          \"id\": \"includes_gui\",\n          \"description\": \"包含 --gui 選項\",\n          \"type\": \"grep\",\n          \"pattern\": \"--gui\"\n        }\n      ]\n    },\n    {\n      \"id\": 2,\n      \"prompt\": \"我要在家裡的 NAS 上架設 sylvia-iot，用 docker compose，hostname 設成 nas.local\",\n      \"expected_output\": \"使用 compose 方式，下載 scripts 到 /tmp，執行 setup.sh --host nas.local\",\n      \"files\": [],\n      \"assertions\": [\n        {\n          \"id\": \"downloads_to_tmp\",\n          \"description\": \"有提到從 GitHub 下載 scripts 到 /tmp\",\n          \"type\": \"grep\",\n          \"pattern\": \"/tmp\"\n        },\n        {\n          \"id\": \"uses_compose_method\",\n          \"description\": \"使用 compose 方式（setup.sh）\",\n          \"type\": \"grep\",\n          \"pattern\": \"setup\\\\.sh\"\n        },\n        {\n          \"id\": \"sets_hostname\",\n          \"description\": \"包含 --host nas.local\",\n          \"type\": \"grep\",\n          \"pattern\": \"nas\\\\.local\"\n        },\n        {\n          \"id\": \"mentions_stop_command\",\n          \"description\": \"提到如何停止服務（--down）\",\n          \"type\": \"grep\",\n          \"pattern\": \"\\\\-\\\\-down\"\n        }\n      ]\n    }\n  ]\n}\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 4351,
+        "kind": "text",
+        "content_preview": "---\nname: sylvia-iot-services\ndescription: Deploy, manage, and operate Sylvia-IoT platform services. Use this skill whenever the user wants to start, stop, reset, or check the status of Sylvia-IoT services — whether for local development, E2E testing, demos, or production. Triggers on mentions of sylvia-iot-core, sylvia-router, or any Sylvia-IoT deployment context, even if the user doesn't say \"deploy\" explicitly (e.g. \"I need the backend up for testing\", \"set up a demo environment\", \"switch from core to router\").\n---\n\n# Sylvia-IoT Services\n\nSylvia-IoT is an open-source IoT platform that routes device messages to applications.\nCore modules: auth, broker, coremgr, data. The `sylvia-router` binary bundles all core modules plus IP router functionality.\n\nAll deployment logic lives in the [woofdogtw/sylvia-iot-deployment](https://github.com/woofdogtw/sylvia-iot-deployment) repo.\n**Always download the latest scripts from GitHub to `/tmp/sylvia-iot-deployment/` before running anything** — these scripts are the source of truth and handle all the complexity.\n\n## Step 1: Download Scripts\n\n```bash\nif [ -d /tmp/sylvia-iot-deployment ]; then\n  git -C /tmp/sylvia-iot-deployment pull\nelse\n  git clone https://github.com/woofdogtw/sylvia-iot-deployment /tmp/sylvia-iot-deployment\nfi\n```\n\n## Step 2: Clarify Intent\n\nAsk what's needed. Use context clues to skip obvious questions. When in doubt, apply the defaults below.\n\n| Question | Options | Default |\n|----------|---------|---------|\n| Operation | start / stop / status / reset-db / remove | start |\n| Deployment method | scripts / compose / kustomize / systemd | scripts |\n| Binary | core / router | **router** |\n| Optional services | lora-ifroglab, app-demo | both (demo), none (E2E test) |\n| GUI | yes / no | yes (demo), no (E2E test) |\n| Database (scripts only) | sqlite / mongodb | sqlite |\n\n**Tip:** If the user mentions \"testing\" or \"E2E\", lean toward `--bin core` or `--bin router` without GUI. If they mention \"demo\" or \"show\", use router + lora-ifroglab + app-demo + GUI.\n\n**Common combo for demos:**\n```bash\n./start.sh --bin router --with lora-ifroglab,app-demo --gui\n```\n\n## Step 3: Check Prerequisites\n\nBefore running scripts, verify:\n- **Docker**: `docker info` (all methods except systemd for infra)\n- **sqlite3**: `command -v sqlite3` (scripts method with sqlite)\n- **kubectl + kustomize**: `kubectl version` (kustomize method)\n- **sudo access**: systemd method requires `sudo`\n\nIf something is missing, tell the user what to install and stop.\n\n## Step 4: Run the Appropriate Scripts\n\n### scripts/ — Local dev/test (native binaries)\n\n```bash\ncd /tmp/sylvia-iot-deployment/scripts\n\n# Start\n./start.sh [--db sqlite|mongodb] [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]\n\n# Stop (containers stopped but not removed)\n./stop.sh\n\n# Status\n./status.sh\n\n# Reset database only\n./reset-db.sh [--db sqlite|mongodb]\n```\n\nNo \"remove\" operation for scripts — just stop. Data persists in the scripts/ directory.\n\n### compose/ — Docker Compose\n\n```bash\ncd /tmp/sylvia-iot-deployment/compose\n\n# Start (also configures .env)\n./setup.sh [--with lora-ifroglab,app-demo] [--host HOSTNAME] [--port PORT]\n\n# Stop (containers removed, data volumes kept)\n./setup.sh --down\n\n# Remove everything including data\n./setup.sh --down-v\n```\n\n### kustomize/ — Kubernetes\n\n```bash\ncd /tmp/sylvia-iot-deployment/kustomize/overlays/sylvia-iot-core\n\n# Start\n./install.sh\n\n# Remove\nkubectl delete -k .\n```\n\nNote: `sylvia-router` is NOT supported in kustomize (it manages host network interfaces).\n\n### systemd/ — Ubuntu/Debian production\n\n```bash\ncd /tmp/sylvia-iot-deployment/systemd\n\n# Install and start\nsudo ./install.sh [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]\n\n# Uninstall\nsudo ./install.sh --uninstall\n```\n\n## Default Credentials\n\n| Service | URL | Credentials |\n|---------|-----|-------------|\n| Sylvia-IoT + GUI | http://localhost:1080 | admin / admin |\n| RabbitMQ | http://localhost:15672 ",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: sylvia-iot-services\ndescription: Deploy, manage, and operate Sylvia-IoT platform services. Use this skill whenever the user wants to start, stop, reset, or check the status of Sylvia-IoT services — whether for local development, E2E testing, demos, or production. Triggers on mentions of sylvia-iot-core, sylvia-router, or any Sylvia-IoT deployment context, even if the user doesn't say \"deploy\" explicitly (e.g. \"I need the backend up for testing\", \"set up a demo environment\", \"switch from core to router\").\n---\n\n# Sylvia-IoT Services\n\nSylvia-IoT is an open-source IoT platform that routes device messages to applications.\nCore modules: auth, broker, coremgr, data. The `sylvia-router` binary bundles all core modules plus IP router functionality.\n\nAll deployment logic lives in the [woofdogtw/sylvia-iot-deployment](https://github.com/woofdogtw/sylvia-iot-deployment) repo.\n**Always download the latest scripts from GitHub to `/tmp/sylvia-iot-deployment/` before running anything** — these scripts are the source of truth and handle all the complexity.\n\n## Step 1: Download Scripts\n\n```bash\nif [ -d /tmp/sylvia-iot-deployment ]; then\n  git -C /tmp/sylvia-iot-deployment pull\nelse\n  git clone https://github.com/woofdogtw/sylvia-iot-deployment /tmp/sylvia-iot-deployment\nfi\n```\n\n## Step 2: Clarify Intent\n\nAsk what's needed. Use context clues to skip obvious questions. When in doubt, apply the defaults below.\n\n| Question | Options | Default |\n|----------|---------|---------|\n| Operation | start / stop / status / reset-db / remove | start |\n| Deployment method | scripts / compose / kustomize / systemd | scripts |\n| Binary | core / router | **router** |\n| Optional services | lora-ifroglab, app-demo | both (demo), none (E2E test) |\n| GUI | yes / no | yes (demo), no (E2E test) |\n| Database (scripts only) | sqlite / mongodb | sqlite |\n\n**Tip:** If the user mentions \"testing\" or \"E2E\", lean toward `--bin core` or `--bin router` without GUI. If they mention \"demo\" or \"show\", use router + lora-ifroglab + app-demo + GUI.\n\n**Common combo for demos:**\n```bash\n./start.sh --bin router --with lora-ifroglab,app-demo --gui\n```\n\n## Step 3: Check Prerequisites\n\nBefore running scripts, verify:\n- **Docker**: `docker info` (all methods except systemd for infra)\n- **sqlite3**: `command -v sqlite3` (scripts method with sqlite)\n- **kubectl + kustomize**: `kubectl version` (kustomize method)\n- **sudo access**: systemd method requires `sudo`\n\nIf something is missing, tell the user what to install and stop.\n\n## Step 4: Run the Appropriate Scripts\n\n### scripts/ — Local dev/test (native binaries)\n\n```bash\ncd /tmp/sylvia-iot-deployment/scripts\n\n# Start\n./start.sh [--db sqlite|mongodb] [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]\n\n# Stop (containers stopped but not removed)\n./stop.sh\n\n# Status\n./status.sh\n\n# Reset database only\n./reset-db.sh [--db sqlite|mongodb]\n```\n\nNo \"remove\" operation for scripts — just stop. Data persists in the scripts/ directory.\n\n### compose/ — Docker Compose\n\n```bash\ncd /tmp/sylvia-iot-deployment/compose\n\n# Start (also configures .env)\n./setup.sh [--with lora-ifroglab,app-demo] [--host HOSTNAME] [--port PORT]\n\n# Stop (containers removed, data volumes kept)\n./setup.sh --down\n\n# Remove everything including data\n./setup.sh --down-v\n```\n\n### kustomize/ — Kubernetes\n\n```bash\ncd /tmp/sylvia-iot-deployment/kustomize/overlays/sylvia-iot-core\n\n# Start\n./install.sh\n\n# Remove\nkubectl delete -k .\n```\n\nNote: `sylvia-router` is NOT supported in kustomize (it manages host network interfaces).\n\n### systemd/ — Ubuntu/Debian production\n\n```bash\ncd /tmp/sylvia-iot-deployment/systemd\n\n# Install and start\nsudo ./install.sh [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]\n\n# Uninstall\nsudo ./install.sh --uninstall\n```\n\n## Default Credentials\n\n| Service | URL | Credentials |\n|---------|-----|-------------|\n| Sylvia-IoT + GUI | http://localhost:1080 | admin / admin |\n| RabbitMQ | http://localhost:15672 "
+  },
+  "layer_1_static_scan": {
+    "total_findings": 4,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 1,
+      "LOW": 3
+    },
+    "by_pattern": {
+      "PE2": 3,
+      "P8": 1
+    },
+    "by_kill_chain_phase": {
+      "impact": 4
+    },
+    "rule_ids_hit": [
+      "P8",
+      "PE2"
+    ],
+    "files_scanned_count": 2,
+    "ai_downgraded_count": 4
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 2,
+      "label": "Intermediate",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 4
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "impact"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 4.8,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0875,
+      "S_static_raw": 0.0875,
+      "S_chain": 0.0,
+      "S_soph": 0.67,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "verdict floor #2: PE2 持久化 ×3 处未降级 — 多处启动项 / 服务写入",
+      "分数与判定对齐: SUSPICIOUS 区间下限 15, composite_score 7.43 → 16",
+      "SSD downgrade: R2=0.035 (DeepSeek V4-Pro) — LLM 全文审计判 SAFE → score 16 → 4.8 (×0.3)"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    },
+    "composite_score_pre_ssd": 16
+  },
+  "findings": [
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 50,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  47 | - **Docker**: `docker info` (all methods except systemd for infra)\n  48 | - **sqlite3**: `command -v sqlite3` (scripts method with sqlite)\n  49 | - **kubectl + kustomize**: `kubectl version` (kustomize method)\n» 50 | - **sudo access**: systemd method requires `sudo`\n  51 | \n  52 | If something is missing, tell the user what to install and stop.\n  53 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "- **sudo access**: systemd method requires `sudo`",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: sudo 出现在前提条件说明中，解释 systemd 方法需要 sudo 权限，属于合规的文档说明。",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "sudo 出现在前提条件说明中，解释 systemd 方法需要 sudo 权限，属于合规的文档说明。"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "sudo 出现在前提条件说明中，解释 systemd 方法需要 sudo 权限，属于合规的文档说明。"
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 111,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  108 | cd /tmp/sylvia-iot-deployment/systemd\n  109 | \n  110 | # Install and start\n» 111 | sudo ./install.sh [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]\n  112 | \n  113 | # Uninstall\n  114 | sudo ./install.sh --uninstall",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "sudo ./install.sh [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: sudo 出现在 systemd 安装示例命令中，仅为文档展示，并非实际执行脚本。",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "sudo 出现在 systemd 安装示例命令中，仅为文档展示，并非实际执行脚本。"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "sudo 出现在 systemd 安装示例命令中，仅为文档展示，并非实际执行脚本。"
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 114,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  111 | sudo ./install.sh [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]\n  112 | \n  113 | # Uninstall\n» 114 | sudo ./install.sh --uninstall\n  115 | ```\n  116 | \n  117 | ## Default Credentials",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "sudo ./install.sh --uninstall",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: sudo 出现在 systemd 卸载示例命令中，仅为文档展示，非真实恶意操作。",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "sudo 出现在 systemd 卸载示例命令中，仅为文档展示，非真实恶意操作。"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "sudo 出现在 systemd 卸载示例命令中，仅为文档展示，非真实恶意操作。"
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 12,
+      "pattern": "(?i)\\bthe\\s+(?:source|single\\s+source)\\s+of\\s+truth",
+      "matched_text": "the source of truth",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "   9 | Core modules: auth, broker, coremgr, data. The `sylvia-router` binary bundles all core modules plus IP router functionality.\n  10 | \n  11 | All deployment logic lives in the [woofdogtw/sylvia-iot-deployment](https://github.com/woofdogtw/sylvia-iot-deployment) repo.\n» 12 | **Always download the latest scripts from GitHub to `/tmp/sylvia-iot-deployment/` before running anything** — these scripts are the source of truth and handle all the complexity.\n  13 | \n  14 | ## Step 1: Download Scripts\n  15 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "**Always download the latest scripts from GitHub to `/tmp/sylvia-iot-deployment/` before running anything** — these scripts are the source of truth and handle all the complexity.",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 文档说明'这些脚本是真实来源'，属于合法的描述性语句，并非隐藏的恶意负载或硬编码凭据。",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "文档说明'这些脚本是真实来源'，属于合法的描述性语句，并非隐藏的恶意负载或硬编码凭据。"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "文档说明'这些脚本是真实来源'，属于合法的描述性语句，并非隐藏的恶意负载或硬编码凭据。"
+    }
+  ],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.035,
+    "verdict": "SAFE",
+    "mean_confidence": 0.9,
+    "subtasks": {
+      "A": {
+        "risk_score": 0.1,
+        "rating": "SAFE",
+        "confidence": 0.9,
+        "evidence": [],
+        "reasoning": "该技能声明的部署与管理功能与其实际指示的仓库下载与脚本执行行为一致，未发现隐藏或恶意行为。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "D": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [],
+        "reasoning": "在 SKILL.md",
+        "task_name": "cross_file_consistency"
+      },
+      "B": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [],
+        "reasoning": "(LLM 输出被截断/格式异常，建议增大 max_tokens 后复扫)",
+        "task_name": "permission_justification"
+      },
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [],
+        "reasoning": "confidence 0.9因为比较确信。 这样即可。",
+        "task_name": "covert_behavior"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.035 confidence=0.9 都高置信 → DeepSeek 单家定论"
+  },
+  "l1_review_meta": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "total_reviewed": 4,
+    "total_findings": 4,
+    "tp_count": 0,
+    "fp_count": 4,
+    "uncertain_count": 0,
+    "api_calls": 1
+  }
+}

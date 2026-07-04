@@ -1,0 +1,238 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-13T14:52:22.294531+00:00",
+  "skill_name": "benign-skill-development",
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-skill-development",
+  "skill_contents": {
+    "file_count": 10,
+    "total_bytes": 89716,
+    "files": [
+      {
+        "path": "LICENSE",
+        "size_bytes": 1089,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "references/contribution-examples.md",
+        "size_bytes": 11563,
+        "kind": "text",
+        "content_preview": "# Contribution Examples\n\nReal-world examples of good contributions to help you understand what makes an effective PR.\n\n## Example 1: Correcting Guidance That Led to Errors\n\n### The Situation\n\nAgent followed `letta-memory-architect` guidance to use `memory_rethink` for updating shared memory blocks. Result: Data loss when two agents wrote simultaneously.\n\n### The Investigation\n\n```\n1. Checked references/concurrency.md\n2. Found memory_insert is safer for concurrent writes\n3. Realized warning existed but wasn't prominent\n4. Tested memory_insert with concurrent writes - no data loss\n5. Identified that warning needs to be more visible\n```\n\n###PR Created\n\n**Title:** \"Emphasize memory_insert for concurrent writes\"\n\n**Description:**\n```markdown\n## What\n\nMakes the concurrent write warning more prominent in letta-memory-architect \nand adds concrete example of data loss scenario.\n\n## Why\n\nI followed the skill's guidance and used memory_rethink for updates in a \nmulti-agent scenario. Result: Data loss when two agents wrote simultaneously.\n\nThe warning about concurrent writes existed in references/concurrency.md but \nwasn't prominent in the main SKILL.md. This led me to miss it.\n\n## Evidence\n\n- Reproduced data loss with memory_rethink (7/10 concurrent writes lost data)\n- Tested memory_insert with same scenario (0/10 data loss)\n- Confirmed in references/concurrency.md that this is documented behavior\n- Pattern is clear: append-only is safer for concurrency\n\n## Impact\n\nPrevents other agents from making same mistake that causes data loss.\nMakes critical safety information visible where agents first look.\n\n## Testing\n\nAdded concrete example showing data loss scenario. Verified example is \nclear and illustrative. Checked that warning now appears in main skill body.\n```\n\n**Changes:**\n- Move warning to prominent position in SKILL.md\n- Add concrete \"what goes wrong\" example\n- Bold the safety recommendation\n- Link to detailed concurrency patterns\n\n**Outcome:** Merged. Prevents future agents from data loss.\n\n---\n\n## Example 2: Adding Missing Pattern\n\n### The Situation\n\nAgent hit API rate limiting 5 times across different projects (OpenRouter, Anthropic, OpenAI). Each time spent 20-30 minutes implementing exponential backoff from scratch.\n\n### The Investigation\n\n```\n1. Searched skills repository for rate limiting patterns - not found\n2. Checked ai/models/ and ai/tools/ - no coverage\n3. Researched best practices - exponential backoff with jitter is standard\n4. Validated pattern works across all three APIs\n5. Determined this is generalizable, not project-specific\n```\n\n### PR Created\n\n**Title:** \"Add API rate limiting patterns\"\n\n**Description:**\n```markdown\n## What\n\nCreates new skill `ai/models/api-rate-limiting` covering exponential backoff, \njitter, and retry strategies for HTTP APIs.\n\n## Why\n\nEncountered rate limiting 5 times across different projects:\n- OpenRouter (2 times)\n- Anthropic API (2 times)\n- OpenAI API (1 time)\n\nEach time spent 20-30 minutes implementing retry logic from scratch. This is a \ncommon pattern that should be documented.\n\n## Evidence\n\n- Tested pattern across all three APIs successfully\n- Pattern is HTTP standard (RFC 6585 for 429 responses)\n- Exponential backoff with jitter is documented best practice\n- Saved ~25 minutes per instance after documenting\n\n## Impact\n\nPrevents repeated implementation of same pattern. Helps any agent integrating \nexternal APIs handle rate limiting correctly.\n\n## Testing\n\nCreated test scenarios with intentional rate limiting. Verified:\n- Backoff timing works correctly\n- Jitter prevents thundering herd\n- Max retry limit prevents infinite loops\n- Pattern works across different API providers\n```\n\n**Changes:**\n- New skill: `ai/models/api-rate-limiting/SKILL.md`\n- Includes code examples for implementation\n- Documents when to use and when not to use\n- Covers different retry strategies and tradeoffs\n- Updates README.md to list new skill\n\n**Outcome:** Merged. Now saves time for all agents working with APIs.\n\n-",
+        "content_truncated": true
+      },
+      {
+        "path": "references/pr-workflow.md",
+        "size_bytes": 10400,
+        "kind": "text",
+        "content_preview": "# Pull Request Workflow\n\nAll contributions to the skills repository go through pull requests (PRs), not direct commits to main. This ensures quality, enables review, and maintains a clear contribution history.\n\n## Why Pull Requests?\n\n**Quality control:**\n- Changes reviewed before merging\n- Catch errors or unclear instructions\n- Validate improvements are sound\n\n**Collaboration:**\n- Discuss alternatives and tradeoffs\n- Learn from reviewer feedback\n- Build shared understanding\n\n**History:**\n- Clear record of what changed and why\n- Attributable contributions\n- Easy to revert if needed\n\n**Learning:**\n- Feedback improves your future contributions\n- See how others approach problems\n- Collective knowledge building\n\n## PR Workflow Steps\n\n### 1. Create Feature Branch\n\n**Before making changes,** create a branch for your work.\n\n**Branch naming conventions:**\n```\nadd/skill-name              # New skill\nupdate/skill-name-aspect    # Update existing skill\nfix/skill-name-issue        # Fix error or bug\nclarify/skill-name-section  # Improve clarity\n```\n\n**Example:**\n```bash\ngit checkout -b add/api-rate-limiting\n```\n\n### 2. Make Your Changes\n\n**Update or create skills:**\n- Edit SKILL.md files\n- Add/update reference files\n- Include examples if helpful\n- Update README if adding new skill\n\n**Test your changes:**\n- Read through as if you're seeing it for first time\n- Check that examples work\n- Verify links/references are correct\n- Ensure formatting is clean\n\n**Best practices:**\n- Keep changes focused (one improvement per PR)\n- Preserve existing valid content\n- Write clearly and concisely\n- Include examples where helpful\n\n### 3. Stage and Commit Changes\n\n**Stage relevant files:**\n```bash\ngit add path/to/changed/files\n```\n\n**Write clear commit message:**\n```bash\ngit commit -m \"Add exponential backoff pattern to API integration\n\nIncludes retry logic with jitter for rate limiting scenarios.\nTested across OpenRouter, Anthropic, and OpenAI APIs.\"\n```\n\n**Commit message format:**\n```\n<Short summary of change>\n\n<Longer explanation of what and why>\n<Evidence or testing notes if relevant>\n```\n\n### 4. Push Branch to Remote\n\n**First time pushing branch:**\n```bash\ngit push -u origin add/api-rate-limiting\n```\n\n**Subsequent pushes:**\n```bash\ngit push\n```\n\n### 5. Create Pull Request\n\n**Use GitHub web interface or CLI (gh):**\n```bash\ngh pr create --title \"Add API rate limiting patterns\" \\\n  --body \"$(cat <<'EOF'\n## What\n\nAdds exponential backoff pattern for handling API rate limits.\n\n## Why\n\nHit rate limiting 5 times across different projects. Spent ~30 minutes \neach time figuring out retry logic. No existing skill documents this \ncommon pattern.\n\n## Evidence\n\n- Tested on OpenRouter, Anthropic API, OpenAI API\n- 100% success rate across 20 test scenarios\n- Pattern aligns with HTTP RFC recommendations\n- Prevents 429 errors with minimal latency addition\n\n## Impact\n\nSaves debugging time when integrating external APIs. Prevents rate limit \nerrors that cause user-facing failures.\n\n## Testing\n\nCreated test scenarios with intentional rate limiting. Verified backoff \nlogic works correctly and doesn't retry indefinitely.\nEOF\n)\"\n```\n\n### 6. PR Description Template\n\nUse this structure for PR descriptions:\n\n```markdown\n## What\n\n[Brief description of what's changing - 1-2 sentences]\n\n## Why\n\n[Problem encountered / gap found / improvement opportunity]\n[Why this change helps]\n\n## Evidence\n\n[How you validated this is better]\n[Testing you did]\n[Sources you referenced]\n\n## Impact  \n\n[Who benefits from this change]\n[What situations this helps]\n[What it prevents or enables]\n\n## Testing\n\n[How you verified changes work]\n[Examples you tried]\n[Edge cases you considered]\n\n## Related\n\n[Link to related skills if relevant]\n[Reference forum discussions or docs if applicable]\n```\n\n### 7. Respond to Feedback\n\n**Reviewers may:**\n- Ask clarifying questions\n- Suggest alternative approaches\n- Request additional examples\n- Point out edge cases\n- Propose refinements\n\n**How to respond:**\n- Address feedba",
+        "content_truncated": true
+      },
+      {
+        "path": "references/progressive-disclosure-research.md",
+        "size_bytes": 20897,
+        "kind": "text",
+        "content_preview": "# Progressive Disclosure at Scale: Operating Large Skill Libraries\n\n**Focus:** Practical patterns for managing 100-1000+ skills  \n**Date:** December 18, 2025\n\n---\n\n## Executive Summary\n\nProgressive disclosure enables agents to work with arbitrarily large skill libraries by loading information in stages: metadata → instructions → resources. This report focuses on practical implementation patterns for systems with 100+ skills, where naive approaches fail.\n\n**Critical insight:** At scale, you're building a discovery system, not a documentation library.\n\n**Performance data:** 36.8% improvement with dynamic loading across 200+ tasks (Letta ContextBench). Discovery scales O(log n), browsing scales O(n) and fails beyond ~50 skills.\n\n---\n\n## The Scaling Wall\n\n### When Flat Structures Break\n\n**10-50 skills:** Flat list in memory block works fine  \n**50-100 skills:** Memory block gets crowded, discovery slower but functional  \n**100-500 skills:** Flat structure at breaking point, need better organization  \n**500+ skills:** Flat structure fails, hierarchical organization required\n\n**The problem at 100+ skills:**\n```\nMemory block contains:\n- 100 skills × 100 words metadata = 10,000 words\n- Approaches context window limits\n- Agent spends significant time scanning metadata\n- Discovery precision drops (too many similar-sounding skills)\n```\n\n**Key metrics from production (100+ skill systems):**\n- Discovery time: 2.5s → 8.3s (3.3x slower)\n- False positives: 3.1% → 18.7% (agents load wrong skills)\n- Memory overhead: 15% → 45% of context window\n- Agent confusion: More time selecting skills than executing tasks\n\n---\n\n## Three-Tier Architecture for Scale\n\n### Tier 1: Discovery Metadata (Always Loaded)\n\n**Challenge:** How do you fit 1000 skills in memory without overwhelming agents?\n\n**Solution: Hierarchical metadata with progressive drilling**\n\n```yaml\n# Top-level categories (always in memory)\nletta/          - Letta product ecosystem\n  ├─ agents/    - Agent development patterns\n  ├─ sdks/      - SDK integrations\n  └─ ops/       - Operations and deployment\n\ntools/          - External tool integrations\n  ├─ web/       - Web scraping, testing\n  ├─ data/      - Data processing\n  └─ ml/        - Machine learning tools\n\n# Skill metadata (loaded per category)\nletta/agents/\n  - memory-architecture: Designing memory blocks...\n  - tool-patterns: Tool selection and configuration...\n  - multi-agent: Coordinating multiple agents...\n```\n\n**Implementation pattern:**\n1. **Categories in memory block** (always loaded): ~10-20 categories, <1k words\n2. **Skill list on demand** (when category selected): 10-50 skills per category\n3. **Full skill** (when specific skill selected): Complete SKILL.md\n\n**Example agent flow:**\n```\nTask: \"Set up memory blocks for a customer support agent\"\n\nAgent reasoning:\n1. Scan categories → \"letta/\" relevant\n2. Load letta/ skill list → See \"memory-architecture\" \n3. Load memory-architecture SKILL.md\n4. Navigate to references/customer-support-patterns.md\n5. Execute task\n```\n\n### Tier 2: Category Organization\n\n**Practical category structure for 500+ skills:**\n\n```\n<domain>/\n├── <subdomain>/\n│   ├── CATEGORY.md         # Overview, when to use these skills\n│   ├── skill-1/\n│   ├── skill-2/\n│   └── skill-3/\n└── README.md               # Domain overview\n```\n\n**CATEGORY.md template:**\n```markdown\n# Agent Development Skills\n\nUse these skills when building, configuring, or debugging Letta agents.\n\n## Available Skills\n\n- **memory-architecture** - Use when designing memory blocks and data flow\n- **tool-patterns** - Use when selecting and configuring tools\n- **model-selection** - Use when choosing LLMs for specific workloads\n- **multi-agent** - Use when coordinating multiple agents\n\n## Quick Decision Tree\n\nBuilding new agent? → Start with memory-architecture\nDebugging tool issues? → See tool-patterns\nPerformance problems? → Check model-selection\nMultiple agents? → Read multi-agent\n```\n\n**Key insight:** CATEGORY.md is metadata for a group of skills. Ag",
+        "content_truncated": true
+      },
+      {
+        "path": "references/recognizing-learnings.md",
+        "size_bytes": 10301,
+        "kind": "text",
+        "content_preview": "# Recognizing Learnings\n\nValuable learnings often reveal themselves through specific signals during your work. Train yourself to notice these patterns.\n\n## Time Investment Signals\n\n### Debugging Time\n**Signal:** \"I spent 20+ minutes debugging this issue\"\n\n**Questions to ask:**\n- Was this documented anywhere?\n- Did I search existing skills first?\n- Would documenting this prevent future debugging time?\n- Is this a one-off or recurring pattern?\n\n**Example:**\n```\nSpent 45 minutes figuring out why Playwright tests were flaky. \nRoot cause: Need to wait for network idle, not just element presence.\nPattern documented? No. Should be? Yes - common issue with webapp-testing.\n```\n\n### Trial and Error\n**Signal:** \"I tried 3+ approaches before finding what worked\"\n\n**Questions to ask:**\n- Were the failed approaches reasonable attempts?\n- What made the winning approach better?\n- Could guidance have prevented the trial-and-error?\n\n**Example:**\n```\nTried git rebase -i (failed - interactive not supported)\nTried git reset (lost work)\nFinally: git rebase HEAD~3 worked\nCould this be documented in git-workflows? Yes.\n```\n\n### \"Wish I Had Known\"\n**Signal:** \"I wish I had known this at the start\"\n\n**Questions to ask:**\n- Where would I have looked for this info?\n- What skill should contain this?\n- How much time would it have saved?\n\n**Example:**\n```\nSpent hour implementing custom retry logic for API calls.\nLater discovered: Most API libraries have built-in retry with backoff.\nShould be in api-integration skill: \"Check library features first\"\n```\n\n## Repetition Signals\n\n### Recurring Problem\n**Signal:** \"This is the third time I've solved this exact problem\"\n\n**Strong indicator** that knowledge should be captured.\n\n**Questions to ask:**\n- Am I solving it the same way each time?\n- Have I refined my approach across iterations?\n- Would other agents encounter this?\n\n**Example:**\n```\nThird time setting up Letta agent with file system access.\nSame steps each time: attach folder, verify tools appear, test read access.\nCreate quick-start pattern in letta-agent-designer.\n```\n\n### Deja Vu Moments\n**Signal:** \"I remember doing something similar before\"\n\n**Questions to ask:**\n- What was different about the previous context?\n- What was the same (the generalizable pattern)?\n- Can I extract the common pattern?\n\n**Example:**\n```\nConfiguring environment variables for third different framework.\nPattern: All frameworks need .env file, loading mechanism differs.\nExtract: Common env var patterns, framework-specific loading details.\n```\n\n### Teaching Moments\n**Signal:** \"Let me explain how this works...\"\n\n**When you explain something to a user, you're identifying knowledge worth documenting.**\n\n**Questions to ask:**\n- Did I explain this clearly?\n- Would this explanation help in a skill?\n- Are there examples that made it click?\n\n**Example:**\n```\nExplained memory_insert vs memory_replace to user with concurrent scenario.\nUser understood immediately with the example.\nCapture example in letta-memory-architect for future clarity.\n```\n\n## Correction Signals\n\n### Skill Led Astray\n**Signal:** \"The skill said X, but Y actually works better\"\n\n**Critical learning moment - either skill is wrong or you misunderstood.**\n\n**Questions to ask:**\n- Did I follow instructions correctly?\n- Are there conditions where X is right but Y is better for my case?\n- Is the skill outdated or incomplete?\n\n**Example:**\n```\nSkill said: \"Use GPT-4 for complex tasks\"\nBut: GPT-4o is newer, faster, same quality, lower cost\nSkill needs update: GPT-4o is now preferred over GPT-4\n```\n\n### Approach Failed\n**Signal:** \"This approach failed in ways not documented\"\n\n**Questions to ask:**\n- Was the failure predictable?\n- Should the skill warn about this?\n- What's the workaround?\n\n**Example:**\n```\nFollowed git-workflows to use git add -i (interactive add)\nFailed: Interactive mode not supported in Bash tool\nAdd warning to skill about non-interactive environment\n```\n\n### Misunderstanding Caused Issue\n**Signal:** \"I misund",
+        "content_truncated": true
+      },
+      {
+        "path": "references/validation-criteria.md",
+        "size_bytes": 14772,
+        "kind": "text",
+        "content_preview": "# Validation Criteria\n\nBefore contributing changes to the repository, validate that your learning is solid and will benefit others. Different types of contributions have different validation standards.\n\n## Contribution Types\n\n### Tool/SDK Documentation\n**Purpose:** Help agents integrate widely-used tools with battle-tested insights\n\n**What qualifies as \"widely-used\":**\n- Has 1000+ GitHub stars OR\n- Appears in top search results for its problem domain OR  \n- Is a Letta product\n\n**Validation standards:**\n- Shares battle-tested insights beyond official docs (what you struggled with, not basic usage)\n- Documents common pitfalls, workarounds, and agent-specific patterns\n- Well-documented with working examples\n- Accurate and up-to-date\n- NOT just \"getting started\" guides (official docs already cover that)\n\n**Examples:** \n- ✅ Claude SDK: Common pitfalls when streaming responses\n- ✅ Playwright: Testing patterns for AI-driven web apps  \n- ✅ MCP servers: Integration patterns for tool calling\n- ❌ \"How to install FastAPI\" (just use official docs)\n\n### Pattern Contributions\n**Purpose:** Share patterns discovered through agent experience\n\n**Validation standards:**\n- Seen 2-3+ times across different contexts\n- Tested and proven better than alternatives\n- Generalizable beyond specific projects\n- Explains tradeoffs and edge cases\n- Framework-specific patterns require validation through real agent experience (not just \"well-established practices\")\n\n**Examples:** \n- General: API rate limiting patterns, memory architecture principles, error handling strategies\n- Framework-specific (validated): React patterns tested across multiple agent UI projects, FastAPI patterns proven in production\n\n## Core Validation Questions\n\nThe questions below apply primarily to **pattern contributions**. Tool/SDK documentation follows different standards (see above).\n\n### 1. Did You Test That Your Approach Works Better?\n\n**What this means:**\n- Compare before and after\n- Measure improvement (time saved, errors prevented, clarity gained)\n- Try both approaches if possible\n\n**Example - PASS:**\n```\nOld approach: memory_rethink for all updates\nNew approach: memory_insert for concurrent writes\nTest: Ran 10 concurrent update scenarios\nResult: 0 data loss with memory_insert vs 7/10 data loss with memory_rethink\nValidated: Yes, objectively better for concurrent scenarios\n```\n\n**Example - FAIL:**\n```\nOld approach: Use GPT-4o\nNew approach: Use Claude Sonnet  \nTest: Tried once, seemed fine\nResult: Personal preference, no systematic comparison\nValidated: No, insufficient evidence\n```\n\n### 2. Is This Generalizable Beyond Your Specific Context?\n\n**CRITICAL:** This is the most important validation criterion. Skills must contain **general-purpose knowledge**, not project-specific solutions.\n\n**What this means:**\n- Works across different projects/contexts\n- Not dependent on your unique setup/environment\n- Solves problems many agents will encounter\n- Teaches patterns, principles, or widely-applicable practices\n\n**Example - PASS (General pattern):**\n```\nPattern: API rate limiting with exponential backoff\nContext tested: OpenRouter, Anthropic API, OpenAI API\nResult: Pattern worked across all three\nGeneralizable: Yes, applies to most HTTP APIs\nWhy general: HTTP rate limiting is universal problem with standard solution\n```\n\n**Example - FAIL (Too specific):**\n```\nPattern: Our company API endpoint for user data is https://api.acme.com/v2/users\nContext: My project at Acme Corp\nResult: Works for my project\nGeneralizable: No, this is project-specific configuration\nWhy not general: Only applies to one company's API\n```\n\n**Example - FAIL (Environment-specific):**\n```\nPattern: Restart Docker container to fix database connection\nContext: My local setup with specific networking config\nResult: Works for me\nGeneralizable: No, this is environment-specific workaround\nWhy not general: Root cause likely in specific environment, not universal pattern\n```\n\n**Red flags for overly-specific contributions:**\n- Con",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/init_skill.py",
+        "size_bytes": 11166,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"\nSkill Initializer - Creates a new skill from template\n\nUsage:\n    init_skill.py <skill-name> --path <path>\n\nExamples:\n    init_skill.py my-new-skill --path skills/public\n    init_skill.py my-api-helper --path skills/private\n    init_skill.py custom-skill --path /custom/location\n\"\"\"\n\nimport sys\nfrom pathlib import Path\n\n\nSKILL_TEMPLATE = \"\"\"---\nname: {skill_name}\ndescription: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]\n---\n\n# {skill_title}\n\n## Overview\n\n[TODO: 1-2 sentences explaining what this skill enables]\n\n## Structuring This Skill\n\n[TODO: Choose the structure that best fits this skill's purpose. Common patterns:\n\n**1. Workflow-Based** (best for sequential processes)\n- Works well when there are clear step-by-step procedures\n- Example: DOCX skill with \"Workflow Decision Tree\" → \"Reading\" → \"Creating\" → \"Editing\"\n- Structure: ## Overview → ## Workflow Decision Tree → ## Step 1 → ## Step 2...\n\n**2. Task-Based** (best for tool collections)\n- Works well when the skill offers different operations/capabilities\n- Example: PDF skill with \"Quick Start\" → \"Merge PDFs\" → \"Split PDFs\" → \"Extract Text\"\n- Structure: ## Overview → ## Quick Start → ## Task Category 1 → ## Task Category 2...\n\n**3. Reference/Guidelines** (best for standards or specifications)\n- Works well for brand guidelines, coding standards, or requirements\n- Example: Brand styling with \"Brand Guidelines\" → \"Colors\" → \"Typography\" → \"Features\"\n- Structure: ## Overview → ## Guidelines → ## Specifications → ## Usage...\n\n**4. Capabilities-Based** (best for integrated systems)\n- Works well when the skill provides multiple interrelated features\n- Example: Product Management with \"Core Capabilities\" → numbered capability list\n- Structure: ## Overview → ## Core Capabilities → ### 1. Feature → ### 2. Feature...\n\nPatterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).\n\nDelete this entire \"Structuring This Skill\" section when done - it's just guidance.]\n\n## [TODO: Replace with the first main section based on chosen structure]\n\n[TODO: Add content here. See examples in existing skills:\n- Code samples for technical skills\n- Decision trees for complex workflows\n- Concrete examples with realistic user requests\n- References to scripts/templates/references as needed]\n\n## Resources\n\nThis skill includes example resource directories that demonstrate how to organize different types of bundled resources:\n\n### scripts/\nExecutable code (Python/Bash/etc.) that can be run directly to perform specific operations.\n\n**Examples from other skills:**\n- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation\n- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing\n\n**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.\n\n**Note:** Scripts may be executed without loading into context, but can still be read by Claude for patching or environment adjustments.\n\n### references/\nDocumentation and reference material intended to be loaded into context to inform Claude's process and thinking.\n\n**Examples from other skills:**\n- Product management: `communication.md`, `context_building.md` - detailed workflow guides\n- BigQuery: API reference documentation and query examples\n- Finance: Schema documentation, company policies\n\n**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Claude should reference while working.\n\n### assets/\nFiles not intended to be loaded into context, but rather used within the output Claude produces.\n\n**Examples from other skills:**\n- Brand styling: PowerPoint template files (.pptx), logo files\n- Frontend builder: HTM",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/package_skill.py",
+        "size_bytes": 3357,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"\nSkill Packager - Creates a distributable zip file of a skill folder\n\nUsage:\n    python utils/package_skill.py <path/to/skill-folder> [output-directory]\n\nExample:\n    python utils/package_skill.py skills/public/my-skill\n    python utils/package_skill.py skills/public/my-skill ./dist\n\"\"\"\n\nimport sys\nimport zipfile\nfrom pathlib import Path\nfrom quick_validate import validate_skill\n\n\ndef package_skill(skill_path, output_dir=None):\n    \"\"\"\n    Package a skill folder into a zip file.\n\n    Args:\n        skill_path: Path to the skill folder\n        output_dir: Optional output directory for the zip file (defaults to current directory)\n\n    Returns:\n        Path to the created zip file, or None if error\n    \"\"\"\n    skill_path = Path(skill_path).resolve()\n\n    # Validate skill folder exists\n    if not skill_path.exists():\n        print(f\"❌ Error: Skill folder not found: {skill_path}\")\n        return None\n\n    if not skill_path.is_dir():\n        print(f\"❌ Error: Path is not a directory: {skill_path}\")\n        return None\n\n    # Validate SKILL.md exists\n    skill_md = skill_path / \"SKILL.md\"\n    if not skill_md.exists():\n        print(f\"❌ Error: SKILL.md not found in {skill_path}\")\n        return None\n\n    # Run validation before packaging\n    print(\"🔍 Validating skill...\")\n    valid, message = validate_skill(skill_path)\n    if not valid:\n        print(f\"❌ Validation failed: {message}\")\n        print(\"   Please fix the validation errors before packaging.\")\n        return None\n    print(f\"✅ {message}\\n\")\n\n    # Determine output location\n    skill_name = skill_path.name\n    if output_dir:\n        output_path = Path(output_dir).resolve()\n        output_path.mkdir(parents=True, exist_ok=True)\n    else:\n        output_path = Path.cwd()\n\n    zip_filename = output_path / f\"{skill_name}.zip\"\n\n    # Create the zip file\n    try:\n        with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:\n            # Walk through the skill directory\n            for file_path in skill_path.rglob('*'):\n                if file_path.is_file():\n                    # Calculate the relative path within the zip\n                    arcname = file_path.relative_to(skill_path.parent)\n                    zipf.write(file_path, arcname)\n                    print(f\"  Added: {arcname}\")\n\n        print(f\"\\n✅ Successfully packaged skill to: {zip_filename}\")\n        return zip_filename\n\n    except Exception as e:\n        print(f\"❌ Error creating zip file: {e}\")\n        return None\n\n\ndef main():\n    if len(sys.argv) < 2:\n        print(\"Usage: python utils/package_skill.py <path/to/skill-folder> [output-directory]\")\n        print(\"\\nExample:\")\n        print(\"  python utils/package_skill.py skills/public/my-skill\")\n        print(\"  python utils/package_skill.py skills/public/my-skill ./dist\")\n        sys.exit(1)\n\n    skill_path = sys.argv[1]\n    output_dir = sys.argv[2] if len(sys.argv) > 2 else None\n\n    print(f\"📦 Packaging skill: {skill_path}\")\n    if output_dir:\n        print(f\"   Output directory: {output_dir}\")\n    print()\n\n    result = package_skill(skill_path, output_dir)\n\n    if result:\n        sys.exit(0)\n    else:\n        sys.exit(1)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/quick_validate.py",
+        "size_bytes": 2229,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"\nQuick validation script for skills - minimal version\n\"\"\"\n\nimport sys\nimport os\nimport re\nfrom pathlib import Path\n\ndef validate_skill(skill_path):\n    \"\"\"Basic validation of a skill\"\"\"\n    skill_path = Path(skill_path)\n    \n    # Check SKILL.md exists\n    skill_md = skill_path / 'SKILL.md'\n    if not skill_md.exists():\n        return False, \"SKILL.md not found\"\n    \n    # Read and validate frontmatter\n    content = skill_md.read_text()\n    if not content.startswith('---'):\n        return False, \"No YAML frontmatter found\"\n    \n    # Extract frontmatter\n    match = re.match(r'^---\\n(.*?)\\n---', content, re.DOTALL)\n    if not match:\n        return False, \"Invalid frontmatter format\"\n    \n    frontmatter = match.group(1)\n    \n    # Check required fields\n    if 'name:' not in frontmatter:\n        return False, \"Missing 'name' in frontmatter\"\n    if 'description:' not in frontmatter:\n        return False, \"Missing 'description' in frontmatter\"\n    \n    # Extract name for validation\n    name_match = re.search(r'name:\\s*(.+)', frontmatter)\n    if name_match:\n        name = name_match.group(1).strip()\n        # Check naming convention (hyphen-case: lowercase with hyphens)\n        if not re.match(r'^[a-z0-9-]+$', name):\n            return False, f\"Name '{name}' should be hyphen-case (lowercase letters, digits, and hyphens only)\"\n        if name.startswith('-') or name.endswith('-') or '--' in name:\n            return False, f\"Name '{name}' cannot start/end with hyphen or contain consecutive hyphens\"\n\n    # Extract and validate description\n    desc_match = re.search(r'description:\\s*(.+)', frontmatter)\n    if desc_match:\n        description = desc_match.group(1).strip()\n        # Check for angle brackets\n        if '<' in description or '>' in description:\n            return False, \"Description cannot contain angle brackets (< or >)\"\n\n    return True, \"Skill is valid!\"\n\nif __name__ == \"__main__\":\n    if len(sys.argv) != 2:\n        print(\"Usage: python quick_validate.py <skill_directory>\")\n        sys.exit(1)\n    \n    valid, message = validate_skill(sys.argv[1])\n    print(message)\n    sys.exit(0 if valid else 1)",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 3942,
+        "kind": "text",
+        "content_preview": "---\nname: skill-development\ndescription: Create and contribute skills to the communal knowledge base. Use when creating new skills, updating existing skills, or contributing learnings back to the repository.\nlicense: MIT\n---\n\n# Skill Development\n\nGuide for creating effective skills and contributing them to the communal knowledge base.\n\n## When to Use This Skill\n\n**Creating skills:**\n- Building a new skill for a specific domain or workflow\n- Updating an existing skill with improvements\n- Packaging skills for distribution\n\n**Contributing skills:**\n- You discovered something that took significant time to figure out\n- Existing skill instructions were incomplete or led you astray\n- You repeatedly solve the same undocumented problem\n\n---\n\n## Part 1: Creating Skills\n\n### Skill Structure\n\n```\nskill-name/\n├── SKILL.md (required)\n│   ├── YAML frontmatter (name, description)\n│   └── Markdown instructions\n└── Bundled Resources (optional)\n    ├── scripts/      - Executable code\n    ├── references/   - Documentation loaded as needed\n    └── assets/       - Files used in output\n```\n\n### SKILL.md Requirements\n\n```yaml\n---\nname: skill-name\ndescription: What this skill does. Use when [triggers]. \n---\n\n# Skill Name\n\n[Instructions in imperative form...]\n```\n\n**Metadata rules:**\n- `name`: lowercase, hyphens, gerund form (e.g., `creating-skills`)\n- `description`: Lead with action verbs, end with \"Use when [triggers]\"\n\n### Writing Style\n\nWrite in **imperative/infinitive form** (verb-first), not second person:\n- ✅ \"To accomplish X, do Y\"\n- ❌ \"You should do X\"\n\n### Progressive Disclosure\n\nKeep SKILL.md lean (<5k words). Move detailed content to `references/`:\n1. **Metadata** (~100 words) - Always in context\n2. **SKILL.md body** (<5k words) - When skill triggers\n3. **References** (unlimited) - Loaded as needed by agent\n\n### Scripts\n\nInclude scripts for tasks that:\n- Are repeatedly rewritten\n- Require deterministic reliability\n- Save significant tokens\n\n---\n\n## Part 2: Contributing Skills\n\n### Core Philosophy\n\nThis repository is a **living knowledge base**. Skills must contain **general-purpose knowledge** that helps many agents - not project-specific configs or personal preferences.\n\n### What to Contribute\n\n| ✅ Contribute | ❌ Don't Contribute |\n|--------------|-------------------|\n| Patterns that appear 3+ times | One-off solutions |\n| General API/tool patterns | Project-specific configs |\n| Battle-tested workarounds | Personal preferences |\n| Gap in existing skills | Already documented elsewhere |\n\n### Validation Checklist\n\nBefore contributing, verify:\n- [ ] Is this generalizable beyond your specific context?\n- [ ] Have you seen this pattern multiple times?\n- [ ] Does this address a real gap vs. personal preference?\n- [ ] Would this help an agent on a completely different project?\n\n### Contribution Process\n\n1. **Recognize** - Notice patterns during work (time investment, repetition, corrections)\n2. **Validate** - Confirm pattern is general, not specific to your context\n3. **Create branch** - `add/skill-name` or `fix/skill-name`\n4. **Submit PR** - Clear description with rationale and evidence\n\nSee `references/pr-workflow.md` for detailed PR process.\n\n---\n\n## Scripts\n\n- `scripts/init_skill.py` - Initialize skill directory structure\n- `scripts/package_skill.py` - Package skill for distribution\n- `scripts/quick_validate.py` - Validate SKILL.md format\n\n## References\n\n- `references/recognizing-learnings.md` - Patterns for spotting valuable learnings\n- `references/validation-criteria.md` - Detailed validation guidelines\n- `references/pr-workflow.md` - PR process and templates\n- `references/contribution-examples.md` - Real contribution examples\n- `references/progressive-disclosure-research.md` - Research on skill organization\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: skill-development\ndescription: Create and contribute skills to the communal knowledge base. Use when creating new skills, updating existing skills, or contributing learnings back to the repository.\nlicense: MIT\n---\n\n# Skill Development\n\nGuide for creating effective skills and contributing them to the communal knowledge base.\n\n## When to Use This Skill\n\n**Creating skills:**\n- Building a new skill for a specific domain or workflow\n- Updating an existing skill with improvements\n- Packaging skills for distribution\n\n**Contributing skills:**\n- You discovered something that took significant time to figure out\n- Existing skill instructions were incomplete or led you astray\n- You repeatedly solve the same undocumented problem\n\n---\n\n## Part 1: Creating Skills\n\n### Skill Structure\n\n```\nskill-name/\n├── SKILL.md (required)\n│   ├── YAML frontmatter (name, description)\n│   └── Markdown instructions\n└── Bundled Resources (optional)\n    ├── scripts/      - Executable code\n    ├── references/   - Documentation loaded as needed\n    └── assets/       - Files used in output\n```\n\n### SKILL.md Requirements\n\n```yaml\n---\nname: skill-name\ndescription: What this skill does. Use when [triggers]. \n---\n\n# Skill Name\n\n[Instructions in imperative form...]\n```\n\n**Metadata rules:**\n- `name`: lowercase, hyphens, gerund form (e.g., `creating-skills`)\n- `description`: Lead with action verbs, end with \"Use when [triggers]\"\n\n### Writing Style\n\nWrite in **imperative/infinitive form** (verb-first), not second person:\n- ✅ \"To accomplish X, do Y\"\n- ❌ \"You should do X\"\n\n### Progressive Disclosure\n\nKeep SKILL.md lean (<5k words). Move detailed content to `references/`:\n1. **Metadata** (~100 words) - Always in context\n2. **SKILL.md body** (<5k words) - When skill triggers\n3. **References** (unlimited) - Loaded as needed by agent\n\n### Scripts\n\nInclude scripts for tasks that:\n- Are repeatedly rewritten\n- Require deterministic reliability\n- Save significant tokens\n\n---\n\n## Part 2: Contributing Skills\n\n### Core Philosophy\n\nThis repository is a **living knowledge base**. Skills must contain **general-purpose knowledge** that helps many agents - not project-specific configs or personal preferences.\n\n### What to Contribute\n\n| ✅ Contribute | ❌ Don't Contribute |\n|--------------|-------------------|\n| Patterns that appear 3+ times | One-off solutions |\n| General API/tool patterns | Project-specific configs |\n| Battle-tested workarounds | Personal preferences |\n| Gap in existing skills | Already documented elsewhere |\n\n### Validation Checklist\n\nBefore contributing, verify:\n- [ ] Is this generalizable beyond your specific context?\n- [ ] Have you seen this pattern multiple times?\n- [ ] Does this address a real gap vs. personal preference?\n- [ ] Would this help an agent on a completely different project?\n\n### Contribution Process\n\n1. **Recognize** - Notice patterns during work (time investment, repetition, corrections)\n2. **Validate** - Confirm pattern is general, not specific to your context\n3. **Create branch** - `add/skill-name` or `fix/skill-name`\n4. **Submit PR** - Clear description with rationale and evidence\n\nSee `references/pr-workflow.md` for detailed PR process.\n\n---\n\n## Scripts\n\n- `scripts/init_skill.py` - Initialize skill directory structure\n- `scripts/package_skill.py` - Package skill for distribution\n- `scripts/quick_validate.py` - Validate SKILL.md format\n\n## References\n\n- `references/recognizing-learnings.md` - Patterns for spotting valuable learnings\n- `references/validation-criteria.md` - Detailed validation guidelines\n- `references/pr-workflow.md` - PR process and templates\n- `references/contribution-examples.md` - Real contribution examples\n- `references/progressive-disclosure-research.md` - Research on skill organization\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 1,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 1,
+      "LOW": 0
+    },
+    "by_pattern": {
+      "P9": 1
+    },
+    "by_kill_chain_phase": {
+      "cred_access": 1
+    },
+    "rule_ids_hit": [
+      "P9"
+    ],
+    "files_scanned_count": 9
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 1
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "cred_access"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 4.38,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.05,
+      "S_static_raw": 0.05,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "P9",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "references\\validation-criteria.md",
+      "line": 221,
+      "pattern": "(?i)(?:postgres|postgresql|mysql|mongodb)(?:\\+\\w+)?://[^/\\s:]+:[^@\\s]+@[\\w.-]+",
+      "matched_text": "postgres://user:pass@db.acme.com",
+      "description": "Hardcoded credential literal found in skill source or SKILL.md — matches OpenAI / Anthropic / GitHub PAT / AWS / JWT / private key / DB connection-string-with-password / hardcoded password field. Aligns with Snyk audit and QAX commercial-scanner SECRET_* taxonomy. Distinct from E2 which catches reading env vars: P9 catches literal credentials baked into the package.",
+      "confidence": 0.92,
+      "context": "  218 | **Example 1: Project configuration**\n  219 | ```\n  220 | Skill: \"How to connect to our company database\"\n» 221 | Content: \"Use postgres://user:pass@db.acme.com:5432/production\"\n  222 | Why bad: Only applies to one company's infrastructure\n  223 | ```\n  224 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "Content: \"Use postgres://user:pass@db.acme.com:5432/production\"",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

@@ -11,7 +11,13 @@
       "Bash(python -c \"import json; c=json.load\\(open\\('asg/vm_config.json'\\)\\); print\\('JSON OK'\\); print\\('base_url:', c['remote_anthropic_base_url']\\); k=c['remote_anthropic_api_key']; print\\('api_key:', 'PLACEHOLDER \\(you need to fill\\)' if 'REPLACE' in k else 'SET'\\)\")",
       "PowerShell($c = Get-NetTCPConnection -LocalPort 8765 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c.OwningProcess | Select-Object -Unique | ForEach-Object { Stop-Process -Id $_ -Force; Write-Output \"Killed PID $_\" } } else { Write-Output \"Nothing on 8765\" })",
       "Bash(python -m py_compile web_ui/app.py)",
-      "Read(//c/Users/captivating/Pictures/MaliciousAgentSkillsBench-Codex/**)"
+      "Read(//c/Users/captivating/Pictures/MaliciousAgentSkillsBench-Codex/**)",
+      "Bash(cd /c/Users/captivating/Pictures/MaliciousAgentSkillsBench-Codex *)",
+      "PowerShell(Start-Process \"http://127.0.0.1:8765/report/Auto%20Deployer\")",
+      "Bash(taskkill //F //IM python.exe //FI \"WINDOWTITLE eq *\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\asg\\sub-memory-bootstrap\\vm_paper_logs"
     ]
   }
 }

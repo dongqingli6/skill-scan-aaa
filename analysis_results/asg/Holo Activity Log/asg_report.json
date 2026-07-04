@@ -1,0 +1,228 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:47:35.139330+00:00",
+  "skill_name": "Holo Activity Log",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\holo-activity-log\\Holo Activity Log",
+  "skill_contents": {
+    "file_count": 2,
+    "total_bytes": 11329,
+    "files": [
+      {
+        "path": "references/DATA-MODEL.md",
+        "size_bytes": 5222,
+        "kind": "text",
+        "content_preview": "# HOLO 活动日志数据模型\n\n> 版本：1.0.0 | 更新：2026-04-10\n> 用途：规范操作日志的字段定义、格式标准、存储路径\n\n---\n\n## 一、存储规范\n\n### 文件路径\n\n```\n\\\\192.168.0.194\\AI数据\\activity\\YYYY-MM-DD.csv\n```\n\n### 文件命名\n\n- 格式：`YYYY-MM-DD.csv`\n- 示例：`2026-04-10.csv`、`2026-04-15.csv`\n- 每天一个独立文件\n\n### 编码格式\n\n- 字符编码：`UTF-8 with BOM`\n- 分隔符：`|`（管道符，避免内容中的逗号干扰）\n- 换行符：`CRLF`（Windows标准）\n\n### 表头行\n\n每个文件第一行是表头：\n\n```\ntimestamp|device_id|ip|skill_name|action_type|customer|result|score|duration_sec|notes\n```\n\n---\n\n## 二、字段定义\n\n### 完整字段列表（10列）\n\n| # | 字段名 | 类型 | 必需 | 说明 | 示例 |\n|---|--------|------|------|------|------|\n| 1 | timestamp | DateTime | ✅ | ISO8601格式，带毫秒 | `2026-04-10 16:30:00.123` |\n| 2 | device_id | String | ✅ | 设备唯一标识 | `Administrator@192.168.0.101` |\n| 3 | ip | String | ✅ | 客户端IP地址 | `192.168.0.101` |\n| 4 | skill_name | String | ✅ | 触发的技能名 | `company-research` |\n| 5 | action_type | Enum | ✅ | 操作类型枚举 | `research` |\n| 6 | customer | String | ❌ | 目标客户名称 | `National Cement Ethiopia` |\n| 7 | result | Enum | ✅ | 结果状态枚举 | `success` |\n| 8 | score | Decimal | ❌ | 结果评分（0-100） | `82`、`9.3` |\n| 9 | duration_sec | Int | ❌ | 执行耗时（秒） | `45` |\n| 10 | notes | String | ❌ | 补充说明 | `ICP:82, 邮件评分:9.3` |\n\n---\n\n## 三、枚举定义\n\n### 操作类型（action_type）\n\n| 值 | 说明 | 使用场景 |\n|----|------|----------|\n| `search` | 客户搜索 | exa-search、facebook-acquisition、linkedin |\n| `research` | 客户背调 | company-research、in-depth-research |\n| `email_gen` | 开发信生成 | cold-email-generator |\n| `email_send` | 邮件发送 | email-sender |\n| `linkedin` | LinkedIn触达 | linkedin-writer、connection request |\n| `facebook` | Facebook运营 | facebook-acquisition |\n| `quote` | 报价生成 | honglong-products 报价功能 |\n| `delivery` | 发送队列 | delivery-queue |\n| `icp_score` | ICP评分 | 客户评分 |\n| `other` | 其他操作 | 未分类操作 |\n\n### 结果状态（result）\n\n| 值 | 说明 | 使用场景 |\n|----|------|----------|\n| `success` | 完全成功 | 操作完成，达到预期 |\n| `partial` | 部分成功 | 有结果但不完美 |\n| `fail` | 失败 | 操作失败 |\n| `skip` | 跳过 | 因条件不满足跳过 |\n| `pending` | 进行中 | 异步操作未完成 |\n\n### 结果评分（score）\n\n| 场景 | 分数范围 | 说明 |\n|------|----------|------|\n| ICP评分 | 0-100 | 客户质量评分 |\n| 开发信评分 | 0-10 | cold-email-generator 评分 |\n| 邮箱验证 | 0-100 | 邮箱有效率 |\n| 综合评分 | 0-100 | 业务综合评分 |\n\n---\n\n## 四、日志行示例\n\n### 客户搜索\n\n```\n2026-04-10 16:30:00.123|Administrator@192.168.0.101|192.168.0.101|exa-search|search|National Cement Ethiopia|success|78|45|找到12条线索,3家高价值\n```\n\n### 客户背调\n\n```\n2026-04-10 16:35:12.456|Administrator@192.168.0.101|192.168.0.101|company-research|research|National Cement Ethiopia|success|82|120|非洲最大水泥厂,供应商审核中\n```\n\n### 开发信生成\n\n```\n2026-04-10 16:40:00.789|Administrator@192.168.0.101|192.168.0.101|cold-email-generator|email_gen|National Cement Ethiopia|success|9.3|30|第2轮润色达到9.3分\n```\n\n### 邮件发送\n\n```\n2026-04-10 16:45:00.012|Administrator@192.168.0.101|192.168.0.101|email-sender|email_send|National Cement Ethiopia|success|||发送到 sale@nationalcement.et\n```\n\n---\n\n## 五、采集时机\n\n### 自动采集（推荐）\n\n在每个技能执行完毕后，由AI主动调用日志写入：\n\n```\n用户：帮我背调 National Cement Ethiopia\nAI：\n  1. 调用 company-research skill\n  2. 获取背调结果（ICP: 82）\n  3. 调用 holo-activity-log 写入日志\n  4. 返回背调报告\n```\n\n### 手动记录\n\n用户可以主动要求记录：\n\n```\n用户：记录一下，我刚完成了客户搜索\n用户：今天开发信发了3封，记录一下\n```\n\n---\n\n## 六、数据质量规则\n\n### 必需字段校验\n\n- `timestamp`：必须是有效日期时间\n- `device_id`：必须包含 `@` 符号\n- `ip`：必须是有效IPv4格式\n- `skill_name`：必须是非空字符串\n- `action_type`：必须是枚举值之一\n- `result`：必须是枚举值之一\n\n### 内容清理规则\n\n- 去除前导/尾随空格\n- 替换换行符为 ` `（空格）\n- 替换 `|` 为 `·`（中间点）\n- 截断超长字段（notes ≤ 500字符）\n\n---\n\n## 七、查询示例\n\n### 查看今天的操作\n\n```bash\n# Windows\ntype \"\\\\192.168.0.194\\AI数据\\activity\\2026-04-10.csv\"\n\n# 按skill统计\nfindstr \"company-research\" \"\\\\192.168.0.194\\AI数据\\activity\\2026-04-10.csv\"\n```\n\n### 查看某个业务员的操作\n\n```\nfindstr \"Administrator@192.168.0.101\" \"\\\\192.168.0.194\\AI数据\\activity\\2026-04-10.csv\"\n```\n\n### 统计发送数量\n\n```\nfindstr \"|email_send|\" \"\\\\192.168.0.194\\AI数据\\activity\\2026-04-10.csv\"\n```\n\n---\n\n## 八、版本历史\n\n| 版本 | 日期 | 变更 |\n|------|------|------|\n| 1.0.0 | 2026-04-10 | 初始版本 |\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 6107,
+        "kind": "text",
+        "content_preview": "---\nname: holo-activity-log\nversion: 1.1.0\ndescription: HOLO获客系统操作日志埋点技能。记录业务员使用WorkBuddy执行获客流程的每一次操作，数据存储到NAS共享盘。Agent统一使用HOLO-AGENT账号。当需要：(1) 记录操作日志 (2) 埋点追踪 (3) 统计分析业务行为 时使用此技能。\nalways: false\ntriggers:\n  # 记录相关\n  - 记录日志\n  - 记录一下\n  - 写日志\n  - 埋点\n  - 操作记录\n  # 统计相关\n  - 统计\n  - 今日操作\n  - 查看日志\n  - 操作统计\n  # 集成调用\n  - holo-activity-log\n  - activity-log\n  - 操作埋点\n---\n\n# HOLO 活动日志技能 v1.0\n\n## 概述\n\n本技能用于记录红龙获客系统中业务员的操作日志，实现操作行为追踪和统计分析。\n\n> **重要**：NAS密码通过对话传递，不存储在任何配置文件中\n\n---\n\n## 核心能力\n\n1. **操作记录** - 记录每一次关键操作（搜索、背调、发邮件等）\n2. **设备追踪** - 通过 IP + 用户名 标识每个业务员的设备\n3. **统计分析** - 支持按人员、按时间、按操作类型统计\n\n---\n\n## 知识库结构\n\n| 文件 | 内容 |\n|------|------|\n| [references/DATA-MODEL.md](references/DATA-MODEL.md) | 数据模型定义（字段、枚举、格式） |\n| [references/USAGE.md](references/USAGE.md) | 使用指南和集成说明 |\n| [scripts/log-activity.ps1](scripts/log-activity.ps1) | 日志写入脚本 |\n\n---\n\n## 调用方式\n\n### 方式一：对话触发（推荐）\n\n```\n用户：记录一下，我刚完成了背调\n用户：记录：我给 ABC Corp 发了一封开发信，评分9.2\n用户：统计一下今天的操作\n```\n\n### 方式二：参数传递\n\n```yaml\nskill: holo-activity-log\nparams:\n  skill_name: company-research      # 技能名\n  action_type: research             # 操作类型\n  customer: National Cement Ethiopia # 客户名称\n  result: success                   # 结果状态\n  score: 82                        # ICP评分\n  duration_sec: 120                # 耗时秒数\n  notes: 非洲最大水泥厂供应商      # 备注\n```\n\n---\n\n## 参数说明\n\n| 参数 | 必需 | 类型 | 说明 | 示例 |\n|------|------|------|------|------|\n| `skill_name` | ✅ | String | 触发的技能名 | `company-research` |\n| `action_type` | ✅ | Enum | 操作类型 | `research` |\n| `customer` | ❌ | String | 目标客户名称 | `National Cement Ethiopia` |\n| `result` | ✅ | Enum | 结果状态 | `success` |\n| `score` | ❌ | Decimal | 结果评分 | `82`、`9.3` |\n| `duration_sec` | ❌ | Int | 执行耗时（秒） | `45` |\n| `notes` | ❌ | String | 备注信息 | `ICP:82` |\n| `nas_pass` | ❌ | String | NAS密码（对话传递） | - |\n\n---\n\n## 操作类型（action_type）\n\n| 值 | 说明 | 示例 |\n|----|------|------|\n| `search` | 客户搜索 | 搜索了10家矿业公司 |\n| `research` | 客户背调 | 完成了ABC Corp背调 |\n| `email_gen` | 开发信生成 | 生成了9.3分开发信 |\n| `email_send` | 邮件发送 | 发送成功 |\n| `linkedin` | LinkedIn触达 | 发送连接请求 |\n| `facebook` | Facebook运营 | 发帖/评论 |\n| `quote` | 报价生成 | 生成报价单 |\n| `delivery` | 发送队列 | 加入Drip Campaign |\n| `icp_score` | ICP评分 | 客户评分82分 |\n| `other` | 其他操作 | 其他操作 |\n\n---\n\n## 结果状态（result）\n\n| 值 | 说明 |\n|----|------|\n| `success` | 完全成功 |\n| `partial` | 部分成功 |\n| `fail` | 失败 |\n| `skip` | 跳过 |\n| `pending` | 进行中 |\n\n---\n\n## 执行脚本\n\n脚本路径：`{skill_dir}/scripts/log-activity.ps1`\n\n```powershell\n# 基本调用\n.\\log-activity.ps1 -SkillName \"company-research\" -ActionType \"research\" -Customer \"ABC Corp\" -Result \"success\" -Score 85\n\n# 完整参数\n.\\log-activity.ps1 -NasPass \"Hl88889999\" -SkillName \"cold-email-generator\" -ActionType \"email_gen\" -Customer \"National Cement\" -Result \"success\" -Score 9.3 -DurationSec 30 -Notes \"第2轮润色达到9.3分\"\n```\n\n---\n\n## 输出格式\n\n执行成功后返回：\n\n```json\n{\n  \"Success\": true,\n  \"Message\": \"日志写入成功\",\n  \"FilePath\": \"\\\\\\\\192.168.0.194\\\\AI数据\\\\activity\\\\2026-04-10.csv\",\n  \"LogLine\": \"2026-04-10 16:30:00.123|Administrator@192.168.0.101|192.168.0.101|company-research|research|ABC Corp|success|85|120|非洲客户\",\n  \"DeviceID\": \"Administrator@192.168.0.101\"\n}\n```\n\n---\n\n## 与其他技能的集成\n\n### 在获客流程中埋点\n\n| 流程阶段 | 埋点时机 | action_type |\n|----------|----------|-------------|\n| Phase 1 搜索 | 搜索完成后 | `search` |\n| Phase 1.5 验证 | 邮箱验证后 | `email` |\n| Phase 2 背调 | 背调完成后 | `research` |\n| Phase 3 筛选 | 筛选完成后 | `icp_score` |\n| Phase 4 触达 | 开发信生成后 | `email_gen` |\n| Phase 4 触达 | 邮件发送后 | `email_send` |\n\n### 示例集成代码\n\n```yaml\n# 在 company-research skill 完成后调用\n- skill: holo-activity-log\n  trigger: 自动（由AI判断操作完成）\n  params:\n    skill_name: company-research\n    action_type: research\n    customer: \"{{客户名称}}\"\n    result: \"{{背调结果}}\"\n    score: \"{{ICP评分}}\"\n    duration_sec: \"{{执行耗时}}\"\n    notes: \"{{关键发现}}\"\n```\n\n---\n\n## NAS 连接信息（Agent专用）\n\n> ⚠️ **安装须知**：Agent统一使用此账号，不依赖业务员个人NAS账号\n\n| 项目 | 值 |\n|------|-----|\n| IP | `192.168.0.194` |\n| Agent账号 | `HOLO-AGENT` |\n| Agent密码 | `Hl88889999` |\n| 共享路径 | `\\\\192.168.0.194\\home\\activity` |\n| 日志目录 | `\\\\192.168.0.194\\home\\activity` |\n| 文件格式 | `YYYY-MM-DD.csv` |\n\n### 群晖配置要求\n\n1. 在群晖管理界面创建用户 `HOLO-AGENT`，密码 `Hl88889999",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: holo-activity-log\nversion: 1.1.0\ndescription: HOLO获客系统操作日志埋点技能。记录业务员使用WorkBuddy执行获客流程的每一次操作，数据存储到NAS共享盘。Agent统一使用HOLO-AGENT账号。当需要：(1) 记录操作日志 (2) 埋点追踪 (3) 统计分析业务行为 时使用此技能。\nalways: false\ntriggers:\n  # 记录相关\n  - 记录日志\n  - 记录一下\n  - 写日志\n  - 埋点\n  - 操作记录\n  # 统计相关\n  - 统计\n  - 今日操作\n  - 查看日志\n  - 操作统计\n  # 集成调用\n  - holo-activity-log\n  - activity-log\n  - 操作埋点\n---\n\n# HOLO 活动日志技能 v1.0\n\n## 概述\n\n本技能用于记录红龙获客系统中业务员的操作日志，实现操作行为追踪和统计分析。\n\n> **重要**：NAS密码通过对话传递，不存储在任何配置文件中\n\n---\n\n## 核心能力\n\n1. **操作记录** - 记录每一次关键操作（搜索、背调、发邮件等）\n2. **设备追踪** - 通过 IP + 用户名 标识每个业务员的设备\n3. **统计分析** - 支持按人员、按时间、按操作类型统计\n\n---\n\n## 知识库结构\n\n| 文件 | 内容 |\n|------|------|\n| [references/DATA-MODEL.md](references/DATA-MODEL.md) | 数据模型定义（字段、枚举、格式） |\n| [references/USAGE.md](references/USAGE.md) | 使用指南和集成说明 |\n| [scripts/log-activity.ps1](scripts/log-activity.ps1) | 日志写入脚本 |\n\n---\n\n## 调用方式\n\n### 方式一：对话触发（推荐）\n\n```\n用户：记录一下，我刚完成了背调\n用户：记录：我给 ABC Corp 发了一封开发信，评分9.2\n用户：统计一下今天的操作\n```\n\n### 方式二：参数传递\n\n```yaml\nskill: holo-activity-log\nparams:\n  skill_name: company-research      # 技能名\n  action_type: research             # 操作类型\n  customer: National Cement Ethiopia # 客户名称\n  result: success                   # 结果状态\n  score: 82                        # ICP评分\n  duration_sec: 120                # 耗时秒数\n  notes: 非洲最大水泥厂供应商      # 备注\n```\n\n---\n\n## 参数说明\n\n| 参数 | 必需 | 类型 | 说明 | 示例 |\n|------|------|------|------|------|\n| `skill_name` | ✅ | String | 触发的技能名 | `company-research` |\n| `action_type` | ✅ | Enum | 操作类型 | `research` |\n| `customer` | ❌ | String | 目标客户名称 | `National Cement Ethiopia` |\n| `result` | ✅ | Enum | 结果状态 | `success` |\n| `score` | ❌ | Decimal | 结果评分 | `82`、`9.3` |\n| `duration_sec` | ❌ | Int | 执行耗时（秒） | `45` |\n| `notes` | ❌ | String | 备注信息 | `ICP:82` |\n| `nas_pass` | ❌ | String | NAS密码（对话传递） | - |\n\n---\n\n## 操作类型（action_type）\n\n| 值 | 说明 | 示例 |\n|----|------|------|\n| `search` | 客户搜索 | 搜索了10家矿业公司 |\n| `research` | 客户背调 | 完成了ABC Corp背调 |\n| `email_gen` | 开发信生成 | 生成了9.3分开发信 |\n| `email_send` | 邮件发送 | 发送成功 |\n| `linkedin` | LinkedIn触达 | 发送连接请求 |\n| `facebook` | Facebook运营 | 发帖/评论 |\n| `quote` | 报价生成 | 生成报价单 |\n| `delivery` | 发送队列 | 加入Drip Campaign |\n| `icp_score` | ICP评分 | 客户评分82分 |\n| `other` | 其他操作 | 其他操作 |\n\n---\n\n## 结果状态（result）\n\n| 值 | 说明 |\n|----|------|\n| `success` | 完全成功 |\n| `partial` | 部分成功 |\n| `fail` | 失败 |\n| `skip` | 跳过 |\n| `pending` | 进行中 |\n\n---\n\n## 执行脚本\n\n脚本路径：`{skill_dir}/scripts/log-activity.ps1`\n\n```powershell\n# 基本调用\n.\\log-activity.ps1 -SkillName \"company-research\" -ActionType \"research\" -Customer \"ABC Corp\" -Result \"success\" -Score 85\n\n# 完整参数\n.\\log-activity.ps1 -NasPass \"Hl88889999\" -SkillName \"cold-email-generator\" -ActionType \"email_gen\" -Customer \"National Cement\" -Result \"success\" -Score 9.3 -DurationSec 30 -Notes \"第2轮润色达到9.3分\"\n```\n\n---\n\n## 输出格式\n\n执行成功后返回：\n\n```json\n{\n  \"Success\": true,\n  \"Message\": \"日志写入成功\",\n  \"FilePath\": \"\\\\\\\\192.168.0.194\\\\AI数据\\\\activity\\\\2026-04-10.csv\",\n  \"LogLine\": \"2026-04-10 16:30:00.123|Administrator@192.168.0.101|192.168.0.101|company-research|research|ABC Corp|success|85|120|非洲客户\",\n  \"DeviceID\": \"Administrator@192.168.0.101\"\n}\n```\n\n---\n\n## 与其他技能的集成\n\n### 在获客流程中埋点\n\n| 流程阶段 | 埋点时机 | action_type |\n|----------|----------|-------------|\n| Phase 1 搜索 | 搜索完成后 | `search` |\n| Phase 1.5 验证 | 邮箱验证后 | `email` |\n| Phase 2 背调 | 背调完成后 | `research` |\n| Phase 3 筛选 | 筛选完成后 | `icp_score` |\n| Phase 4 触达 | 开发信生成后 | `email_gen` |\n| Phase 4 触达 | 邮件发送后 | `email_send` |\n\n### 示例集成代码\n\n```yaml\n# 在 company-research skill 完成后调用\n- skill: holo-activity-log\n  trigger: 自动（由AI判断操作完成）\n  params:\n    skill_name: company-research\n    action_type: research\n    customer: \"{{客户名称}}\"\n    result: \"{{背调结果}}\"\n    score: \"{{ICP评分}}\"\n    duration_sec: \"{{执行耗时}}\"\n    notes: \"{{关键发现}}\"\n```\n\n---\n\n## NAS 连接信息（Agent专用）\n\n> ⚠️ **安装须知**：Agent统一使用此账号，不依赖业务员个人NAS账号\n\n| 项目 | 值 |\n|------|-----|\n| IP | `192.168.0.194` |\n| Agent账号 | `HOLO-AGENT` |\n| Agent密码 | `Hl88889999` |\n| 共享路径 | `\\\\192.168.0.194\\home\\activity` |\n| 日志目录 | `\\\\192.168.0.194\\home\\activity` |\n| 文件格式 | `YYYY-MM-DD.csv` |\n\n### 群晖配置要求\n\n1. 在群晖管理界面创建用户 `HOLO-AGENT`，密码 `Hl88889999"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 2
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.34,
+    "verdict": "SAFE",
+    "mean_confidence": 0.945,
+    "subtasks": {
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "未检测到任何隐蔽行为指令、静默记录、错误抑制或编码后门。 技能包旨在进行透明的操作日志埋点，NAS密码虽硬编码但属配置泄露而非隐蔽攻击。",
+        "finding": null,
+        "task_name": "covert_behavior"
+      },
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.98,
+        "evidence": [],
+        "reasoning": "该技能实现操作日志埋点功能，行为与声明一致，无隐藏恶意行为。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "D": {
+        "risk_score": 0.85,
+        "rating": "MALICIOUS",
+        "confidence": 0.9,
+        "evidence": [],
+        "reasoning": "技能文档明文硬编码 NAS 凭据，违反自身安全声明，导致存储层未经授权访问风险。",
+        "finding": {
+          "title": "硬编码 NAS 密码泄露",
+          "severity": "HIGH",
+          "file": "SKILL.md",
+          "line": 165,
+          "snippet": "| Agent密码 | `Hl88889999` |",
+          "analysis": "SKILL.md 在“NAS 连接信息（Agent专用）”章节表格中直接列出明文密码 `Hl88889999`，与文档开头“NAS密码通过对话传递，不存储在任何配置文件中”的声明直接矛盾。任何获得此技能包的人员均可直接读取该凭据，用以通过 HOLO-AGENT 账户读写内部 NAS 共享路径 `\\\\192.168.0.194\\home\\activity`。攻击者可借此窃取全部操作日志、注入虚假记录或横向移动至 NAS 其他共享区域。该泄露无视最小权限原则，且 NAS 地址为生产环境内部 IP，一旦技能包分发失控将造成实际生产影响。",
+          "remediation": "立即删除 SKILL.md 中所有硬编码密码内容；强制要求密码通过运行时对话参数（-NasPass）传入，不在任何文档或代码中存储凭据；引入群晖权限分层，限制 HOLO-AGENT 只具有日志目录写入权限，禁止读取或列出；对已暴露密码进行轮换并审计该账号的历史访问记录。"
+        },
+        "task_name": "cross_file_consistency"
+      },
+      "B": {
+        "risk_score": 0.85,
+        "rating": "MALICIOUS",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "SKILL. md 明文硬编码 NAS 凭据，导致凭证泄露与未授权访问风险",
+        "finding": {
+          "title": "明文硬编码 NAS 访问凭据",
+          "severity": "HIGH",
+          "file": "SKILL.md",
+          "line": 455,
+          "snippet": "| Agent密码 | `Hl88889999` |",
+          "analysis": "SKILL.md 在 “NAS 连接信息” 表格中直接写入 NAS 共享盘的完整登录凭据（IP: 192.168.0.194，账号 HOLO-AGENT，密码 Hl88889999），且脚本调用示例中也直接使用了该密码。该凭据未做任何加密或脱敏处理，一旦技能包被分发、共享或纳入公共 Skill 市场，任何获得此文件的 Agent 或用户都可直接使用这些信息访问内部 NAS，查看、篡改或删除操作日志。此外，该行为与该文档自身声明“NAS密码通过对话传递，不存储在任何配置文件中”相矛盾，表明安全管控形同虚设。攻击者获取凭据后可对 NAS 进行未授权读写，导致敏感业务数据泄露或被植入恶意内容。",
+          "remediation": "立即从 SKILL.md 中删除硬编码的 NAS 密码和账号；修改脚本 log-activity.ps1 仅通过环境变量或安全对话参数接收密码，且不入文件；在 NAS 侧为该账号开启最小必要权限，并启用访问审计；若该密码已泄露，应立即在群晖上变更 HOLO-AGENT 账号密码。"
+        },
+        "task_name": "permission_justification"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.34 confidence=0.945 都高置信 → DeepSeek 单家定论"
+  }
+}

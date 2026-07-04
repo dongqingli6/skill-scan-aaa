@@ -1,0 +1,317 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:56:51.226827+00:00",
+  "skill_name": "benign-agent-development",
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-agent-development",
+  "skill_contents": {
+    "file_count": 10,
+    "total_bytes": 35521,
+    "files": [
+      {
+        "path": "LICENSE",
+        "size_bytes": 1089,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "references/architectures.md",
+        "size_bytes": 997,
+        "kind": "text",
+        "content_preview": "# Letta Agent Architectures\n\n## letta_v1_agent (Recommended)\n\n**Key Features:**\n- Native reasoning via Responses API (encrypted across providers)\n- Direct assistant message generation (no send_message tool)\n- Works with ANY LLM (tool calling no longer required)\n- Optimized for frontier models (GPT-4o, Claude Sonnet 4, Gemini 2.0)\n\n**Trade-offs:**\n- No prompted reasoning for smaller models\n- Limited tool rules on AssistantMessage\n- May experience more frequent summarizations\n\n**Memory Tools:**\n- memory_insert, memory_replace, memory_rethink (same as v2)\n- archival_memory_insert/search: opt-in (must explicitly attach)\n\n## memgpt_v2_agent (Legacy)\n\n**When to Use:**\n- Maintaining existing agents\n- Specific workflow requires v2 tool patterns\n\n**Key Differences:**\n- send_message tool for explicit message generation\n- More flexible tool rules\n- Better for smaller models requiring prompted reasoning\n\n**Note:** Team recommends migrating to v1 for new projects.\n",
+        "content_truncated": false
+      },
+      {
+        "path": "references/concurrency.md",
+        "size_bytes": 6049,
+        "kind": "text",
+        "content_preview": "# Memory Concurrency Patterns\n\n## Concurrency Scenarios\n\n### 1. Multiple Agents Sharing Memory Blocks\nMultiple agents with access to the same memory blocks (e.g., team of agents collaborating)\n\n### 2. Single Agent, Concurrent Requests\nOne agent processing multiple user requests simultaneously\n\n### 3. Agent + External Updates\nAgent and external system (via API) updating same blocks\n\n## Memory Tool Safety\n\n### memory_insert (Safest)\n\n**How it works:**\n- Appends content to end of block\n- Minimal race condition risk\n- PostgreSQL row-level locking prevents conflicts\n\n**Best for:**\n- Concurrent writes\n- Log-style data\n- Accumulating information\n\n**Example:**\n```python\n# Multiple agents can safely append\nmemory_insert(\"interaction_history\", \"User reported issue X\")\n```\n\n**Potential issue:**\n- Block can grow large if many agents append simultaneously\n- Monitor size and archive periodically\n\n### memory_replace (Moderate Risk)\n\n**How it works:**\n- Finds exact string match\n- Replaces with new content\n- Race condition if target string changes between read and write\n\n**Risk scenario:**\n```\nAgent A reads: \"Status: pending\"\nAgent B reads: \"Status: pending\"\nAgent A writes: \"Status: pending\" → \"Status: in-progress\"\nAgent B writes: \"Status: pending\" → \"Status: completed\"\n# Agent B's write fails - string no longer matches\n```\n\n**Best for:**\n- Single-agent scenarios\n- Precise edits when you control timing\n- Updating specific facts\n\n**Mitigation:**\n- Use for infrequently updated blocks\n- Implement retry logic\n- Consider memory_insert for concurrent scenarios\n\n### memory_rethink (Highest Risk)\n\n**How it works:**\n- Completely rewrites block content\n- Last-writer-wins, no merge logic\n- Highest risk of data loss in concurrent scenarios\n\n**Risk scenario:**\n```\nAgent A reads block (version 1)\nAgent B reads block (version 1)\nAgent A rewrites → block is now version 2\nAgent B rewrites → block is now version 3 (overwrites A's changes)\n# Agent A's changes are lost\n```\n\n**Best for:**\n- Single-agent exclusive access\n- Consolidation operations\n- Intentional full rewrites\n\n**Avoid when:**\n- Multiple agents share the block\n- Concurrent requests possible\n- Changes need to be preserved\n\n## Database-Level Protection\n\n**PostgreSQL row-level locking:**\n- Prevents simultaneous writes to same block\n- Ensures write consistency\n- Does NOT merge changes - last write wins\n\n**What this means:**\n- Writes won't corrupt data\n- But later write can overwrite earlier write\n- Design patterns to minimize conflicts\n\n## Concurrency Patterns\n\n### Pattern 1: Append-Only Blocks\n\nDesign blocks for append-only updates using memory_insert.\n\n**Example - Agent Activity Log:**\n```yaml\nagent_activity:\n  description: \"Log of agent actions. Append new actions using memory_insert only.\"\n  value: |\n    [timestamp] Agent A: Processed request\n    [timestamp] Agent B: Updated customer record\n```\n\n**Benefits:**\n- Safe for concurrent writes\n- No data loss\n- Clear audit trail\n\n**Manage growth:**\n- Archive old entries periodically\n- Rotate logs (daily/weekly)\n\n### Pattern 2: Agent-Owned Blocks\n\nGive each agent its own memory blocks.\n\n**Example - Multi-Agent Team:**\n```yaml\n# Agent A's blocks\nagent_a_tasks:\n  description: \"Tasks owned by Agent A\"\n\nagent_a_notes:\n  description: \"Agent A's working notes\"\n\n# Agent B's blocks\nagent_b_tasks:\n  description: \"Tasks owned by Agent B\"\n\nagent_b_notes:\n  description: \"Agent B's working notes\"\n\n# Shared read-only\nteam_guidelines:\n  description: \"Shared team guidelines (read-only)\"\n  read_only: true\n```\n\n**Benefits:**\n- No concurrent writes to same block\n- Clear ownership\n- Easy to track responsibility\n\n### Pattern 3: Coordinator Pattern\n\nOne \"coordinator\" agent manages shared state, workers report via append-only logs.\n\n**Architecture:**\n```yaml\n# Coordinator writes\nteam_state:\n  description: \"Current team state (coordinator-owned)\"\n\n# Workers append\nworker_reports:\n  description: \"Worker status reports (append-only)\"\n  value: |\n    [timestamp] Worker 1: Completed tas",
+        "content_truncated": true
+      },
+      {
+        "path": "references/description-patterns.md",
+        "size_bytes": 3165,
+        "kind": "text",
+        "content_preview": "# Memory Block Description Patterns\n\nGood descriptions guide the agent on when to read and update blocks. Use instructional style that clearly indicates purpose and usage.\n\n## Template Structure\n\n```\n[What this block contains]. [When to reference it]. [When/how to update it].\n```\n\n## Examples by Use Case\n\n### Read-Only Reference Blocks\n\n**Brand Guidelines:**\n```\n\"Brand tone, voice, and style guidelines. Reference this when generating any customer-facing content to ensure consistency with brand identity.\"\n```\n\n**Company Policies:**\n```\n\"Company policies and procedures for customer support. Reference when handling returns, warranties, or service requests.\"\n```\n\n**API Documentation:**\n```\n\"API endpoints and authentication patterns for [Service]. Reference when building integrations or debugging API calls.\"\n```\n\n### Actively Updated Blocks\n\n**Customer Profile:**\n```\n\"Current customer's business context and preferences. Update as you learn more about their needs, priorities, and constraints.\"\n```\n\n**Project Context:**\n```\n\"Current project architecture, active tasks, and goals. Update when the user shares new information about the project or shifts focus.\"\n```\n\n**Interaction History:**\n```\n\"Recent interactions and key decisions. Update after significant conversations to track context and progress.\"\n```\n\n### Task Management Blocks\n\n**Current Task:**\n```\n\"Active task, planned approach, and progress. Update as work advances, blockers emerge, or requirements change.\"\n```\n\n**Todo List:**\n```\n\"Outstanding tasks and priorities. Add tasks when identified, remove when completed, update priorities as needed.\"\n```\n\n### User Preference Blocks\n\n**Communication Preferences:**\n```\n\"User's preferred communication style, level of detail, and response format. Update when the user corrects your approach or expresses preferences.\"\n```\n\n**Working Constraints:**\n```\n\"User's time zone, availability, and scheduling constraints. Update when planning or scheduling activities.\"\n```\n\n## Anti-Patterns to Avoid\n\n### Too Vague\n\n❌ Bad:\n```\n\"Contains customer information\"\n```\n\n✅ Good:\n```\n\"Current customer's business context and preferences. Update as you learn more about their needs, priorities, and constraints.\"\n```\n\n### Missing Update Guidance\n\n❌ Bad:\n```\n\"Project architecture and stack information.\"\n```\n\n✅ Good:\n```\n\"Current project architecture, active tasks, and goals. Update when the user shares new information about the project or shifts focus.\"\n```\n\n### Passive Voice\n\n❌ Bad:\n```\n\"This block should be referenced when brand consistency is needed.\"\n```\n\n✅ Good:\n```\n\"Reference this when generating customer-facing content to ensure brand consistency.\"\n```\n\n## Label Conventions\n\n**Use underscores, not spaces:**\n- ✅ `customer_profile`\n- ❌ `customer profile`\n\n**Keep short and descriptive:**\n- ✅ `project_context`\n- ✅ `brand_guidelines`\n- ❌ `information_about_the_current_project_and_context`\n\n**Think like variable names:**\n- ✅ `current_task`\n- ✅ `interaction_history`\n- ✅ `communication_preferences`\n",
+        "content_truncated": false
+      },
+      {
+        "path": "references/memory-architecture.md",
+        "size_bytes": 3154,
+        "kind": "text",
+        "content_preview": "# Memory Types in Letta\n\n## Core Memory (In-Context)\n\n**What it is:**\n- Structured sections of agent's context window\n- Always visible to agent\n- Persists across all interactions\n\n**When to use:**\n- Current state and active context\n- Frequently referenced information\n- User preferences and agent identity\n- Information that should be immediately accessible\n\n**Structure:**\n- Label: unique identifier\n- Description: guides agent usage\n- Value: the actual data\n- Limit: character limit per block\n\n**Access:**\n- Always in context (no tool call needed)\n- Agent can edit via memory_insert, memory_replace, memory_rethink\n\n**Best for:**\n- User profile information\n- Agent personality and guidelines\n- Current project/task context\n- Active conversation metadata\n\n## Archival Memory (Out-of-Context)\n\n**What it is:**\n- Vector database storing embedded content\n- Semantic search over historical data\n- Not automatically included in context\n\n**When to use:**\n- Large knowledge bases\n- Historical interaction records\n- Past project notes\n- Reference documentation\n\n**Access:**\n- Agent must explicitly call archival_memory_search\n- Results brought into context on demand\n- Agent can add via archival_memory_insert\n\n**Important notes:**\n- NOT auto-populated from context overflow\n- Must be explicitly added by agent\n- Separate from memory blocks (not connected)\n\n**Best for:**\n- Past conversation summaries\n- Historical customer interactions\n- Large documentation sets\n- Long-term knowledge accumulation\n\n## Conversation History\n\n**What it is:**\n- Past messages from current conversation\n- Moves out of context window as conversation grows\n- Stored in database, searchable\n\n**When to use:**\n- Referencing earlier discussion\n- Tracking conversation flow\n- Finding specific past exchanges\n\n**Access:**\n- Agent calls conversation_search tool\n- Can filter by date range, role, query\n\n**Automatic behavior:**\n- Messages automatically move to history when context full\n- Agent can trigger summarization when needed\n\n**Best for:**\n- Multi-turn conversation context\n- Tracking what was already discussed\n- Finding specific user requests\n\n## Memory Type Selection Guide\n\n| Use Case | Core Memory | Archival Memory | Conversation History |\n|----------|-------------|-----------------|----------------------|\n| User name and preferences | ✓ | | |\n| Agent personality | ✓ | | |\n| Current task status | ✓ | | |\n| Last 10 messages | (in context) | | |\n| Messages 50+ turns ago | | | ✓ |\n| Past project notes | | ✓ | |\n| Large documentation | | ✓ | |\n| Company policies | ✓ | | |\n| Historical customer data | | ✓ | |\n\n## Common Misconceptions\n\n**Myth:** \"Archival memory is automatically populated when context overflows\"\n**Reality:** Archival memory must be explicitly added via archival_memory_insert tool\n\n**Myth:** \"Memory blocks and archival memory are connected\"\n**Reality:** They are completely separate systems\n\n**Myth:** \"Conversation history is lost when context fills\"\n**Reality:** It's stored in database and accessible via conversation_search\n",
+        "content_truncated": false
+      },
+      {
+        "path": "references/memory-patterns.md",
+        "size_bytes": 3081,
+        "kind": "text",
+        "content_preview": "# Memory Block Patterns by Domain\n\n## Customer Support Agent\n\n```yaml\npersona:\n  label: persona\n  description: \"Your role as customer support agent, including communication style and escalation criteria.\"\n  value: |\n    I am a customer support agent for [Company]. I respond professionally,\n    empathetically, and efficiently. I escalate to humans when: [criteria].\n\ncompany_policies:\n  label: company_policies\n  description: \"Company policies and procedures. Reference when handling returns, warranties, or service requests.\"\n  read_only: true\n  value: |\n    Return Policy: [details]\n    Warranty: [details]\n    Service Terms: [details]\n\nproduct_knowledge:\n  label: product_knowledge\n  description: \"Product features and common solutions. Update when learning new troubleshooting steps.\"\n  value: |\n    Product A: [features, common issues]\n    Product B: [features, common issues]\n\ncustomer:\n  label: customer\n  description: \"Current customer's information and interaction history. Update as you learn more about them.\"\n  value: |\n    Name: [extracted from conversation]\n    Issue: [current problem]\n    History: [relevant past interactions]\n```\n\n## Coding Assistant\n\n```yaml\npersona:\n  label: persona\n  description: \"Your approach to coding assistance and communication with developers.\"\n  value: |\n    I help write clean, maintainable code. I explain my reasoning,\n    suggest best practices, and ask clarifying questions.\n\nproject_context:\n  label: project_context\n  description: \"Current project architecture and goals. Update as you learn about the codebase.\"\n  value: |\n    Project: [name]\n    Stack: [technologies]\n    Architecture: [patterns]\n    Current Focus: [active work]\n\ncoding_standards:\n  label: coding_standards\n  description: \"Team coding standards and review checklist. Reference before making suggestions.\"\n  read_only: true\n  value: |\n    Style Guide: [details]\n    Testing Requirements: [coverage, patterns]\n    Review Checklist: [items]\n\ncurrent_task:\n  label: current_task\n  description: \"Active coding task and implementation progress. Update as work advances.\"\n  value: |\n    Task: [description]\n    Approach: [planned solution]\n    Progress: [completed steps]\n    Blockers: [current issues]\n```\n\n## Personal Assistant\n\n```yaml\npersona:\n  label: persona\n  description: \"Your role as personal assistant and communication preferences.\"\n  value: |\n    I help manage your schedule, remind you of tasks, and provide\n    proactive assistance. I'm concise unless you ask for detail.\n\nschedule:\n  label: schedule\n  description: \"Upcoming appointments and commitments. Update when scheduling or rescheduling.\"\n  value: |\n    Today: [appointments]\n    This Week: [commitments]\n    Upcoming: [notable events]\n\npreferences:\n  label: preferences\n  description: \"User's preferences and decision-making criteria. Update as you learn more.\"\n  value: |\n    Communication: [style preferences]\n    Priorities: [what matters most]\n    Constraints: [time zones, availability]",
+        "content_truncated": false
+      },
+      {
+        "path": "references/model-recommendations.md",
+        "size_bytes": 1919,
+        "kind": "text",
+        "content_preview": "# Model Selection Guide\n\n## Production Recommendations\n\n### High-Quality Reasoning\n- **GPT-4o**: Best overall, reliable tool calling (`openai/gpt-4o`)\n- **Claude Sonnet 4**: Excellent reasoning, strong with memory tools (`anthropic/claude-sonnet-4-20250514`)\n- **Gemini 2.0 Flash**: Fast, good capability (`google/gemini-2.0-flash`)\n\n### Cost-Efficient\n- **GPT-4o-mini**: Best balance of cost and capability (`openai/gpt-4o-mini`)\n- **Claude Haiku 3.5**: Fast, lightweight, good for simple tasks (`anthropic/claude-3-5-haiku-20241022`)\n\n### Local/Self-Hosted\n- **Qwen 2.5**: Strong local model with good tool calling\n- **Llama 3.3 70B**: Excellent local option\n- **Mistral Small**: Good tool calling for its size\n\n## Avoid for Production\n\n### Tool Calling Issues\n- Ollama models < 7B parameters\n- Models without function calling support\n- Untested vision models in tool-calling contexts\n\n### Proxy Provider Issues\n- OpenRouter: Inconsistent tool calling across providers\n- Groq: Limited tool calling support\n\n## Context Window Considerations\n\n**Default: 32k tokens**\n- Team recommends 32k as sweet spot\n- Larger windows (100k+) cause two issues:\n  1. Agent reliability decreases\n  2. Response latency increases\n\n**When to increase:**\n- Specific use case requires larger context\n- Willing to accept performance trade-offs\n- Have tested reliability at target size\n\n## Reasoning Models\n\n**Native reasoning (v1 agents only):**\n- GPT-4o and newer\n- Claude Sonnet 4 with extended thinking\n- Gemini 2.0 Flash Thinking\n\n**Prompted reasoning (v2 agents):**\n- Better for smaller models\n- Uses tool call arguments for inner monologue\n\n## Cost Management\n\n**Self-hosted:**\n- Pay per token directly to provider\n- No Letta overhead\n\n**Letta Cloud:**\n- Per-message pricing (not per token)\n- 1 credit = 1 standard model request\n- Premium models have different multipliers\n",
+        "content_truncated": false
+      },
+      {
+        "path": "references/size-management.md",
+        "size_bytes": 4141,
+        "kind": "text",
+        "content_preview": "# Memory Block Size Management\n\n## Character Limits\n\n**Typical limits per block:**\n- 2000-5000 characters depending on configuration\n- Total core memory should stay under 80% of context window\n\n**Monitor size:**\n- Via ADE: shows character count per block\n- Via API: check block `value` length\n\n## Growth Strategies\n\n### 1. Split by Topic\n\nWhen a block covers multiple independent topics, split into focused blocks.\n\n**Before:**\n```yaml\ncustomer_profile:\n  value: |\n    Business: Tech startup, 50 employees, B2B SaaS\n    Contact: Jane Doe, CTO, jane@company.com\n    Preferences: Prefers technical detail, async communication\n    History: Signed up 2023, upgraded to Enterprise in 2024\n```\n\n**After:**\n```yaml\ncustomer_business:\n  value: |\n    Industry: Tech startup, 50 employees\n    Product: B2B SaaS platform\n    Stage: Series A, growing rapidly\n\ncustomer_contact:\n  value: |\n    Primary: Jane Doe, CTO\n    Email: jane@company.com\n    Preferences: Technical detail, async communication\n\ncustomer_history:\n  value: |\n    Signed up: 2023\n    Milestones: Upgraded to Enterprise (2024)\n```\n\n### 2. Split by Time\n\nFor temporal data, split into recent and historical.\n\n**Before:**\n```yaml\ninteraction_history:\n  value: |\n    [6 months of interaction notes...]\n```\n\n**After:**\n```yaml\nrecent_interactions:\n  value: |\n    [Last 2 weeks of interactions]\n\n# Archive older interactions to archival memory via archival_memory_insert\n```\n\n### 3. Archive to Archival Memory\n\nMove historical or infrequently accessed data to archival memory.\n\n**Process:**\n1. Identify data that's rarely needed immediately\n2. Use `archival_memory_insert` to store it\n3. Remove from core memory block\n4. Agent can retrieve via `archival_memory_search` when needed\n\n**Good candidates for archival:**\n- Past conversation summaries\n- Historical project notes\n- Completed task records\n- Old customer interactions\n\n### 4. Consolidate with memory_rethink\n\nSummarize and rewrite block content to be more concise.\n\n**Before:**\n```yaml\nproject_context:\n  value: |\n    Project Name: Customer Portal\n    Started: January 2024\n    Stack: React, Node.js, PostgreSQL\n    Architecture: Microservices with API gateway\n    Current Phase: User authentication completed\n    Next Phase: Dashboard development\n    Team: 3 engineers, 1 designer\n    Notes: Using JWT for auth, Redis for sessions\n```\n\n**After (condensed):**\n```yaml\nproject_context:\n  value: |\n    Customer Portal (Jan 2024)\n    Stack: React/Node.js/PostgreSQL microservices\n    Status: Auth complete, starting dashboard\n    Team: 3 eng, 1 design\n```\n\n## Proactive Strategies\n\n### Monitor Growth Patterns\n\n**High-growth blocks:**\n- Interaction histories\n- Task lists\n- Conversation summaries\n\n**Strategies:**\n- Set up archival thresholds (e.g., archive when >1500 chars)\n- Regular consolidation cycles\n- Time-based splits (current vs. historical)\n\n### Design for Bounded Growth\n\n**Append-limited blocks:**\n```yaml\nrecent_activity:\n  description: \"Last 10 user actions. Archive older actions when adding new ones.\"\n```\n\n**Rotating logs:**\n```yaml\ndaily_summary:\n  description: \"Today's key events. Reset daily, archive yesterday to archival memory.\"\n```\n\n## Warning Signs\n\n**Block is too large when:**\n- Approaching character limit\n- Agent frequently struggles to find information within it\n- Contains multiple unrelated topics\n- Includes rarely-referenced historical data\n\n**Action needed:**\n- Split by topic or time\n- Archive historical content\n- Consolidate with memory_rethink\n- Redesign block structure\n\n## Context Window Management\n\n**Total core memory guideline:**\n- Keep under 80% of context window\n- Leave room for conversation, tool outputs, reasoning\n\n**Example for 32k context:**\n- ~25k tokens available\n- Core memory should be <20k tokens\n- ~5k tokens for conversation and tools\n\n**When approaching limit:**\n1. Identify least-used blocks\n2. Archive or consolidate content\n3. Consider splitting large blocks\n4. Review if all blocks are still needed\n",
+        "content_truncated": false
+      },
+      {
+        "path": "references/tool-patterns.md",
+        "size_bytes": 2338,
+        "kind": "text",
+        "content_preview": "# Common Tool Configurations\n\n## Memory-Only Agent\n\n```python\ntools = [\n  \"memory_insert\",\n  \"memory_replace\",\n  \"memory_rethink\"\n]\n```\n\n**Use cases:**\n\n- Personal assistants\n- Note-taking agents\n- Context managers\n\n## File System Agent\n\n```\n# Tools auto-attached when folder connected:\n# - read_file\n# - write_file\n# - list_files\n# - grep\n# - search_files\n```\n\n**Use cases:**\n\n- Code analysis\n- Document processing\n- Project management\n\n## Database Agent\n\n```\ntools = [\n  \"memory_insert\",\n  \"memory_replace\",\n  \"query_database\", # Custom tool\n  \"update_record\" # Custom tool\n]\n```\n\n**Use cases:**\n\n- Data analysis\n- Report generation\n- Database management\n\n## Multi-Agent System\n\n```\n# Supervisor agent:\ntools = [\n  \"memory_insert\",\n  \"send_message_to_agent_and_wait_for_reply\"\n]\n\n# Worker agents:\ntools = [\n  \"memory_insert\",\n  \"domain_specific_tool\"\n]\n```\n\n**Note:** Use `send_message_to_agent_and_wait_for_reply` for agent-to-agent communication. Check docs for latest multi-agent patterns.\n\n## Tool Rules\n\nConstrain tool sequences without hardcoded workflows:\n\n```\ntool_rules = [\n  {\n    \"tool_name\": \"answer_question\",\n    \"children\": [] # Must be terminal call\n  },\n  {\n    \"tool_name\": \"search_files\",\n    \"children\": [\"search_files\", \"answer_question\"]\n  }\n]\n```\n\n**Pattern:** Agent must search before answering, but can search multiple times.\n\n## Custom Tool Development\n\n**Critical requirements:**\n\n- ALL imports must be INSIDE function body\n- Tools execute in sandbox without top-level imports\n- Return strings or JSON-serializable objects\n\n**Example - Creating and attaching a custom tool:**\n\n```python\nfrom letta_client import Letta\n\nclient = Letta()\n\n# Define tool with imports INSIDE the function\ntool_source = '''\ndef fetch_weather(city: str) -> str:\n    \"\"\"Fetch current weather for a city.\n    \n    Args:\n        city: Name of the city\n        \n    Returns:\n        Weather description string\n    \"\"\"\n    import requests  # Import INSIDE function\n    \n    response = requests.get(f\"https://wttr.in/{city}?format=3\")\n    return response.text\n'''\n\n# Create and attach to agent\ntool = client.tools.create(source_code=tool_source)\nclient.agents.tools.attach(agent_id=agent.id, tool_id=tool.id)\n```\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 9588,
+        "kind": "text",
+        "content_preview": "---\nname: letta-development-guide\ndescription: Comprehensive guide for developing Letta agents, including architecture selection, memory design, model selection, and tool configuration. Use when building or troubleshooting Letta agents.\nlicense: MIT\n---\n\n# Letta Development Guide\n\nComprehensive guide for designing and building effective Letta agents with appropriate architectures, memory configurations, model selection, and tool setups.\n\n## When to Use This Skill\n\nUse this skill when:\n- Starting a new Letta agent project\n- Choosing between agent architectures (letta_v1_agent vs memgpt_v2_agent)\n- Designing memory block structure and architecture\n- Selecting appropriate models for your use case\n- Planning tool configurations\n- Optimizing memory management and performance\n- Implementing shared memory between agents\n- Debugging memory-related issues\n\n## Quick Start Guide\n\n### Minimal Working Example\n\n```python\nfrom letta_client import Letta\n\nclient = Letta()\nagent = client.agents.create(\n    name=\"my-assistant\",\n    model=\"openai/gpt-4o\",\n    embedding=\"openai/text-embedding-3-small\",\n    memory_blocks=[\n        {\"label\": \"persona\", \"value\": \"You are a helpful assistant.\"},\n        {\"label\": \"human\", \"value\": \"The user's name and preferences.\"},\n    ],\n)\n\n# Send a message\nresponse = client.agents.messages.create(\n    agent_id=agent.id,\n    messages=[{\"role\": \"user\", \"content\": \"Hello!\"}],\n)\nprint(response.messages[-1].content)\n```\n\n### 1. Architecture Selection\n\n**Use letta_v1_agent when:**\n- Building new agents (recommended default)\n- Need compatibility with reasoning models (GPT-4o, Claude Sonnet 4)\n- Want simpler system prompts and direct message generation\n\n**Use memgpt_v2_agent when:**\n- Maintaining legacy agents\n- Require specific tool patterns not yet supported in v1\n\nFor detailed comparison, see `references/architectures.md`.\n\n### 2. Memory Architecture Design\n\nMemory is the foundation of effective agents. Letta provides three memory types:\n\n**Core Memory (in-context):**\n- Always accessible in agent's context window\n- Use for: current state, active context, frequently referenced information\n- Limit: Keep total core memory under 80% of context window\n\n**Archival Memory (out-of-context):**\n- Semantic search over vector database\n- Use for: historical records, large knowledge bases, past interactions\n- Access: Agent must explicitly call archival_memory_search\n- Note: NOT automatically populated from context overflow\n\n**Conversation History:**\n- Past messages from current conversation\n- Retrieved via conversation_search tool\n- Use for: referencing earlier discussion, tracking conversation flow\n\nSee `references/memory-architecture.md` for detailed guidance.\n\n### 3. Memory Block Design\n\n**Core principle:** One block per distinct functional unit.\n\n**Essential blocks:**\n- `persona`: Agent identity, behavioral guidelines, capabilities\n- `human`: User information, preferences, context\n\n**Add domain-specific blocks based on use case:**\n- Customer support: `company_policies`, `product_knowledge`, `customer`\n- Coding assistant: `project_context`, `coding_standards`, `current_task`\n- Personal assistant: `schedule`, `preferences`, `contacts`\n\n**Memory block guidelines:**\n- Keep blocks focused and purpose-specific\n- Use clear, instructional descriptions\n- Monitor size limits (typically 2000-5000 characters per block)\n- Design for append operations when sharing memory between agents\n\nSee `references/memory-patterns.md` for domain examples and `references/description-patterns.md` for writing effective descriptions.\n\n### 4. Model Selection\n\nMatch model capabilities to agent requirements:\n\n**For production agents:**\n- GPT-4o or Claude Sonnet 4 for complex reasoning\n- GPT-4o-mini for cost-efficient general tasks\n- Claude Haiku 3.5 for fast, lightweight operations\n- Gemini 2.0 Flash for balanced speed/capability\n\n**Avoid for production:**\n- Small Ollama models (<7B parameters) - poor tool calling\n- Models without reliable function calling suppo",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: letta-development-guide\ndescription: Comprehensive guide for developing Letta agents, including architecture selection, memory design, model selection, and tool configuration. Use when building or troubleshooting Letta agents.\nlicense: MIT\n---\n\n# Letta Development Guide\n\nComprehensive guide for designing and building effective Letta agents with appropriate architectures, memory configurations, model selection, and tool setups.\n\n## When to Use This Skill\n\nUse this skill when:\n- Starting a new Letta agent project\n- Choosing between agent architectures (letta_v1_agent vs memgpt_v2_agent)\n- Designing memory block structure and architecture\n- Selecting appropriate models for your use case\n- Planning tool configurations\n- Optimizing memory management and performance\n- Implementing shared memory between agents\n- Debugging memory-related issues\n\n## Quick Start Guide\n\n### Minimal Working Example\n\n```python\nfrom letta_client import Letta\n\nclient = Letta()\nagent = client.agents.create(\n    name=\"my-assistant\",\n    model=\"openai/gpt-4o\",\n    embedding=\"openai/text-embedding-3-small\",\n    memory_blocks=[\n        {\"label\": \"persona\", \"value\": \"You are a helpful assistant.\"},\n        {\"label\": \"human\", \"value\": \"The user's name and preferences.\"},\n    ],\n)\n\n# Send a message\nresponse = client.agents.messages.create(\n    agent_id=agent.id,\n    messages=[{\"role\": \"user\", \"content\": \"Hello!\"}],\n)\nprint(response.messages[-1].content)\n```\n\n### 1. Architecture Selection\n\n**Use letta_v1_agent when:**\n- Building new agents (recommended default)\n- Need compatibility with reasoning models (GPT-4o, Claude Sonnet 4)\n- Want simpler system prompts and direct message generation\n\n**Use memgpt_v2_agent when:**\n- Maintaining legacy agents\n- Require specific tool patterns not yet supported in v1\n\nFor detailed comparison, see `references/architectures.md`.\n\n### 2. Memory Architecture Design\n\nMemory is the foundation of effective agents. Letta provides three memory types:\n\n**Core Memory (in-context):**\n- Always accessible in agent's context window\n- Use for: current state, active context, frequently referenced information\n- Limit: Keep total core memory under 80% of context window\n\n**Archival Memory (out-of-context):**\n- Semantic search over vector database\n- Use for: historical records, large knowledge bases, past interactions\n- Access: Agent must explicitly call archival_memory_search\n- Note: NOT automatically populated from context overflow\n\n**Conversation History:**\n- Past messages from current conversation\n- Retrieved via conversation_search tool\n- Use for: referencing earlier discussion, tracking conversation flow\n\nSee `references/memory-architecture.md` for detailed guidance.\n\n### 3. Memory Block Design\n\n**Core principle:** One block per distinct functional unit.\n\n**Essential blocks:**\n- `persona`: Agent identity, behavioral guidelines, capabilities\n- `human`: User information, preferences, context\n\n**Add domain-specific blocks based on use case:**\n- Customer support: `company_policies`, `product_knowledge`, `customer`\n- Coding assistant: `project_context`, `coding_standards`, `current_task`\n- Personal assistant: `schedule`, `preferences`, `contacts`\n\n**Memory block guidelines:**\n- Keep blocks focused and purpose-specific\n- Use clear, instructional descriptions\n- Monitor size limits (typically 2000-5000 characters per block)\n- Design for append operations when sharing memory between agents\n\nSee `references/memory-patterns.md` for domain examples and `references/description-patterns.md` for writing effective descriptions.\n\n### 4. Model Selection\n\nMatch model capabilities to agent requirements:\n\n**For production agents:**\n- GPT-4o or Claude Sonnet 4 for complex reasoning\n- GPT-4o-mini for cost-efficient general tasks\n- Claude Haiku 3.5 for fast, lightweight operations\n- Gemini 2.0 Flash for balanced speed/capability\n\n**Avoid for production:**\n- Small Ollama models (<7B parameters) - poor tool calling\n- Models without reliable function calling suppo"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 1,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "INFO": 1
+    },
+    "by_pattern": {
+      "E1": 1
+    },
+    "by_kill_chain_phase": {
+      "exfil": 1
+    },
+    "rule_ids_hit": [
+      "E1"
+    ],
+    "files_scanned_count": 9,
+    "ai_downgraded_count": 1
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 1
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "exfil"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 3.48,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "L1 review: 1 条命中被 AI 标为 FP，composite_score 3.48 → 3.48"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "references\\tool-patterns.md",
+      "line": 118,
+      "pattern": "requests\\.(?:post|put|get).*http[s]?://(?!localhost)",
+      "matched_text": "requests.get(f\"https://",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  115 |     \"\"\"\n  116 |     import requests  # Import INSIDE function\n  117 |     \n» 118 |     response = requests.get(f\"https://wttr.in/{city}?format=3\")\n  119 |     return response.text\n  120 | '''\n  121 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "response = requests.get(f\"https://wttr.in/{city}?format=3\")",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 该代码是文档中定义自定义天气工具的教学示例，合法地演示 requests.get 调用外部 API，并非实际执行数据外泄。",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "该代码是文档中定义自定义天气工具的教学示例，合法地演示 requests.get 调用外部 API，并非实际执行数据外泄。"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "该代码是文档中定义自定义天气工具的教学示例，合法地演示 requests.get 调用外部 API，并非实际执行数据外泄。"
+    }
+  ],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.015,
+    "verdict": "SAFE",
+    "mean_confidence": 0.962,
+    "subtasks": {
+      "D": {
+        "risk_score": 0.1,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "仅包含 Letta 代理开发指南文档，无脚本、凭据或外部载荷，符合声明用途。",
+        "finding": null,
+        "task_name": "cross_file_consistency"
+      },
+      "B": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 1.0,
+        "evidence": [],
+        "reasoning": "纯文档技能包，无环境变量访问、网络请求或文件写入行为，与功能相称。",
+        "finding": null,
+        "task_name": "permission_justification"
+      },
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该技能包为Letta代理开发纯文档指南，无实际可执行逻辑，行为与声明完全一致。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该技能包是Letta智能体开发指南，未发现任何隐蔽行为、静默指令或安全绕过机制。",
+        "finding": null,
+        "task_name": "covert_behavior"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.015 confidence=0.962 都高置信 → DeepSeek 单家定论"
+  },
+  "l1_review_meta": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "total_reviewed": 1,
+    "total_findings": 1,
+    "tp_count": 0,
+    "fp_count": 1,
+    "uncertain_count": 0,
+    "api_calls": 1
+  }
+}

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sub-memory"
+version = "0.2.0"
+description = "Local memory assistant with installable agent and MCP server entrypoints."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "openai>=2.30.0,<3",
+  "networkx>=3.6,<4",
+  "sentence-transformers>=5.3.0,<6",
+  "sqlite-vec>=0.1.9,<0.2",
+  "mcp[cli]>=1.27.0,<2",
+]
+
+[project.scripts]
+sub-memory-agent = "sub_memory.agent:main"
+sub-memory-mcp = "sub_memory.mcp_server:main"
+sub-memory-web = "sub_memory.web:main"
+
+[tool.setuptools.packages.find]
+include = ["sub_memory*"]

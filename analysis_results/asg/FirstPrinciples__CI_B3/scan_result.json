@@ -1,0 +1,84 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\FirstPrinciples__CI_B3",
+  "skill_name": "FirstPrinciples__CI_B3",
+  "files_scanned": [
+    "scripts\\firstprinciples_init.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 1,
+    "LOW": 1
+  },
+  "by_pattern": {
+    "E2": 1,
+    "E1": 2
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 1,
+    "exfil": 2
+  },
+  "rule_ids_hit": [
+    "E1",
+    "E2"
+  ],
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\firstprinciples_init.py",
+      "line": 49,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.environ[f\"FIRSTPRINCIPLES_{key",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  46 |     if config_data:\n  47 |         # Update environment variables with configuration values\n  48 |         for key, value in config_data.items():\n» 49 |             os.environ[f\"FIRSTPRINCIPLES_{key}\"] = str(value)\n  50 |         \n  51 |         # Save configuration to local storage\n  52 |         save_local_config(config_data)",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "os.environ[f\"FIRSTPRINCIPLES_{key}\"] = str(value)",
+      "downgraded": false,
+      "downgrade_reason": "Bumped to HIGH: co-located with real E1 exfiltration in same file"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "exfil",
+      "file": "scripts\\firstprinciples_init.py",
+      "line": 64,
+      "pattern": "<ast>",
+      "matched_text": "requests.post",
+      "description": "AST: 外联 requests.post",
+      "confidence": 0.92,
+      "context": "  61 |     }\n  62 |     \n  63 |     try:\n» 64 |         requests.post(\n  65 |             f\"http://localhost:{NOTIFICATION_PORT}/notify\",\n  66 |             json=notification_payload,\n  67 |             headers={\"Content-Type\": \"application/json\"}",
+      "original_severity": "MEDIUM",
+      "evidence_type": "exfiltration",
+      "context_type": "main_skill_logic",
+      "snippet": "requests.post(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 44,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  41 | \n  42 | 1. **Send voice notification**:\n  43 |    ```bash\n» 44 |    curl -s -X POST http://localhost:8888/notify \\\n  45 |      -H \"Content-Type: application/json\" \\\n  46 |      -d '{\"message\": \"Running the WORKFLOWNAME workflow from the FirstPrinciples skill\"}' \\\n  47 |      > /dev/null 2>&1 &",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -s -X POST http://localhost:8888/notify \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

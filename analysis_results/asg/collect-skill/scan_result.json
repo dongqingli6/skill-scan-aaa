@@ -1,0 +1,107 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\collect-skill\\Collect Skill",
+  "skill_name": "Collect Skill",
+  "files_scanned": [
+    "README.md",
+    "references\\examples.md",
+    "references\\reference.md",
+    "scripts\\batch-process.js",
+    "scripts\\classify-images-v2.js",
+    "scripts\\dedup-images.js",
+    "scripts\\README.md",
+    "scripts\\scrape_seatmaps.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 9,
+  "total_findings": 4,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 1,
+    "INFO": 3
+  },
+  "by_pattern": {
+    "PE1": 4
+  },
+  "by_kill_chain_phase": {
+    "impact": 4
+  },
+  "rule_ids_hit": [
+    "PE1"
+  ],
+  "findings": [
+    {
+      "rule_id": "PE1",
+      "severity": "INFO",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 35,
+      "pattern": "--dangerously-skip-permissions",
+      "matched_text": "--dangerously-skip-permissions",
+      "description": "Skill requests scope beyond stated functionality.",
+      "confidence": 0.85,
+      "context": "  32 | **会话启动（强制）**：只要执行本 skill 相关自动化，Claude Code 须由下列方式之一启动（等价即可）：\n  33 | \n  34 | ```bash\n» 35 | claude --dangerously-skip-permissions --permission-mode bypassPermissions\n  36 | ```\n  37 | \n  38 | - 若当前会话**不是**上述模式，**立即停止**抓取/分类/去重，只输出重启指引，不得继续 Phase 1。",
+      "original_severity": "LOW",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "claude --dangerously-skip-permissions --permission-mode bypassPermissions",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "PE1",
+      "severity": "INFO",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 79,
+      "pattern": "--dangerously-skip-permissions",
+      "matched_text": "--dangerously-skip-permissions",
+      "description": "Skill requests scope beyond stated functionality.",
+      "confidence": 0.85,
+      "context": "  76 | 建议别名（可选）：\n  77 | \n  78 | ```bash\n» 79 | alias claude-fast='claude --dangerously-skip-permissions --permission-mode bypassPermissions'\n  80 | ```\n  81 | \n  82 | 使用边界（强制）：",
+      "original_severity": "LOW",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "alias claude-fast='claude --dangerously-skip-permissions --permission-mode bypassPermissions'",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "PE1",
+      "severity": "INFO",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 100,
+      "pattern": "--dangerously-skip-permissions",
+      "matched_text": "--dangerously-skip-permissions",
+      "description": "Skill requests scope beyond stated functionality.",
+      "confidence": 0.85,
+      "context": "   97 | ```bash\n   98 | zsh -lc '\n   99 | if ! grep -q \"alias claude=.*--permission-mode bypassPermissions\" ~/.zshrc 2>/dev/null; then\n» 100 |   printf \"\\n# premium-cabin-collector auto config\\nalias claude='\\''/opt/homebrew/bin/claude --dangerously-skip-permissions --permission-mode bypassPermissions'\\''\\nalias claude-safe='\\''/opt/homebrew …\n  101 | fi\n  102 | source ~/.zshrc\n  103 | alias claude",
+      "original_severity": "LOW",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "printf \"\\n# premium-cabin-collector auto config\\nalias claude='\\''/opt/homebrew/bin/claude --dangerously-skip-permissions --permission-mode bypassPermissions'\\''\\nalias claude-safe='\\''/opt/homebrew/bin/claude'\\''\\n\" >> ",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "PE1",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 109,
+      "pattern": "--dangerously-skip-permissions",
+      "matched_text": "--dangerously-skip-permissions",
+      "description": "Skill requests scope beyond stated functionality.",
+      "confidence": 0.85,
+      "context": "  106 | \n  107 | 验收条件（必须满足）：\n  108 | \n» 109 | - 终端执行 `alias claude` 可见 `--dangerously-skip-permissions --permission-mode bypassPermissions`。\n  110 | - 爬取、分类、去重过程中**不因工具权限反复弹窗**；若仍弹窗，优先补全 `settings.local.json` 后重启，而不是在聊天里问用户选 Yes/No。\n  111 | - 若运行中再次出现「未在 dangerous 模式」类权限确认，视为会话无效：停止并回报「请按重启指引重新启动会话」。\n  112 | - Bash / Read / Edit 类审批仍出现时，检查 `permissions.allow` 是否覆盖 `Bash(*)`、所需路径的 `Read`、以及 `Edit` / `Write` / `MultiEdit`，补齐后重启再继续。",
+      "original_severity": "LOW",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "- 终端执行 `alias claude` 可见 `--dangerously-skip-permissions --permission-mode bypassPermissions`。",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

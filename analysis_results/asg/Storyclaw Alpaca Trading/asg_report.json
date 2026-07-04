@@ -1,0 +1,297 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:55:20.045346+00:00",
+  "skill_name": "Storyclaw Alpaca Trading",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\storyclaw-alpaca-trading\\Storyclaw Alpaca Trading",
+  "skill_contents": {
+    "file_count": 7,
+    "total_bytes": 35629,
+    "files": [
+      {
+        "path": "config.example.json",
+        "size_bytes": 172,
+        "kind": "text",
+        "content_preview": "{\n  \"apiKey\": \"YOUR_ALPACA_API_KEY\",\n  \"apiSecret\": \"YOUR_ALPACA_API_SECRET\",\n  \"baseUrl\": \"https://paper-api.alpaca.markets\",\n  \"dataUrl\": \"https://data.alpaca.markets\"\n}\n",
+        "content_truncated": false
+      },
+      {
+        "path": "credentials/example.json",
+        "size_bytes": 131,
+        "kind": "text",
+        "content_preview": "{\n  \"apiKey\": \"\",\n  \"apiSecret\": \"\",\n  \"baseUrl\": \"https://paper-api.alpaca.markets\",\n  \"dataUrl\": \"https://data.alpaca.markets\"\n}\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/aggressive-strategy.js",
+        "size_bytes": 3250,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env node\n/**\n * Aggressive Trading Strategy\n * Goal: 30%+ profit in 1 week\n *\n * Strategy:\n * - Day 1 (Mon): All-in NVDA\n * - Take profit: +10%\n * - Stop loss: -5%\n * - Daily swing trading\n */\n\nconst { execSync } = require(\"child_process\");\n\nfunction exec(cmd) {\n  try {\n    return execSync(cmd, { cwd: __dirname, encoding: \"utf8\" });\n  } catch (err) {\n    return err.stdout || err.message;\n  }\n}\n\nasync function getAccountBalance() {\n  const output = exec(\"node trading.js account\");\n  const match = output.match(/Cash: \\$([0-9,.]+)/);\n  return match ? parseFloat(match[1].replace(/,/g, \"\")) : 0;\n}\n\nasync function getCurrentPrice(symbol) {\n  const output = exec(`node trading.js quote ${symbol}`);\n  const match = output.match(/Last: \\$([0-9.]+)/);\n  return match ? parseFloat(match[1]) : 0;\n}\n\nasync function buyMaxShares(symbol) {\n  const cash = await getAccountBalance();\n  const price = await getCurrentPrice(symbol);\n  const shares = Math.floor(cash / price);\n\n  console.log(`💰 Cash: $${cash.toFixed(2)}`);\n  console.log(`📊 ${symbol} Price: $${price.toFixed(2)}`);\n  console.log(`🛒 Buying ${shares} shares (~$${(shares * price).toFixed(2)})`);\n\n  if (shares > 0) {\n    const result = exec(`node trading.js buy ${symbol} ${shares}`);\n    console.log(result);\n    return { shares, price, total: shares * price };\n  }\n  return null;\n}\n\nasync function checkPositionAndTakeProfitStopLoss(symbol, targetProfit = 0.1, stopLoss = 0.05) {\n  const posOutput = exec(\"node trading.js positions\");\n\n  // Parse position\n  const symbolMatch = posOutput.match(new RegExp(`${symbol}: (\\\\d+) shares`));\n  const pnlMatch = posOutput.match(/P&L: \\$([0-9.-]+) \\(([0-9.-]+)%\\)/);\n\n  if (!symbolMatch || !pnlMatch) {\n    console.log(\"⏸  No position or unable to parse\");\n    return false;\n  }\n\n  const shares = parseInt(symbolMatch[1]);\n  const pnlPct = parseFloat(pnlMatch[2]) / 100;\n\n  console.log(`📊 Position: ${shares} shares, P&L: ${(pnlPct * 100).toFixed(2)}%`);\n\n  // Take profit\n  if (pnlPct >= targetProfit) {\n    console.log(`🎉 Target reached! Taking profit at +${(pnlPct * 100).toFixed(2)}%`);\n    exec(`node trading.js sell ${symbol} ${shares}`);\n    return true;\n  }\n\n  // Stop loss\n  if (pnlPct <= -stopLoss) {\n    console.log(`🛑 Stop loss triggered at ${(pnlPct * 100).toFixed(2)}%`);\n    exec(`node trading.js sell ${symbol} ${shares}`);\n    return true;\n  }\n\n  return false;\n}\n\nasync function dailyReport() {\n  console.log(\"\\n📊 Daily Report:\");\n  exec(\"node trading.js account\");\n  exec(\"node trading.js positions\");\n}\n\n// Main\n(async () => {\n  const action = process.argv[2];\n\n  if (action === \"buy-nvda\") {\n    console.log(\"🚀 Executing: Buy max NVDA\");\n    await buyMaxShares(\"NVDA\");\n  } else if (action === \"check-and-exit\") {\n    console.log(\"🔍 Checking position...\");\n    await checkPositionAndTakeProfitStopLoss(\"NVDA\", 0.1, 0.05);\n  } else if (action === \"report\") {\n    await dailyReport();\n  } else {\n    console.log(\"Usage:\");\n    console.log(\"  node aggressive-strategy.js buy-nvda         - Buy max NVDA\");\n    console.log(\"  node aggressive-strategy.js check-and-exit   - Check take-profit/stop-loss\");\n    console.log(\"  node aggressive-strategy.js report           - Daily report\");\n  }\n})();\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/config-loader.js",
+        "size_bytes": 1945,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env node\n/**\n * Multi-User Config Loader\n * Loads user-specific config from credentials/{USER_ID}.json\n */\n\nconst fs = require(\"fs\");\nconst path = require(\"path\");\n\nfunction loadUserConfig(exitOnMissing = true) {\n  const USER_ID = process.env.USER_ID || process.env.TELEGRAM_USER_ID;\n\n  if (!USER_ID) {\n    if (exitOnMissing) {\n      console.error(\"❌ USER_ID or TELEGRAM_USER_ID environment variable required\");\n      console.error(\"   Set it when calling the script: USER_ID=1234567890 node trading.js ...\");\n      process.exit(1);\n    }\n    return { config: null, userId: null, credentialsPath: null, exists: false };\n  }\n\n  const credentialsPath = path.join(__dirname, \"..\", \"credentials\", `${USER_ID}.json`);\n\n  if (!fs.existsSync(credentialsPath)) {\n    if (exitOnMissing) {\n      console.error(`❌ No config found for user ${USER_ID}`);\n      console.error(`   Create: ${credentialsPath}`);\n      console.error(`   Copy from: config.example.json`);\n      process.exit(1);\n    }\n    return { config: null, userId: USER_ID, credentialsPath, exists: false };\n  }\n\n  try {\n    const config = JSON.parse(fs.readFileSync(credentialsPath, \"utf8\"));\n    return { config, userId: USER_ID, credentialsPath, exists: true };\n  } catch (e) {\n    if (exitOnMissing) {\n      console.error(`❌ Failed to load config for user ${USER_ID}: ${e.message}`);\n      process.exit(1);\n    }\n    return { config: null, userId: USER_ID, credentialsPath, exists: false, error: e.message };\n  }\n}\n\n// Check if user is configured (soft mode, doesn't exit)\nfunction checkUserConfigured() {\n  return loadUserConfig(false);\n}\n\nfunction getStatePath(userId, filename = \"state.json\") {\n  const stateDir = path.join(__dirname, \"..\", \"state\");\n  if (!fs.existsSync(stateDir)) {\n    fs.mkdirSync(stateDir, { recursive: true });\n  }\n  return path.join(stateDir, `${userId}.${filename}`);\n}\n\nmodule.exports = { loadUserConfig, checkUserConfigured, getStatePath };\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/momentum-strategy.js",
+        "size_bytes": 11473,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env node\n\n/**\n * 动量轮动策略 - Momentum Rotation Strategy\n *\n * 逻辑：\n * 1. 扫描选股池，计算动量分数（RSI + 均线 + 近期涨幅）\n * 2. 持有排名前 2-3 名的股票\n * 3. 每周/双周轮动一次\n * 4. 单只止损 -8%\n *\n * 适合账户：$1000-5000\n */\n\nconst https = require(\"https\");\nconst fs = require(\"fs\");\nconst path = require(\"path\");\n\n// 加载配置\nconst CONFIG_PATH = path.join(__dirname, \"..\", \"config.json\");\nif (!fs.existsSync(CONFIG_PATH)) {\n  console.error(\"❌ config.json not found\");\n  process.exit(1);\n}\nconst config = JSON.parse(fs.readFileSync(CONFIG_PATH, \"utf8\"));\n\nconst API_KEY = config.apiKey;\nconst API_SECRET = config.apiSecret;\nconst BASE_URL = config.baseUrl || \"https://paper-api.alpaca.markets\";\nconst DATA_URL = config.dataUrl || \"https://data.alpaca.markets\";\n\n// HTTP 请求辅助函数\nfunction request(method, url, data = null) {\n  return new Promise((resolve, reject) => {\n    const urlObj = new URL(url);\n    const options = {\n      hostname: urlObj.hostname,\n      port: urlObj.port || 443,\n      path: urlObj.pathname + urlObj.search,\n      method,\n      headers: {\n        \"APCA-API-KEY-ID\": API_KEY,\n        \"APCA-API-SECRET-KEY\": API_SECRET,\n        \"Content-Type\": \"application/json\",\n      },\n    };\n\n    const req = https.request(options, (res) => {\n      let body = \"\";\n      res.on(\"data\", (chunk) => (body += chunk));\n      res.on(\"end\", () => {\n        try {\n          const json = JSON.parse(body);\n          if (res.statusCode >= 400) {\n            reject(new Error(`API Error [${res.statusCode}]: ${json.message || body}`));\n          } else {\n            resolve(json);\n          }\n        } catch (e) {\n          resolve(body);\n        }\n      });\n    });\n\n    req.on(\"error\", reject);\n    if (data) req.write(JSON.stringify(data));\n    req.end();\n  });\n}\n\n// 延迟函数（避免 API 限流）\nconst sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));\n\n// 选股池 - L 的自选股（2026-02-07）\nconst STOCK_UNIVERSE = [\n  \"GOOGL\", // 谷歌\n  \"TSLA\", // 特斯拉\n  \"PLTR\", // Palantir\n  \"AMZN\", // 亚马逊\n  \"AVGO\", // 博通\n  \"FCX\", // 麦克莫兰铜金\n  \"FBTC\", // Fidelity Bitcoin ETF\n];\n\n// 策略参数（L的自选股优化）\nconst MAX_POSITIONS = 2; // 最多持仓数（持有前2名）\nconst POSITION_SIZE = 0.45; // 单只仓位比例（45%，保留10%现金）\nconst STOP_LOSS = 0.08; // 止损比例（8%）\nconst MIN_STOCK_PRICE = 50; // 最低股价限制\nconst MAX_STOCK_PRICE = 400; // 最高股价限制（调高以容纳 AVGO/GOOGL/AMZN）\nconst RSI_PERIOD = 14;\nconst MOMENTUM_DAYS = 5; // 动量计算周期\n\n// 计算 RSI\nfunction calculateRSI(bars, period = 14) {\n  if (bars.length < period + 1) return 50;\n\n  let gains = 0;\n  let losses = 0;\n\n  for (let i = bars.length - period; i < bars.length; i++) {\n    const change = bars[i].c - bars[i - 1].c;\n    if (change > 0) gains += change;\n    else losses -= change;\n  }\n\n  const avgGain = gains / period;\n  const avgLoss = losses / period;\n\n  if (avgLoss === 0) return 100;\n  const rs = avgGain / avgLoss;\n  return 100 - 100 / (1 + rs);\n}\n\n// 计算均线\nfunction calculateSMA(bars, period) {\n  if (bars.length < period) return null;\n  const slice = bars.slice(-period);\n  const sum = slice.reduce((acc, bar) => acc + bar.c, 0);\n  return sum / period;\n}\n\n// 获取股票历史数据\nasync function getBars(symbol, days = 60) {\n  const end = new Date();\n  const start = new Date(end - days * 24 * 60 * 60 * 1000);\n\n  const url = `${DATA_URL}/v2/stocks/${symbol}/bars?start=${start.toISOString().split(\"T\")[0]}&end=${end.toISOString().split(\"T\")[0]}&timeframe=1Day&feed=iex`;\n\n  try {\n    const data = await request(\"GET\", url);\n    return data.bars || [];\n  } catch (error) {\n    console.error(`   ⚠️ ${symbol} 数据获取失败: ${error.message}`);\n    return [];\n  }\n}\n\n// 计算动量分数\nasync function calculateMomentumScore(symbol) {\n  const bars = await getBars(symbol, 60);\n\n  if (bars.length < 30) return null;\n\n  // 计算指标\n  const rsi = calculateRSI(bars, RSI_PERIOD);\n  const sma20 = calculateSMA(bars, 20);\n  const sma50 = calculateSMA(bars, 50);\n  const currentPrice = bars[bars.length - 1].c;\n\n  // 计算近期涨幅\n  const priceNDaysAgo = bars[bars.length - MOMENTUM_DAYS - 1].c;\n  const momentum = ((currentPrice - priceNDaysAgo) / priceNDaysAgo) * 100;\n\n  // 综合评分\n  let score = 0",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/trading.js",
+        "size_bytes": 15475,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env node\n/**\n * Alpaca Trading Bot\n * US stock & crypto trading via Alpaca API\n *\n * Commands:\n *   quote <symbol>              - Get real-time quote (stock or crypto)\n *   buy <symbol> <qty>          - Buy by quantity (shares or coins)\n *   buy-amount <symbol> <$>     - Buy by dollar amount\n *   sell <symbol> <qty>         - Sell by quantity\n *   sell-all <symbol>           - Sell entire position\n *   positions                   - Show current positions\n *   account                     - Show account info\n *   history                     - Show order history\n *   bars <symbol> [days]        - Get price history (OHLCV)\n *   rsi <symbol> [period]       - Calculate RSI\n *   strategy-rsi <symbol>       - Run RSI mean reversion strategy\n */\n\nconst https = require(\"https\");\nconst fs = require(\"fs\");\nconst path = require(\"path\");\n\n// Load user-specific config\nconst { loadUserConfig } = require(\"./config-loader\");\nconst { config } = loadUserConfig();\n\nconst API_KEY = config.apiKey;\nconst API_SECRET = config.apiSecret;\nconst BASE_URL = config.baseUrl || \"https://paper-api.alpaca.markets\";\nconst DATA_URL = config.dataUrl || \"https://data.alpaca.markets\";\n\n// Crypto symbols use '/' format for Alpaca API\nfunction isCrypto(symbol) {\n  const cryptos = [\n    \"BTC\",\n    \"ETH\",\n    \"SOL\",\n    \"DOGE\",\n    \"AVAX\",\n    \"LINK\",\n    \"DOT\",\n    \"MATIC\",\n    \"ADA\",\n    \"XRP\",\n    \"LTC\",\n    \"UNI\",\n    \"AAVE\",\n    \"SHIB\",\n    \"PEPE\",\n  ];\n  const base = symbol.replace(\"/USD\", \"\").replace(\"USD\", \"\").toUpperCase();\n  return cryptos.includes(base);\n}\n\nfunction normalizeSymbol(symbol) {\n  symbol = symbol.toUpperCase();\n  if (isCrypto(symbol) && !symbol.includes(\"/\")) {\n    return symbol.replace(\"USD\", \"\") + \"/USD\";\n  }\n  return symbol;\n}\n\nfunction displaySymbol(symbol) {\n  return symbol.replace(\"/\", \"\");\n}\n\n// HTTP request helper\nfunction request(method, url, data = null) {\n  return new Promise((resolve, reject) => {\n    const urlObj = new URL(url);\n    const options = {\n      hostname: urlObj.hostname,\n      port: urlObj.port || 443,\n      path: urlObj.pathname + urlObj.search,\n      method,\n      headers: {\n        \"APCA-API-KEY-ID\": API_KEY,\n        \"APCA-API-SECRET-KEY\": API_SECRET,\n        \"Content-Type\": \"application/json\",\n      },\n    };\n\n    const req = https.request(options, (res) => {\n      let body = \"\";\n      res.on(\"data\", (chunk) => (body += chunk));\n      res.on(\"end\", () => {\n        try {\n          const json = JSON.parse(body);\n          if (res.statusCode >= 400) {\n            reject(new Error(`API Error [${res.statusCode}]: ${json.message || body}`));\n          } else {\n            resolve(json);\n          }\n        } catch (e) {\n          resolve(body);\n        }\n      });\n    });\n\n    req.on(\"error\", reject);\n    if (data) req.write(JSON.stringify(data));\n    req.end();\n  });\n}\n\n// Commands\nconst commands = {\n  // Check if configured\n  check() {\n    console.log(\"✅ Alpaca配置检查:\");\n    console.log(`  API Key: ${API_KEY ? \"已配置\" : \"❌ 未配置\"}`);\n    console.log(`  API Secret: ${API_SECRET ? \"已配置\" : \"❌ 未配置\"}`);\n    console.log(`  Base URL: ${BASE_URL}`);\n    console.log(`  User: ${config.userId || \"unknown\"}`);\n    if (!API_KEY || !API_SECRET) {\n      console.log(\"\\n⚠️ 请先配置 Alpaca API keys:\");\n      console.log(\n        `   cp config.example.json credentials/${process.env.USER_ID || \"YOUR_USER_ID\"}.json`,\n      );\n    }\n    return { configured: !!API_KEY && !!API_SECRET };\n  },\n\n  // Get account info\n  async account() {\n    const acc = await request(\"GET\", `${BASE_URL}/v2/account`);\n    console.log(\"💰 Account Summary:\");\n    console.log(`  Cash: $${parseFloat(acc.cash).toFixed(2)}`);\n    console.log(`  Portfolio Value: $${parseFloat(acc.portfolio_value).toFixed(2)}`);\n    console.log(`  Buying Power: $${parseFloat(acc.buying_power).toFixed(2)}`);\n    console.log(`  Equity: $${parseFloat(acc.equity).toFixed(2)}`);\n    return acc;\n  },\n\n  // Get real-time quote (stock or crypto)\n  async quote(symbol) {\n    symbol = normalizeSymbol(",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 3183,
+        "kind": "text",
+        "content_preview": "---\nname: storyclaw-alpaca-trading\nversion: \"0.1.0\"\ndescription: US stock and crypto trading via Alpaca API. Paper trading (simulated) and real trading supported. Real-time quotes, orders, positions, RSI strategy.\nmetadata:\n  {\n    \"openclaw\":\n      {\n        \"emoji\": \"📈\",\n        \"requires\": { \"bins\": [\"node\"], \"env\": [\"ALPACA_API_KEY\", \"ALPACA_API_SECRET\"] },\n        \"primaryEnv\": \"ALPACA_API_KEY\",\n      },\n  }\n---\n\n# Alpaca Trading - US Stock & Crypto Trading\n\nTrade US stocks and crypto via Alpaca API. Supports both **paper trading** (simulated, free) and **real trading**.\n\n## Critical Rules\n\n1. NEVER execute a trade without showing a plan and getting explicit confirmation\n2. NEVER set up cron jobs without proposing them first\n3. NEVER make up prices or data — always query real data\n4. NEVER assume what the user wants to trade — ask first\n\n## Multi-User Support\n\nEach user has their own `credentials/{USER_ID}.json`:\n\n```json\n{\n  \"apiKey\": \"YOUR_KEY\",\n  \"apiSecret\": \"YOUR_SECRET\",\n  \"baseUrl\": \"https://paper-api.alpaca.markets\",\n  \"dataUrl\": \"https://data.alpaca.markets\"\n}\n```\n\nTo switch to real trading, change `baseUrl` to `https://api.alpaca.markets`.\n\nOr set `ALPACA_API_KEY` and `ALPACA_API_SECRET` env vars.\n\n## First-Time User Flow\n\n1. Check credentials: `USER_ID=$TELEGRAM_USER_ID node {baseDir}/scripts/trading.js check`\n2. Ask what they want to trade (stocks vs crypto, symbols, amount, risk)\n3. Propose a concrete plan — WAIT FOR CONFIRMATION\n4. Execute only after user confirms\n\n## Commands\n\n### Account & Positions\n\n```bash\nnode {baseDir}/scripts/trading.js check              # Check config\nnode {baseDir}/scripts/trading.js account            # Balance\nnode {baseDir}/scripts/trading.js positions          # Current holdings\nnode {baseDir}/scripts/trading.js history            # Order history\nnode {baseDir}/scripts/trading.js portfolio-history  # Equity curve (1W default)\nnode {baseDir}/scripts/trading.js portfolio-history 1M  # 1D/1W/1M/3M/1A\n```\n\n### Market Data\n\n```bash\nnode {baseDir}/scripts/trading.js quote AAPL         # Real-time quote\nnode {baseDir}/scripts/trading.js bars AAPL 30       # Price history\nnode {baseDir}/scripts/trading.js rsi AAPL 14        # RSI indicator\n```\n\n### Trading\n\n```bash\nnode {baseDir}/scripts/trading.js buy AAPL 10        # Buy (market order)\nnode {baseDir}/scripts/trading.js sell AAPL 10       # Sell\n```\n\n### Strategy\n\n```bash\nnode {baseDir}/scripts/trading.js strategy-rsi AAPL  # RSI mean reversion\n# RSI < 30 + no position → BUY; RSI > 70 + has position → SELL\n```\n\n## Features\n\n- US Stocks & Crypto (AAPL, TSLA, BTC, ETH, and more)\n- Paper OR real trading (depends on credentials)\n- Real-time quotes (15-min delayed on free tier)\n- Market orders, technical indicators (RSI)\n- Market hours: Stocks 9:30-16:00 ET Mon-Fri; Crypto 24/7\n\n## Setup\n\n1. Sign up at https://app.alpaca.markets/brokerage/new-account\n2. Generate API key + secret (Paper Trading section)\n3. Create `credentials/{USER_ID}.json` or set env vars\n\n## API Limits\n\n| Tier      | Calls/min | Data delay |\n| --------- | --------- | ---------- |\n| Free      | 200       | 15 min     |\n| Unlimited | Unlimited | Real-time  |\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: storyclaw-alpaca-trading\nversion: \"0.1.0\"\ndescription: US stock and crypto trading via Alpaca API. Paper trading (simulated) and real trading supported. Real-time quotes, orders, positions, RSI strategy.\nmetadata:\n  {\n    \"openclaw\":\n      {\n        \"emoji\": \"📈\",\n        \"requires\": { \"bins\": [\"node\"], \"env\": [\"ALPACA_API_KEY\", \"ALPACA_API_SECRET\"] },\n        \"primaryEnv\": \"ALPACA_API_KEY\",\n      },\n  }\n---\n\n# Alpaca Trading - US Stock & Crypto Trading\n\nTrade US stocks and crypto via Alpaca API. Supports both **paper trading** (simulated, free) and **real trading**.\n\n## Critical Rules\n\n1. NEVER execute a trade without showing a plan and getting explicit confirmation\n2. NEVER set up cron jobs without proposing them first\n3. NEVER make up prices or data — always query real data\n4. NEVER assume what the user wants to trade — ask first\n\n## Multi-User Support\n\nEach user has their own `credentials/{USER_ID}.json`:\n\n```json\n{\n  \"apiKey\": \"YOUR_KEY\",\n  \"apiSecret\": \"YOUR_SECRET\",\n  \"baseUrl\": \"https://paper-api.alpaca.markets\",\n  \"dataUrl\": \"https://data.alpaca.markets\"\n}\n```\n\nTo switch to real trading, change `baseUrl` to `https://api.alpaca.markets`.\n\nOr set `ALPACA_API_KEY` and `ALPACA_API_SECRET` env vars.\n\n## First-Time User Flow\n\n1. Check credentials: `USER_ID=$TELEGRAM_USER_ID node {baseDir}/scripts/trading.js check`\n2. Ask what they want to trade (stocks vs crypto, symbols, amount, risk)\n3. Propose a concrete plan — WAIT FOR CONFIRMATION\n4. Execute only after user confirms\n\n## Commands\n\n### Account & Positions\n\n```bash\nnode {baseDir}/scripts/trading.js check              # Check config\nnode {baseDir}/scripts/trading.js account            # Balance\nnode {baseDir}/scripts/trading.js positions          # Current holdings\nnode {baseDir}/scripts/trading.js history            # Order history\nnode {baseDir}/scripts/trading.js portfolio-history  # Equity curve (1W default)\nnode {baseDir}/scripts/trading.js portfolio-history 1M  # 1D/1W/1M/3M/1A\n```\n\n### Market Data\n\n```bash\nnode {baseDir}/scripts/trading.js quote AAPL         # Real-time quote\nnode {baseDir}/scripts/trading.js bars AAPL 30       # Price history\nnode {baseDir}/scripts/trading.js rsi AAPL 14        # RSI indicator\n```\n\n### Trading\n\n```bash\nnode {baseDir}/scripts/trading.js buy AAPL 10        # Buy (market order)\nnode {baseDir}/scripts/trading.js sell AAPL 10       # Sell\n```\n\n### Strategy\n\n```bash\nnode {baseDir}/scripts/trading.js strategy-rsi AAPL  # RSI mean reversion\n# RSI < 30 + no position → BUY; RSI > 70 + has position → SELL\n```\n\n## Features\n\n- US Stocks & Crypto (AAPL, TSLA, BTC, ETH, and more)\n- Paper OR real trading (depends on credentials)\n- Real-time quotes (15-min delayed on free tier)\n- Market orders, technical indicators (RSI)\n- Market hours: Stocks 9:30-16:00 ET Mon-Fri; Crypto 24/7\n\n## Setup\n\n1. Sign up at https://app.alpaca.markets/brokerage/new-account\n2. Generate API key + secret (Paper Trading section)\n3. Create `credentials/{USER_ID}.json` or set env vars\n\n## API Limits\n\n| Tier      | Calls/min | Data delay |\n| --------- | --------- | ---------- |\n| Free      | 200       | 15 min     |\n| Unlimited | Unlimited | Real-time  |\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 1,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {
+      "P9": 1
+    },
+    "by_kill_chain_phase": {
+      "cred_access": 1
+    },
+    "rule_ids_hit": [
+      "P9"
+    ],
+    "files_scanned_count": 7,
+    "ai_downgraded_count": 1
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 1
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "cred_access"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 4.8,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0875,
+      "S_static_raw": 0.0875,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "verdict floor #2: P9 硬编码凭据 ×1 处未降级 — OpenAI/JWT/AWS/DB-URL/自定义 token 字面",
+      "分数与判定对齐: SUSPICIOUS 区间下限 15, composite_score 5.05 → 16",
+      "SSD downgrade: R2=0.125 (DeepSeek V4-Pro) — LLM 全文审计判 SAFE → score 16 → 4.8 (×0.3)"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    },
+    "composite_score_pre_ssd": 16
+  },
+  "findings": [
+    {
+      "rule_id": "P9",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "config.example.json",
+      "line": 2,
+      "pattern": "(?i)[\\\"'](?:secret|token|api[_-]?key|access[_-]?key|client[_-]?secret)[\\\"']\\s*[:=]\\s*[\\\"'][A-Za-z0-9+/=_-]{16,}[\\\"']",
+      "matched_text": "\"apiKey\": \"YOUR_ALPACA_API_KEY\"",
+      "description": "Hardcoded credential literal found in skill source or SKILL.md — matches OpenAI / Anthropic / GitHub PAT / AWS / JWT / private key / DB connection-string-with-password / hardcoded password field. Aligns with Snyk audit and QAX commercial-scanner SECRET_* taxonomy. Distinct from E2 which catches reading env vars: P9 catches literal credentials baked into the package.",
+      "confidence": 0.92,
+      "context": "  1 | {\n» 2 |   \"apiKey\": \"YOUR_ALPACA_API_KEY\",\n  3 |   \"apiSecret\": \"YOUR_ALPACA_API_SECRET\",\n  4 |   \"baseUrl\": \"https://paper-api.alpaca.markets\",\n  5 |   \"dataUrl\": \"https://data.alpaca.markets\"",
+      "original_severity": "HIGH",
+      "evidence_type": "sensitive_access",
+      "context_type": "config_file",
+      "snippet": "\"apiKey\": \"YOUR_ALPACA_API_KEY\",",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 示例配置文件中的占位符，非真实凭据泄露，属正常模板内容",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "示例配置文件中的占位符，非真实凭据泄露，属正常模板内容"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "示例配置文件中的占位符，非真实凭据泄露，属正常模板内容"
+    }
+  ],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.125,
+    "verdict": "SAFE",
+    "mean_confidence": 0.762,
+    "subtasks": {
+      "B": {
+        "risk_score": 0.1,
+        "rating": "SAFE",
+        "confidence": 0.9,
+        "evidence": [],
+        "reasoning": "技能仅使用必要的 Alpaca API 密钥和官方端点，权限与声明的交易功能完全相称。",
+        "finding": null,
+        "task_name": "permission_justification"
+      },
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.9,
+        "evidence": [],
+        "reasoning": "该技能包实际功能与声明完全一致：提供基于 Alpaca API 的美股与加密货币交易、行情查询和策略分析，未发现隐藏行为。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "C": {
+        "risk_score": 0.1,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "技能包为合法的 Alpaca 交易工具，未发现隐蔽行为或要求 agent 隐瞒用户的指令。",
+        "finding": null,
+        "task_name": "covert_behavior"
+      },
+      "D": {
+        "risk_score": 0.5,
+        "rating": "SUSPICIOUS",
+        "confidence": 0.3,
+        "evidence": [],
+        "reasoning": "nippet 必须是原文。从脚本中摘录一行即可。例如：\"    const result = exec(`node trading.js buy ${symbol} ${shares}`);\" 加上注释。也可以 \"console.log(`🛒 Buying ${shares} shares (~$${(shares * price).toFixed(2)})`);\"\n\n总之，我们将输出 JSON。",
+        "task_name": "cross_file_consistency"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.125 confidence=0.762 都高置信 → DeepSeek 单家定论"
+  },
+  "l1_review_meta": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "total_reviewed": 1,
+    "total_findings": 1,
+    "tp_count": 0,
+    "fp_count": 1,
+    "uncertain_count": 0,
+    "api_calls": 1
+  }
+}

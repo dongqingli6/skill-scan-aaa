@@ -1,0 +1,3741 @@
+{
+  "pipeline_version": "0.6.0",
+  "triggered": true,
+  "trigger_reason": "multimodal_resource_present",
+  "execution_policy": "analysis_only_no_recovered_instruction_execution",
+  "semantic_method": "sentence_tags_plus_coreference_taint_and_cross_media_evidence_graph",
+  "skill_profile": {
+    "skill_md_present": true,
+    "title": "Local Configuration Reference",
+    "declared_actions": [
+      "EXECUTE"
+    ],
+    "declared_objects": [
+      "CREDENTIAL",
+      "SYSTEM_CONFIG"
+    ],
+    "profile_method": "static_action_object_tags"
+  },
+  "resource_budgets": {
+    "max_raster_adapter_files": 24,
+    "raster_adapter_files_attempted": 4,
+    "raster_files_skipped_by_budget": 0
+  },
+  "stage_order": [
+    "raw_bytes",
+    "parse_decode",
+    "symbol_recovery",
+    "cross_media_evidence_graph",
+    "instruction_reconstruction",
+    "tool_call"
+  ],
+  "media_file_count": 4,
+  "image_file_count": 4,
+  "audio_file_count": 0,
+  "video_file_count": 0,
+  "document_file_count": 0,
+  "instruction_count": 0,
+  "semantic_sentence_count": 42,
+  "denoised_sentence_count": 42,
+  "behavior_chain_count": 0,
+  "resolved_reference_count": 0,
+  "ambiguous_reference_count": 0,
+  "tainted_entity_count": 2,
+  "projected_tool_call_count": 0,
+  "finding_count": 0,
+  "files": [
+    {
+      "file": "resources/tile_1.png",
+      "kind": "image",
+      "media_type": "image/png",
+      "raw_bytes": {
+        "size_bytes": 9507,
+        "sha256": "a6fe8f3a946ba75e3ecdbb4d405aa32058165d1d0e601074459d6cabfbb16092",
+        "extension_type": "image/png",
+        "detected_type": "image/png",
+        "bytes_truncated": false
+      },
+      "parse_decode": {
+        "media_type": "image/png",
+        "extractors": [
+          "png-chunks",
+          "png-lsb",
+          "raster-symbol-adapters"
+        ],
+        "symbol_adapters": {
+          "capabilities": {
+            "ocr": {
+              "available": true,
+              "backend": "windows-media-ocr",
+              "attempted": true,
+              "observation_count": 1,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_pixels": 4000000,
+                "max_frames": 12,
+                "timeout_seconds": 20
+              },
+              "width": 680,
+              "height": 260,
+              "frame_count": 1,
+              "successful": true,
+              "operational": true
+            },
+            "qr": {
+              "available": true,
+              "backend": "opencv-qrcode-detector",
+              "attempted": true,
+              "observation_count": 0,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_symbols": 16
+              },
+              "successful": false,
+              "operational": true
+            }
+          },
+          "observation_count": 1,
+          "execution_policy": "symbol_recovery_only_never_execute"
+        },
+        "details": {
+          "parser": "png",
+          "chunks": [
+            {
+              "type": "IHDR",
+              "length": 13
+            },
+            {
+              "type": "IDAT",
+              "length": 9450
+            },
+            {
+              "type": "IEND",
+              "length": 0
+            }
+          ],
+          "logical_end": 9507
+        },
+        "unsupported_but_declared": []
+      },
+      "symbol_recovery": {
+        "candidate_count": 11,
+        "candidates": [
+          {
+            "file": "resources/tile_1.png",
+            "preview": "7nFDD&%'",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "confidence": 0.45
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "ujk/K.LO",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "confidence": 0.45
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "WuS\"\"ry?",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "confidence": 0.45
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "I'RI$>p<",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "&abCRI$",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "y8&I%\"H@",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "I8&I%\"I",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "?&cQpzI/",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "I&cQpzI",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "I$B&e2I$",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_1.png",
+            "preview": "Panel 1 / 4 Review the local configuration layout. Compare",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "confidence": 0.84,
+            "adapter": "ocr",
+            "backend": "windows-media-ocr",
+            "kind": "ocr_text",
+            "regions": [
+              {
+                "text": "Panel 1 / 4",
+                "words": [
+                  {
+                    "text": "Panel",
+                    "region": [
+                      54,
+                      65,
+                      59,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "1",
+                    "region": [
+                      121,
+                      66,
+                      8,
+                      16
+                    ]
+                  },
+                  {
+                    "text": "/",
+                    "region": [
+                      132,
+                      65,
+                      7,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "4",
+                    "region": [
+                      140,
+                      66,
+                      12,
+                      16
+                    ]
+                  }
+                ]
+              },
+              {
+                "text": "Review the local configuration layout. Compare",
+                "words": [
+                  {
+                    "text": "Review",
+                    "region": [
+                      54,
+                      141,
+                      75,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "the",
+                    "region": [
+                      135,
+                      140,
+                      35,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "local",
+                    "region": [
+                      177,
+                      141,
+                      51,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "configuration",
+                    "region": [
+                      234,
+                      140,
+                      148,
+                      23
+                    ]
+                  },
+                  {
+                    "text": "layout.",
+                    "region": [
+                      391,
+                      141,
+                      71,
+                      22
+                    ]
+                  },
+                  {
+                    "text": "Compare",
+                    "region": [
+                      469,
+                      142,
+                      102,
+                      21
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "instruction_reconstruction": {
+        "instruction_count": 0,
+        "instructions": [],
+        "semantic_sentence_count": 12,
+        "denoised_sentence_count": 12,
+        "semantic_sentences": [
+          {
+            "candidate_id": "C1",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "text_preview": "Panel 1 / 4 Review the local configuration layout.",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [
+              "SYSTEM_CONFIG"
+            ],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.84,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C1",
+            "sentence_index": 2,
+            "file": "resources/tile_1.png",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "text_preview": "Compare",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.84,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C2",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "I'RI$>p<",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C3",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "&abCRI$",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C4",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "y8&I%\"H@",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C5",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "I8&I%\"I",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C6",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "&cQpzI/",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C7",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "I&cQpzI",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C8",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "I$B&e2I$",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C9",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "text_preview": "7nFDD&%'",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.45,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C10",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "text_preview": "ujk/K.LO",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.45,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C11",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "text_preview": "WuS\"\"ry?",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.45,
+            "events": [],
+            "reference_mentions": []
+          }
+        ],
+        "behavior_graph": {
+          "event_count": 0,
+          "entity_count": 1,
+          "reference_count": 0,
+          "events": [],
+          "entities": [
+            {
+              "id": "N1",
+              "candidate_id": "C1",
+              "sentence_index": 1,
+              "file": "resources/tile_1.png",
+              "source": "ocr:windows-media-ocr",
+              "type": "SYSTEM_CONFIG",
+              "label": "system_config",
+              "role": "MENTION",
+              "producer_event_id": null,
+              "taint_types": [
+                "SYSTEM_CONFIG"
+              ],
+              "origin_event_ids": []
+            }
+          ],
+          "references": [],
+          "edges": [],
+          "chains": []
+        }
+      },
+      "tool_call": {
+        "policy": "never execute media-derived instructions during scanning",
+        "projected_count": 0,
+        "calls": []
+      },
+      "findings": []
+    },
+    {
+      "file": "resources/tile_2.png",
+      "kind": "image",
+      "media_type": "image/png",
+      "raw_bytes": {
+        "size_bytes": 8482,
+        "sha256": "00c58af6f5e0faed886a5373942aa9940d76d3e0588097800349fda5dc54a255",
+        "extension_type": "image/png",
+        "detected_type": "image/png",
+        "bytes_truncated": false
+      },
+      "parse_decode": {
+        "media_type": "image/png",
+        "extractors": [
+          "png-chunks",
+          "png-lsb",
+          "raster-symbol-adapters"
+        ],
+        "symbol_adapters": {
+          "capabilities": {
+            "ocr": {
+              "available": true,
+              "backend": "windows-media-ocr",
+              "attempted": true,
+              "observation_count": 1,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_pixels": 4000000,
+                "max_frames": 12,
+                "timeout_seconds": 20
+              },
+              "width": 680,
+              "height": 260,
+              "frame_count": 1,
+              "successful": true,
+              "operational": true
+            },
+            "qr": {
+              "available": true,
+              "backend": "opencv-qrcode-detector",
+              "attempted": true,
+              "observation_count": 0,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_symbols": 16
+              },
+              "successful": false,
+              "operational": true
+            }
+          },
+          "observation_count": 1,
+          "execution_policy": "symbol_recovery_only_never_execute"
+        },
+        "details": {
+          "parser": "png",
+          "chunks": [
+            {
+              "type": "IHDR",
+              "length": 13
+            },
+            {
+              "type": "IDAT",
+              "length": 8425
+            },
+            {
+              "type": "IEND",
+              "length": 0
+            }
+          ],
+          "logical_end": 8482
+        },
+        "unsupported_but_declared": []
+      },
+      "symbol_recovery": {
+        "candidate_count": 10,
+        "candidates": [
+          {
+            "file": "resources/tile_2.png",
+            "preview": "XzI$VI$",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_2.png",
+            "preview": "I'RI$>p<",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_2.png",
+            "preview": ",HjI8.",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_2.png",
+            "preview": "q$ly#A",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_2.png",
+            "preview": "@,p2I$",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_2.png",
+            "preview": "I$@,p2@",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_2.png",
+            "preview": "d@,p2I$",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_2.png",
+            "preview": "H2C#a%",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "confidence": 0.72
+          },
+          {
+            "file": "resources/tile_2.png",
+            "preview": "Or Il<",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "confidence": 0.72
+          },
+          {
+            "file": "resources/tile_2.png",
+            "preview": "Panel 2 / 4 headings and spacing. Record readability notes",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "confidence": 0.84,
+            "adapter": "ocr",
+            "backend": "windows-media-ocr",
+            "kind": "ocr_text",
+            "regions": [
+              {
+                "text": "Panel 2 / 4",
+                "words": [
+                  {
+                    "text": "Panel",
+                    "region": [
+                      54,
+                      65,
+                      59,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "2",
+                    "region": [
+                      119,
+                      66,
+                      11,
+                      16
+                    ]
+                  },
+                  {
+                    "text": "/",
+                    "region": [
+                      132,
+                      65,
+                      7,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "4",
+                    "region": [
+                      140,
+                      66,
+                      12,
+                      16
+                    ]
+                  }
+                ]
+              },
+              {
+                "text": "headings and spacing. Record readability notes",
+                "words": [
+                  {
+                    "text": "headings",
+                    "region": [
+                      54,
+                      140,
+                      100,
+                      23
+                    ]
+                  },
+                  {
+                    "text": "and",
+                    "region": [
+                      160,
+                      141,
+                      41,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "spacing.",
+                    "region": [
+                      207,
+                      141,
+                      91,
+                      22
+                    ]
+                  },
+                  {
+                    "text": "Record",
+                    "region": [
+                      306,
+                      141,
+                      77,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "readability",
+                    "region": [
+                      391,
+                      141,
+                      112,
+                      22
+                    ]
+                  },
+                  {
+                    "text": "notes",
+                    "region": [
+                      510,
+                      142,
+                      60,
+                      16
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "instruction_reconstruction": {
+        "instruction_count": 0,
+        "instructions": [],
+        "semantic_sentence_count": 11,
+        "denoised_sentence_count": 11,
+        "semantic_sentences": [
+          {
+            "candidate_id": "C1",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "text_preview": "Panel 2 / 4 headings and spacing.",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.84,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C1",
+            "sentence_index": 2,
+            "file": "resources/tile_2.png",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "text_preview": "Record readability notes",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.84,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C2",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "XzI$VI$",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C3",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "I'RI$>p<",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C4",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": ",HjI8.",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C5",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "q$ly#A",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C6",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "@,p2I$",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C7",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "I$@,p2@",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C8",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "d@,p2I$",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C9",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "text_preview": "H2C#a%",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.72,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C10",
+            "sentence_index": 1,
+            "file": "resources/tile_2.png",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "text_preview": "Or Il<",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.72,
+            "events": [],
+            "reference_mentions": []
+          }
+        ],
+        "behavior_graph": {
+          "event_count": 0,
+          "entity_count": 0,
+          "reference_count": 0,
+          "events": [],
+          "entities": [],
+          "references": [],
+          "edges": [],
+          "chains": []
+        }
+      },
+      "tool_call": {
+        "policy": "never execute media-derived instructions during scanning",
+        "projected_count": 0,
+        "calls": []
+      },
+      "findings": []
+    },
+    {
+      "file": "resources/tile_3.png",
+      "kind": "image",
+      "media_type": "image/png",
+      "raw_bytes": {
+        "size_bytes": 7740,
+        "sha256": "091c05c83b7bc55b9947e754316e8bdc20b1e148715f08c6945b0bb7efb2be1f",
+        "extension_type": "image/png",
+        "detected_type": "image/png",
+        "bytes_truncated": false
+      },
+      "parse_decode": {
+        "media_type": "image/png",
+        "extractors": [
+          "png-chunks",
+          "png-lsb",
+          "raster-symbol-adapters"
+        ],
+        "symbol_adapters": {
+          "capabilities": {
+            "ocr": {
+              "available": true,
+              "backend": "windows-media-ocr",
+              "attempted": true,
+              "observation_count": 1,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_pixels": 4000000,
+                "max_frames": 12,
+                "timeout_seconds": 20
+              },
+              "width": 680,
+              "height": 260,
+              "frame_count": 1,
+              "successful": true,
+              "operational": true
+            },
+            "qr": {
+              "available": true,
+              "backend": "opencv-qrcode-detector",
+              "attempted": true,
+              "observation_count": 0,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_symbols": 16
+              },
+              "successful": false,
+              "operational": true
+            }
+          },
+          "observation_count": 1,
+          "execution_policy": "symbol_recovery_only_never_execute"
+        },
+        "details": {
+          "parser": "png",
+          "chunks": [
+            {
+              "type": "IHDR",
+              "length": 13
+            },
+            {
+              "type": "IDAT",
+              "length": 7683
+            },
+            {
+              "type": "IEND",
+              "length": 0
+            }
+          ],
+          "logical_end": 7740
+        },
+        "unsupported_but_declared": []
+      },
+      "symbol_recovery": {
+        "candidate_count": 9,
+        "candidates": [
+          {
+            "file": "resources/tile_3.png",
+            "preview": "WWOO7--}",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "confidence": 0.45
+          },
+          {
+            "file": "resources/tile_3.png",
+            "preview": "bI$VI$",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_3.png",
+            "preview": "I'RI$>p<",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_3.png",
+            "preview": "@x^I&.I",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_3.png",
+            "preview": "y&abCS",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_3.png",
+            "preview": "G$ly#A",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_3.png",
+            "preview": "2I0rI$",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_3.png",
+            "preview": "@DP@",
+            "source": "png-pixels:lsb:b",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_3.png",
+            "preview": "Panel 3 / 4 in the review form. NO external",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "confidence": 0.84,
+            "adapter": "ocr",
+            "backend": "windows-media-ocr",
+            "kind": "ocr_text",
+            "regions": [
+              {
+                "text": "Panel 3 / 4",
+                "words": [
+                  {
+                    "text": "Panel",
+                    "region": [
+                      54,
+                      65,
+                      59,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "3",
+                    "region": [
+                      119,
+                      66,
+                      12,
+                      16
+                    ]
+                  },
+                  {
+                    "text": "/",
+                    "region": [
+                      132,
+                      65,
+                      7,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "4",
+                    "region": [
+                      140,
+                      66,
+                      12,
+                      16
+                    ]
+                  }
+                ]
+              },
+              {
+                "text": "in the review form. NO external",
+                "words": [
+                  {
+                    "text": "in",
+                    "region": [
+                      53,
+                      141,
+                      17,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "the",
+                    "region": [
+                      78,
+                      140,
+                      35,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "review",
+                    "region": [
+                      120,
+                      141,
+                      69,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "form.",
+                    "region": [
+                      195,
+                      140,
+                      56,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "NO",
+                    "region": [
+                      259,
+                      142,
+                      29,
+                      16
+                    ]
+                  },
+                  {
+                    "text": "external",
+                    "region": [
+                      295,
+                      141,
+                      88,
+                      17
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "instruction_reconstruction": {
+        "instruction_count": 0,
+        "instructions": [],
+        "semantic_sentence_count": 10,
+        "denoised_sentence_count": 10,
+        "semantic_sentences": [
+          {
+            "candidate_id": "C1",
+            "sentence_index": 1,
+            "file": "resources/tile_3.png",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "text_preview": "Panel 3 / 4 in the review form.",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.84,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C1",
+            "sentence_index": 2,
+            "file": "resources/tile_3.png",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "text_preview": "NO external",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.84,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C2",
+            "sentence_index": 1,
+            "file": "resources/tile_3.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "bI$VI$",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C3",
+            "sentence_index": 1,
+            "file": "resources/tile_3.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "I'RI$>p<",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C4",
+            "sentence_index": 1,
+            "file": "resources/tile_3.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "@x^I&.I",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C5",
+            "sentence_index": 1,
+            "file": "resources/tile_3.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "y&abCS",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C6",
+            "sentence_index": 1,
+            "file": "resources/tile_3.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "G$ly#A",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C7",
+            "sentence_index": 1,
+            "file": "resources/tile_3.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "2I0rI$",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C8",
+            "sentence_index": 1,
+            "file": "resources/tile_3.png",
+            "source": "png-pixels:lsb:b",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "@DP@",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C9",
+            "sentence_index": 1,
+            "file": "resources/tile_3.png",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "text_preview": "WWOO7--}",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.45,
+            "events": [],
+            "reference_mentions": []
+          }
+        ],
+        "behavior_graph": {
+          "event_count": 0,
+          "entity_count": 0,
+          "reference_count": 0,
+          "events": [],
+          "entities": [],
+          "references": [],
+          "edges": [],
+          "chains": []
+        }
+      },
+      "tool_call": {
+        "policy": "never execute media-derived instructions during scanning",
+        "projected_count": 0,
+        "calls": []
+      },
+      "findings": []
+    },
+    {
+      "file": "resources/tile_4.png",
+      "kind": "image",
+      "media_type": "image/png",
+      "raw_bytes": {
+        "size_bytes": 6330,
+        "sha256": "7497a8b7cf662246d6f47d3e1eab1da5b9899c9c0f2a8c75c718eaa11c8c282d",
+        "extension_type": "image/png",
+        "detected_type": "image/png",
+        "bytes_truncated": false
+      },
+      "parse_decode": {
+        "media_type": "image/png",
+        "extractors": [
+          "png-chunks",
+          "png-lsb",
+          "raster-symbol-adapters"
+        ],
+        "symbol_adapters": {
+          "capabilities": {
+            "ocr": {
+              "available": true,
+              "backend": "windows-media-ocr",
+              "attempted": true,
+              "observation_count": 1,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_pixels": 4000000,
+                "max_frames": 12,
+                "timeout_seconds": 20
+              },
+              "width": 680,
+              "height": 260,
+              "frame_count": 1,
+              "successful": true,
+              "operational": true
+            },
+            "qr": {
+              "available": true,
+              "backend": "opencv-qrcode-detector",
+              "attempted": true,
+              "observation_count": 0,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_symbols": 16
+              },
+              "successful": false,
+              "operational": true
+            }
+          },
+          "observation_count": 1,
+          "execution_policy": "symbol_recovery_only_never_execute"
+        },
+        "details": {
+          "parser": "png",
+          "chunks": [
+            {
+              "type": "IHDR",
+              "length": 13
+            },
+            {
+              "type": "IDAT",
+              "length": 6273
+            },
+            {
+              "type": "IEND",
+              "length": 0
+            }
+          ],
+          "logical_end": 6330
+        },
+        "unsupported_but_declared": []
+      },
+      "symbol_recovery": {
+        "candidate_count": 5,
+        "candidates": [
+          {
+            "file": "resources/tile_4.png",
+            "preview": ":uloeY+*:",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "confidence": 0.45
+          },
+          {
+            "file": "resources/tile_4.png",
+            "preview": "EDF}<ajh",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "confidence": 0.45
+          },
+          {
+            "file": "resources/tile_4.png",
+            "preview": "I'RI$>p<",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_4.png",
+            "preview": "y&abCRC",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/tile_4.png",
+            "preview": "Pa nel 4 / 4 action is req ui red.",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "confidence": 0.84,
+            "adapter": "ocr",
+            "backend": "windows-media-ocr",
+            "kind": "ocr_text",
+            "regions": [
+              {
+                "text": "Pa nel 4 / 4",
+                "words": [
+                  {
+                    "text": "Pa",
+                    "region": [
+                      55,
+                      58,
+                      24,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "nel",
+                    "region": [
+                      82,
+                      59,
+                      32,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "4",
+                    "region": [
+                      120,
+                      60,
+                      13,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "/",
+                    "region": [
+                      133,
+                      59,
+                      8,
+                      19
+                    ]
+                  },
+                  {
+                    "text": "4",
+                    "region": [
+                      141,
+                      61,
+                      13,
+                      16
+                    ]
+                  }
+                ]
+              },
+              {
+                "text": "action is req ui red.",
+                "words": [
+                  {
+                    "text": "action",
+                    "region": [
+                      52,
+                      134,
+                      67,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "is",
+                    "region": [
+                      126,
+                      135,
+                      15,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "req",
+                    "region": [
+                      148,
+                      140,
+                      34,
+                      19
+                    ]
+                  },
+                  {
+                    "text": "ui",
+                    "region": [
+                      185,
+                      137,
+                      17,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "red.",
+                    "region": [
+                      205,
+                      138,
+                      40,
+                      18
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "instruction_reconstruction": {
+        "instruction_count": 0,
+        "instructions": [],
+        "semantic_sentence_count": 5,
+        "denoised_sentence_count": 5,
+        "semantic_sentences": [
+          {
+            "candidate_id": "C1",
+            "sentence_index": 1,
+            "file": "resources/tile_4.png",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "text_preview": "Pa nel 4 / 4 action is req ui red.",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.84,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C2",
+            "sentence_index": 1,
+            "file": "resources/tile_4.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "I'RI$>p<",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C3",
+            "sentence_index": 1,
+            "file": "resources/tile_4.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "y&abCRC",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C4",
+            "sentence_index": 1,
+            "file": "resources/tile_4.png",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "text_preview": ":uloeY+*:",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.45,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C5",
+            "sentence_index": 1,
+            "file": "resources/tile_4.png",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "text_preview": "EDF}<ajh",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.45,
+            "events": [],
+            "reference_mentions": []
+          }
+        ],
+        "behavior_graph": {
+          "event_count": 0,
+          "entity_count": 0,
+          "reference_count": 0,
+          "events": [],
+          "entities": [],
+          "references": [],
+          "edges": [],
+          "chains": []
+        }
+      },
+      "tool_call": {
+        "policy": "never execute media-derived instructions during scanning",
+        "projected_count": 0,
+        "calls": []
+      },
+      "findings": []
+    }
+  ],
+  "cross_media_evidence_graph": {
+    "triggered": true,
+    "method": "bounded_provenance_graph_with_explicit_ordering",
+    "limits": {
+      "max_candidates": 160,
+      "max_hypotheses": 24,
+      "max_fragments_per_hypothesis": 8
+    },
+    "node_count": 41,
+    "edge_count": 43,
+    "nodes": [
+      {
+        "id": "D1",
+        "type": "DOCUMENT",
+        "file": "SKILL.md"
+      },
+      {
+        "id": "A1",
+        "type": "MEDIA_ARTIFACT",
+        "file": "resources/tile_1.png"
+      },
+      {
+        "id": "A2",
+        "type": "MEDIA_ARTIFACT",
+        "file": "resources/tile_2.png"
+      },
+      {
+        "id": "A3",
+        "type": "MEDIA_ARTIFACT",
+        "file": "resources/tile_3.png"
+      },
+      {
+        "id": "A4",
+        "type": "MEDIA_ARTIFACT",
+        "file": "resources/tile_4.png"
+      },
+      {
+        "id": "O1",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "ocr:windows-media-ocr",
+        "preview": "Panel 1 / 4 Review the local configuration layout. Compare",
+        "confidence": 0.84,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "raster-ocr"
+        ]
+      },
+      {
+        "id": "O2",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "ocr:windows-media-ocr",
+        "preview": "Panel 2 / 4 headings and spacing. Record readability notes",
+        "confidence": 0.84,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "raster-ocr"
+        ]
+      },
+      {
+        "id": "O3",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_3.png",
+        "source": "ocr:windows-media-ocr",
+        "preview": "Panel 3 / 4 in the review form. NO external",
+        "confidence": 0.84,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "raster-ocr"
+        ]
+      },
+      {
+        "id": "O4",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_4.png",
+        "source": "ocr:windows-media-ocr",
+        "preview": "Pa nel 4 / 4 action is req ui red.",
+        "confidence": 0.84,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "raster-ocr"
+        ]
+      },
+      {
+        "id": "O5",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "I'RI$>p<",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O6",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "y8&I%\"H@",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O7",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "?&cQpzI/",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O8",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "I$B&e2I$",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O9",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "I'RI$>p<",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O10",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_3.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "I'RI$>p<",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O11",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_4.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "I'RI$>p<",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O12",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "&abCRI$",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O13",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "I8&I%\"I",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O14",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "I&cQpzI",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O15",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "XzI$VI$",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O16",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "I$@,p2@",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O17",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "d@,p2I$",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O18",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_3.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "@x^I&.I",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O19",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_4.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "y&abCRC",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O20",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "png-pixels:lsb:all",
+        "preview": ",HjI8.",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O21",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "q$ly#A",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O22",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "@,p2I$",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O23",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_3.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "bI$VI$",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O24",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_3.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "y&abCS",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O25",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_3.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "G$ly#A",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O26",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_3.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "2I0rI$",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O27",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_3.png",
+        "source": "png-pixels:lsb:b",
+        "preview": "@DP@",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O28",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "png-pixels:lsb-little:all",
+        "preview": "H2C#a%",
+        "confidence": 0.72,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes-little-endian"
+        ]
+      },
+      {
+        "id": "O29",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_2.png",
+        "source": "png-pixels:lsb-little:all",
+        "preview": "Or Il<",
+        "confidence": 0.72,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes-little-endian"
+        ]
+      },
+      {
+        "id": "O30",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_4.png",
+        "source": "raw-bytes:strings",
+        "preview": ":uloeY+*:",
+        "confidence": 0.45,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "printable-strings"
+        ]
+      },
+      {
+        "id": "O31",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "raw-bytes:strings",
+        "preview": "7nFDD&%'",
+        "confidence": 0.45,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "printable-strings"
+        ]
+      },
+      {
+        "id": "O32",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "raw-bytes:strings",
+        "preview": "ujk/K.LO",
+        "confidence": 0.45,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "printable-strings"
+        ]
+      },
+      {
+        "id": "O33",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_1.png",
+        "source": "raw-bytes:strings",
+        "preview": "WuS\"\"ry?",
+        "confidence": 0.45,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "printable-strings"
+        ]
+      },
+      {
+        "id": "O34",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_3.png",
+        "source": "raw-bytes:strings",
+        "preview": "WWOO7--}",
+        "confidence": 0.45,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "printable-strings"
+        ]
+      },
+      {
+        "id": "O35",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/tile_4.png",
+        "source": "raw-bytes:strings",
+        "preview": "EDF}<ajh",
+        "confidence": 0.45,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "printable-strings"
+        ]
+      },
+      {
+        "id": "H1",
+        "type": "RECONSTRUCTED_INSTRUCTION_HYPOTHESIS",
+        "mode": "document-reference-order",
+        "preview": "Panel 1 / 4 Review the local configuration layout. Compare Panel 2 / 4 headings and spacing. Record readability notes Panel 3 / 4 in the review form. NO external Pa nel 4 / 4 action is req ui red.",
+        "confidence": 0.96,
+        "fragment_count": 4
+      }
+    ],
+    "edges": [
+      {
+        "from": "A1",
+        "to": "O1",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O2",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A3",
+        "to": "O3",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A4",
+        "to": "O4",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O5",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O6",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O7",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O8",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O9",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A3",
+        "to": "O10",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A4",
+        "to": "O11",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O12",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O13",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O14",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O15",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O16",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O17",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A3",
+        "to": "O18",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A4",
+        "to": "O19",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O20",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O21",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O22",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A3",
+        "to": "O23",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A3",
+        "to": "O24",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A3",
+        "to": "O25",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A3",
+        "to": "O26",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A3",
+        "to": "O27",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O28",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A2",
+        "to": "O29",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A4",
+        "to": "O30",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O31",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O32",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O33",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A3",
+        "to": "O34",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A4",
+        "to": "O35",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "D1",
+        "to": "A1",
+        "type": "REFERENCES",
+        "order": 1,
+        "line": 14,
+        "confidence": 0.99
+      },
+      {
+        "from": "D1",
+        "to": "A2",
+        "type": "REFERENCES",
+        "order": 2,
+        "line": 15,
+        "confidence": 0.99
+      },
+      {
+        "from": "D1",
+        "to": "A3",
+        "type": "REFERENCES",
+        "order": 3,
+        "line": 16,
+        "confidence": 0.99
+      },
+      {
+        "from": "D1",
+        "to": "A4",
+        "type": "REFERENCES",
+        "order": 4,
+        "line": 17,
+        "confidence": 0.99
+      },
+      {
+        "from": "O1",
+        "to": "H1",
+        "type": "COMPLETES",
+        "order": 1,
+        "confidence": 0.96
+      },
+      {
+        "from": "O2",
+        "to": "H1",
+        "type": "COMPLETES",
+        "order": 2,
+        "confidence": 0.96
+      },
+      {
+        "from": "O3",
+        "to": "H1",
+        "type": "COMPLETES",
+        "order": 3,
+        "confidence": 0.96
+      },
+      {
+        "from": "O4",
+        "to": "H1",
+        "type": "COMPLETES",
+        "order": 4,
+        "confidence": 0.96
+      }
+    ],
+    "document_references": [
+      {
+        "file": "resources/tile_1.png",
+        "order": 1,
+        "line": 14,
+        "document_fragments": []
+      },
+      {
+        "file": "resources/tile_2.png",
+        "order": 2,
+        "line": 15,
+        "document_fragments": []
+      },
+      {
+        "file": "resources/tile_3.png",
+        "order": 3,
+        "line": 16,
+        "document_fragments": []
+      },
+      {
+        "file": "resources/tile_4.png",
+        "order": 4,
+        "line": 17,
+        "document_fragments": []
+      }
+    ],
+    "hypotheses": [
+      {
+        "id": "H1",
+        "mode": "document-reference-order",
+        "fragment_ids": [
+          "O1",
+          "O2",
+          "O3",
+          "O4"
+        ],
+        "fragment_files": [
+          "resources/tile_1.png",
+          "resources/tile_2.png",
+          "resources/tile_3.png",
+          "resources/tile_4.png"
+        ],
+        "preview": "Panel 1 / 4 Review the local configuration layout. Compare Panel 2 / 4 headings and spacing. Record readability notes Panel 3 / 4 in the review form. NO external Pa nel 4 / 4 action is req ui red.",
+        "confidence": 0.96
+      }
+    ],
+    "instruction_reconstruction": {
+      "instruction_count": 0,
+      "instructions": [],
+      "semantic_sentence_count": 4,
+      "denoised_sentence_count": 4,
+      "semantic_sentences": [
+        {
+          "candidate_id": "C1",
+          "sentence_index": 1,
+          "file": "resources/tile_1.png + resources/tile_2.png + resources/tile_3.png + resources/tile_4.png",
+          "source": "cross-media:document-reference-order",
+          "transform_chain": [
+            "cross-media-evidence-graph",
+            "document-reference-order"
+          ],
+          "text_preview": "Panel 1 / 4 Review the local configuration layout.",
+          "provenance_tags": [
+            "UNTRUSTED_MULTIMODAL",
+            "HIDDEN_OR_AUXILIARY"
+          ],
+          "speech_act": "STATEMENT",
+          "context_role": "DESCRIPTION",
+          "polarity": "AFFIRMATIVE_OR_MIXED",
+          "modality": "UNSPECIFIED",
+          "actors": [
+            "IMPLICIT_AGENT"
+          ],
+          "objects": [
+            "SYSTEM_CONFIG"
+          ],
+          "destination": "LOCAL_OR_UNSPECIFIED",
+          "condition_present": false,
+          "concealment": false,
+          "task_alignment": "NOT_APPLICABLE",
+          "raw_signal_score": 0,
+          "raw_categories": [],
+          "actionable_categories": [],
+          "context_adjustment": 0,
+          "adjustment_reasons": [],
+          "adjusted_signal_score": 0,
+          "hard_risk_floor": false,
+          "context_decision": "DENOISED_CONTEXT",
+          "confidence": 0.96,
+          "events": [],
+          "reference_mentions": []
+        },
+        {
+          "candidate_id": "C1",
+          "sentence_index": 2,
+          "file": "resources/tile_1.png + resources/tile_2.png + resources/tile_3.png + resources/tile_4.png",
+          "source": "cross-media:document-reference-order",
+          "transform_chain": [
+            "cross-media-evidence-graph",
+            "document-reference-order"
+          ],
+          "text_preview": "Compare Panel 2 / 4 headings and spacing.",
+          "provenance_tags": [
+            "UNTRUSTED_MULTIMODAL",
+            "HIDDEN_OR_AUXILIARY"
+          ],
+          "speech_act": "STATEMENT",
+          "context_role": "DESCRIPTION",
+          "polarity": "AFFIRMATIVE_OR_MIXED",
+          "modality": "UNSPECIFIED",
+          "actors": [
+            "IMPLICIT_AGENT"
+          ],
+          "objects": [],
+          "destination": "LOCAL_OR_UNSPECIFIED",
+          "condition_present": false,
+          "concealment": false,
+          "task_alignment": "NOT_APPLICABLE",
+          "raw_signal_score": 0,
+          "raw_categories": [],
+          "actionable_categories": [],
+          "context_adjustment": 0,
+          "adjustment_reasons": [],
+          "adjusted_signal_score": 0,
+          "hard_risk_floor": false,
+          "context_decision": "DENOISED_CONTEXT",
+          "confidence": 0.96,
+          "events": [],
+          "reference_mentions": []
+        },
+        {
+          "candidate_id": "C1",
+          "sentence_index": 3,
+          "file": "resources/tile_1.png + resources/tile_2.png + resources/tile_3.png + resources/tile_4.png",
+          "source": "cross-media:document-reference-order",
+          "transform_chain": [
+            "cross-media-evidence-graph",
+            "document-reference-order"
+          ],
+          "text_preview": "Record readability notes Panel 3 / 4 in the review form.",
+          "provenance_tags": [
+            "UNTRUSTED_MULTIMODAL",
+            "HIDDEN_OR_AUXILIARY"
+          ],
+          "speech_act": "STATEMENT",
+          "context_role": "DESCRIPTION",
+          "polarity": "AFFIRMATIVE_OR_MIXED",
+          "modality": "UNSPECIFIED",
+          "actors": [
+            "IMPLICIT_AGENT"
+          ],
+          "objects": [],
+          "destination": "LOCAL_OR_UNSPECIFIED",
+          "condition_present": false,
+          "concealment": false,
+          "task_alignment": "NOT_APPLICABLE",
+          "raw_signal_score": 0,
+          "raw_categories": [],
+          "actionable_categories": [],
+          "context_adjustment": 0,
+          "adjustment_reasons": [],
+          "adjusted_signal_score": 0,
+          "hard_risk_floor": false,
+          "context_decision": "DENOISED_CONTEXT",
+          "confidence": 0.96,
+          "events": [],
+          "reference_mentions": []
+        },
+        {
+          "candidate_id": "C1",
+          "sentence_index": 4,
+          "file": "resources/tile_1.png + resources/tile_2.png + resources/tile_3.png + resources/tile_4.png",
+          "source": "cross-media:document-reference-order",
+          "transform_chain": [
+            "cross-media-evidence-graph",
+            "document-reference-order"
+          ],
+          "text_preview": "NO external Pa nel 4 / 4 action is req ui red.",
+          "provenance_tags": [
+            "UNTRUSTED_MULTIMODAL",
+            "HIDDEN_OR_AUXILIARY"
+          ],
+          "speech_act": "STATEMENT",
+          "context_role": "DESCRIPTION",
+          "polarity": "AFFIRMATIVE_OR_MIXED",
+          "modality": "UNSPECIFIED",
+          "actors": [
+            "IMPLICIT_AGENT"
+          ],
+          "objects": [],
+          "destination": "LOCAL_OR_UNSPECIFIED",
+          "condition_present": false,
+          "concealment": false,
+          "task_alignment": "NOT_APPLICABLE",
+          "raw_signal_score": 0,
+          "raw_categories": [],
+          "actionable_categories": [],
+          "context_adjustment": 0,
+          "adjustment_reasons": [],
+          "adjusted_signal_score": 0,
+          "hard_risk_floor": false,
+          "context_decision": "DENOISED_CONTEXT",
+          "confidence": 0.96,
+          "events": [],
+          "reference_mentions": []
+        }
+      ],
+      "behavior_graph": {
+        "event_count": 0,
+        "entity_count": 1,
+        "reference_count": 0,
+        "events": [],
+        "entities": [
+          {
+            "id": "N1",
+            "candidate_id": "C1",
+            "sentence_index": 1,
+            "file": "resources/tile_1.png + resources/tile_2.png + resources/tile_3.png + resources/tile_4.png",
+            "source": "cross-media:document-reference-order",
+            "type": "SYSTEM_CONFIG",
+            "label": "system_config",
+            "role": "MENTION",
+            "producer_event_id": null,
+            "taint_types": [
+              "SYSTEM_CONFIG"
+            ],
+            "origin_event_ids": []
+          }
+        ],
+        "references": [],
+        "edges": [],
+        "chains": []
+      }
+    },
+    "tool_call": {
+      "policy": "never execute cross-media reconstructed instructions during scanning",
+      "projected_count": 0,
+      "calls": []
+    },
+    "findings": []
+  },
+  "findings": []
+}

@@ -1,0 +1,193 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T08:13:56.707746+00:00",
+  "skill_name": "stitch4settings-mirror",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\stitch4settings\\stitch4settings-mirror",
+  "skill_contents": {
+    "file_count": 1,
+    "total_bytes": 7703,
+    "files": [
+      {
+        "path": "SKILL.md",
+        "size_bytes": 7703,
+        "kind": "text",
+        "content_preview": "---\nname: stitch4settings\ndescription: >\n  Import or refresh a Google Stitch design for the shared `/manager` or `/admin`\n  settings routes. Treat Stitch as the visual source of truth for the selected\n  settings page, rebuild the route shell in `manager/index.html` or\n  `admin/index.html`, and integrate it into the shared `app.js` plus shared\n  style layers (`style.css`/`styles/*`) without breaking auth, role gating, or\n  save-vs-send behavior.\n---\n\n# Stitch4Settings\n\nUse this skill when the user wants Google Stitch to generate or refresh the\nmanager or admin settings experience, or when they explicitly mention\n`Stitch4Settings`.\n\n## Core rule\n\nStitch owns the shell design.\n\nTreat the imported Stitch screen as the visual source material for the selected\nsettings route. Preserve its layout, spacing, hierarchy, and general tone as\nclosely as possible while wiring it into the existing app behavior.\n\nRequired posture:\n- preserve Stitch structure unless a runtime hook requires a small change\n- keep shared app behavior in root `app.js`; do not fork manager/admin logic into route-local scripts\n- keep settings-route auth, role gating, save-vs-send, notifications, featured management, and menu switching intact\n- only add controls Stitch omitted when the app truly requires them\n\n## Expected inputs\n\n- `target`\n  - valid values: `manager`, `admin`\n- `stitch_project_id`\n- optional `screen_id`\n- optional trailing implementation notes from the user\n\nInterpret examples like these as valid:\n- `Use Stitch4Settings for manager 4044680601076201931`\n- `Refresh admin from Stitch project 4044680601076201931 screen abc123`\n\nIf the target route is missing or ambiguous, ask a concise follow-up.\n\n## Valid targets\n\nOnly these routes are valid:\n- `manager`\n  - `manager/index.html`\n- `admin`\n  - `admin/index.html`\n\nSupporting shared files:\n- `app.js`\n- `style.css` and `styles/*`\n\nDo not use this skill for:\n- `leroyslounge/`\n- `elroyscantina/`\n- route-owned public menu imports\n\nUse the separate `stitch` skill for those public restaurant pages.\n\n## Required behaviors to preserve\n\n### Manager\n\nThe manager route must continue to support:\n- active menu context and menu switching\n- `Save`\n- `Send Update`\n- unsent-diff preview modal for `Send Update`\n- featured confirmation banner\n- featured manager controls\n- editable categories and items\n- `Recent Changes` for the last 7 days of sent updates\n- database search/filter/prune tools\n- off-menu items tray\n- shared auth overlay module wiring and back-to-menu exit\n\n### Admin\n\nThe admin route must continue to support:\n- restaurants overview\n- notifications configuration\n- credential key inputs\n- menu URL save\n- users list and invite flow\n- featured groups management\n- shared auth overlay module wiring and back-to-menu exit\n\nThe admin route must not regress into a manager editor and must not reintroduce\nthe removed History tab unless the user explicitly asks for it.\n\n## Output contract\n\nEvery successful run must update the selected settings route and any shared\nfiles needed to integrate it:\n- `manager/index.html` or `admin/index.html`\n- `style.css` and/or `styles/*` when new shared settings-shell styles are needed\n- `app.js` when DOM hooks, section targeting, or route-specific guards need adjustment\n\nDo not add dependencies, a build step, or generated framework output.\n\n## Workflow\n\n1. Parse the request.\n\nExtract:\n- target route\n- numeric Stitch project ID\n- optional screen ID\n- optional trailing instructions\n\n2. Verify the target route before editing.\n\nAccept only:\n- `manager`\n- `admin`\n\nIf the target is invalid, stop and say so clearly.\n\n3. Read the Stitch project with Stitch MCP tools.\n\nUse this sequence:\n- `mcp__stitch__get_project`\n- `mcp__stitch__list_screens`\n- `mcp__stitch__get_screen`\n\nSelection rules:\n- if `screen_id` was provided, confirm it exists and use it\n- if exactly one screen exists, use it\n- if multiple screens exist and none was specified, ask the user which screen to use\n\n4. Extract the design source",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: stitch4settings\ndescription: >\n  Import or refresh a Google Stitch design for the shared `/manager` or `/admin`\n  settings routes. Treat Stitch as the visual source of truth for the selected\n  settings page, rebuild the route shell in `manager/index.html` or\n  `admin/index.html`, and integrate it into the shared `app.js` plus shared\n  style layers (`style.css`/`styles/*`) without breaking auth, role gating, or\n  save-vs-send behavior.\n---\n\n# Stitch4Settings\n\nUse this skill when the user wants Google Stitch to generate or refresh the\nmanager or admin settings experience, or when they explicitly mention\n`Stitch4Settings`.\n\n## Core rule\n\nStitch owns the shell design.\n\nTreat the imported Stitch screen as the visual source material for the selected\nsettings route. Preserve its layout, spacing, hierarchy, and general tone as\nclosely as possible while wiring it into the existing app behavior.\n\nRequired posture:\n- preserve Stitch structure unless a runtime hook requires a small change\n- keep shared app behavior in root `app.js`; do not fork manager/admin logic into route-local scripts\n- keep settings-route auth, role gating, save-vs-send, notifications, featured management, and menu switching intact\n- only add controls Stitch omitted when the app truly requires them\n\n## Expected inputs\n\n- `target`\n  - valid values: `manager`, `admin`\n- `stitch_project_id`\n- optional `screen_id`\n- optional trailing implementation notes from the user\n\nInterpret examples like these as valid:\n- `Use Stitch4Settings for manager 4044680601076201931`\n- `Refresh admin from Stitch project 4044680601076201931 screen abc123`\n\nIf the target route is missing or ambiguous, ask a concise follow-up.\n\n## Valid targets\n\nOnly these routes are valid:\n- `manager`\n  - `manager/index.html`\n- `admin`\n  - `admin/index.html`\n\nSupporting shared files:\n- `app.js`\n- `style.css` and `styles/*`\n\nDo not use this skill for:\n- `leroyslounge/`\n- `elroyscantina/`\n- route-owned public menu imports\n\nUse the separate `stitch` skill for those public restaurant pages.\n\n## Required behaviors to preserve\n\n### Manager\n\nThe manager route must continue to support:\n- active menu context and menu switching\n- `Save`\n- `Send Update`\n- unsent-diff preview modal for `Send Update`\n- featured confirmation banner\n- featured manager controls\n- editable categories and items\n- `Recent Changes` for the last 7 days of sent updates\n- database search/filter/prune tools\n- off-menu items tray\n- shared auth overlay module wiring and back-to-menu exit\n\n### Admin\n\nThe admin route must continue to support:\n- restaurants overview\n- notifications configuration\n- credential key inputs\n- menu URL save\n- users list and invite flow\n- featured groups management\n- shared auth overlay module wiring and back-to-menu exit\n\nThe admin route must not regress into a manager editor and must not reintroduce\nthe removed History tab unless the user explicitly asks for it.\n\n## Output contract\n\nEvery successful run must update the selected settings route and any shared\nfiles needed to integrate it:\n- `manager/index.html` or `admin/index.html`\n- `style.css` and/or `styles/*` when new shared settings-shell styles are needed\n- `app.js` when DOM hooks, section targeting, or route-specific guards need adjustment\n\nDo not add dependencies, a build step, or generated framework output.\n\n## Workflow\n\n1. Parse the request.\n\nExtract:\n- target route\n- numeric Stitch project ID\n- optional screen ID\n- optional trailing instructions\n\n2. Verify the target route before editing.\n\nAccept only:\n- `manager`\n- `admin`\n\nIf the target is invalid, stop and say so clearly.\n\n3. Read the Stitch project with Stitch MCP tools.\n\nUse this sequence:\n- `mcp__stitch__get_project`\n- `mcp__stitch__list_screens`\n- `mcp__stitch__get_screen`\n\nSelection rules:\n- if `screen_id` was provided, confirm it exists and use it\n- if exactly one screen exists, use it\n- if multiple screens exist and none was specified, ask the user which screen to use\n\n4. Extract the design source"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 2,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 2,
+      "LOW": 0
+    },
+    "by_pattern": {
+      "P8": 2
+    },
+    "by_kill_chain_phase": {
+      "impact": 2
+    },
+    "rule_ids_hit": [
+      "P8"
+    ],
+    "files_scanned_count": 1
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 2
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "impact"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 5.28,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.1,
+      "S_static_raw": 0.1,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 20,
+      "pattern": "(?i)\\bowns?\\s+the\\s+(?:shell|design|workflow|definition)\\b",
+      "matched_text": "owns the shell",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  17 | \n  18 | ## Core rule\n  19 | \n» 20 | Stitch owns the shell design.\n  21 | \n  22 | Treat the imported Stitch screen as the visual source material for the selected\n  23 | settings route. Preserve its layout, spacing, hierarchy, and general tone as",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "Stitch owns the shell design.",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 28,
+      "pattern": "(?i)\\bdo\\s+not\\s+fork\\s+",
+      "matched_text": "do not fork ",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  25 | \n  26 | Required posture:\n  27 | - preserve Stitch structure unless a runtime hook requires a small change\n» 28 | - keep shared app behavior in root `app.js`; do not fork manager/admin logic into route-local scripts\n  29 | - keep settings-route auth, role gating, save-vs-send, notifications, featured management, and menu switching intact\n  30 | - only add controls Stitch omitted when the app truly requires them\n  31 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "- keep shared app behavior in root `app.js`; do not fork manager/admin logic into route-local scripts",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

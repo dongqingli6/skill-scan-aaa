@@ -1,0 +1,50 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\storyclaw-alpaca-trading\\Storyclaw Alpaca Trading",
+  "skill_name": "Storyclaw Alpaca Trading",
+  "files_scanned": [
+    "config.example.json",
+    "credentials\\example.json",
+    "scripts\\aggressive-strategy.js",
+    "scripts\\config-loader.js",
+    "scripts\\momentum-strategy.js",
+    "scripts\\trading.js",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 7,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "P9": 1
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 1
+  },
+  "rule_ids_hit": [
+    "P9"
+  ],
+  "findings": [
+    {
+      "rule_id": "P9",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "config.example.json",
+      "line": 2,
+      "pattern": "(?i)[\\\"'](?:secret|token|api[_-]?key|access[_-]?key|client[_-]?secret)[\\\"']\\s*[:=]\\s*[\\\"'][A-Za-z0-9+/=_-]{16,}[\\\"']",
+      "matched_text": "\"apiKey\": \"YOUR_ALPACA_API_KEY\"",
+      "description": "Hardcoded credential literal found in skill source or SKILL.md — matches OpenAI / Anthropic / GitHub PAT / AWS / JWT / private key / DB connection-string-with-password / hardcoded password field. Aligns with Snyk audit and QAX commercial-scanner SECRET_* taxonomy. Distinct from E2 which catches reading env vars: P9 catches literal credentials baked into the package.",
+      "confidence": 0.92,
+      "context": "  1 | {\n» 2 |   \"apiKey\": \"YOUR_ALPACA_API_KEY\",\n  3 |   \"apiSecret\": \"YOUR_ALPACA_API_SECRET\",\n  4 |   \"baseUrl\": \"https://paper-api.alpaca.markets\",\n  5 |   \"dataUrl\": \"https://data.alpaca.markets\"",
+      "original_severity": "HIGH",
+      "evidence_type": "sensitive_access",
+      "context_type": "config_file",
+      "snippet": "\"apiKey\": \"YOUR_ALPACA_API_KEY\",",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

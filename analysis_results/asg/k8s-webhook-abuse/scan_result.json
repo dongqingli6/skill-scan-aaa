@@ -1,0 +1,64 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\k8s-webhook-abuse\\K8s Webhook Abuse",
+  "skill_name": "K8s Webhook Abuse",
+  "files_scanned": [
+    "references\\admission-review-template.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 1,
+    "INFO": 1
+  },
+  "by_pattern": {
+    "E1": 2
+  },
+  "by_kill_chain_phase": {
+    "exfil": 2
+  },
+  "rule_ids_hit": [
+    "E1"
+  ],
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "references\\admission-review-template.md",
+      "line": 81,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -k -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  78 | Gatekeeper 使用 Validating Webhook，同样的 AdmissionReview 格式，但端点不同：\n  79 | \n  80 | ```bash\n» 81 | curl -k -X POST \\\n  82 |   -H \"Content-Type: application/json\" \\\n  83 |   -d @/tmp/admission.json \\\n  84 |   https://gatekeeper-webhook-service.gatekeeper-system.svc.cluster.local/v1/admit",
+      "original_severity": "HIGH",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "curl -k -X POST \\",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 66,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -k -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  63 | EOF\n  64 | \n  65 | # 发送到 Kyverno mutate 端点\n» 66 | curl -k -X POST \\\n  67 |   -H \"Content-Type: application/json\" \\\n  68 |   -d @/tmp/admission.json \\\n  69 |   https://kyverno-svc.kyverno.svc.cluster.local/mutate",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -k -X POST \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

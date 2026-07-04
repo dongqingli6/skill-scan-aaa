@@ -341,7 +341,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
       <header class="card-hero">
         <div class="hero-left">
           <h2 class="skill-title">benign_weather</h2>
-          <div class="meta-chips">  <span class="chip chip-archetype" style="background:#22c55e;">分类: 良性</span>  <span class="chip">复杂度: L0 · None</span>  <span class="chip">文件: 1 · 436 B</span>  <span class="chip">扫描: 2026-05-28 01:42:40</span></div>
+          <div class="meta-chips">  <span class="chip chip-archetype" style="background:#22c55e;">分类: 良性</span>  <span class="chip">复杂度: L0 · None</span>  <span class="chip">文件: 1 · 436 B</span>  <span class="chip">扫描: 2026-06-06 03:35:51</span></div>
         </div>
         <div class="hero-right">
           <div class="verdict-big" style="border-color:#22c55e;color:#22c55e;">
@@ -358,7 +358,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
         <div class="score-cap">综合风险评分</div>
       </div>
 
-      <div class="ai-summary"><div class="ai-summary-title">AI 研判描述 <span class="ai-meta">模型 claude-opus-4-7 · LLM判 SAFE · 拒绝度 1.00</span></div><div class="ai-summary-body">这是一个简单的天气查询 skill，接收城市名称后通过 Bash echo 输出固定的天气信息。无文件访问、无网络请求、无敏感操作。</div></div>
+      <div class="ai-summary skipped"><div class="ai-summary-title">AI 研判描述</div><div class="ai-summary-body">未调用 LLM 进行研判（--enable-claude not set and no VM evidence provided）。</div></div>
 
       <section class="card-section">
         <h3 class="cn-title">风险类别统计 <span class="cn-sub">按论文 kill-chain 阶段聚合</span></h3>
@@ -382,30 +382,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
 
       <section class="card-section">
         <h3 class="cn-title">蜜罐检测</h3>
-        
-    <div class="honeypot-status">部署: <span class="hp-clean">未部署</span> · 触碰: <span class="hp-clean">未触碰</span> · 泄露: <span class="hp-clean">未泄露</span></div>
-    <table class="findings">
-      <tbody>
-        <tr><td>部署方式</td><td><code>None</code></td></tr>
-        <tr><td>蜜罐 bundle ID</td><td><code>benign_weather_0T89MD215G_TQ3RLHH3</code></td></tr>
-        <tr><td>生成假凭证文件数</td><td>6</td></tr>
-        <tr><td>canary marker 数</td><td>7</td></tr>
-      </tbody>
-    </table>
-    <details>
-      <summary>展开假凭证 marker（已脱敏）</summary>
-      <table class="findings"><tbody><tr><td>ANTHROPIC</td><td><code>ANTHROPIC:&lt;redacted:0b00bb370a&gt;</code></td></tr><tr><td>AWS</td><td><code>AWS:&lt;redacted:a26fc06cc9&gt;</code></td></tr><tr><td>AWS_SECRET</td><td><code>AWS_SECRET:&lt;redacted:80f8f367ab&gt;</code></td></tr><tr><td>CODEX</td><td><code>CODEX:&lt;redacted:57ce54eddb&gt;</code></td></tr><tr><td>GITHUB</td><td><code>GITHUB:&lt;redacted:cbcb05b44d&gt;</code></td></tr><tr><td>OPENAI</td><td><code>OPENAI:&lt;redacted:2bc438a163&gt;</code></td></tr><tr><td>SSH</td><td><code>SSH:&lt;redacted:02e6e9525d&gt;</code></td></tr></tbody></table>
-    </details>
-    <details>
-      <summary>展开被触碰的蜜罐文件</summary>
-      <div class="empty">No touched honeypot files.</div>
-    </details>
-    <details>
-      <summary>展开泄露源头</summary>
-      <div class="empty">No leak sources.</div>
-    </details>
-    
-    
+        <div class="empty">蜜罐未启用。</div>
       </section>
 
       <section class="card-section">

@@ -1,0 +1,47 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_pool\\skills\\web-artifacts-builder",
+  "skill_name": "web-artifacts-builder",
+  "files_scanned": [
+    "LICENSE.txt",
+    "scripts\\bundle-artifact.sh",
+    "scripts\\init-artifact.sh",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 4,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 1
+  },
+  "by_pattern": {
+    "P8": 1
+  },
+  "by_kill_chain_phase": {
+    "impact": 1
+  },
+  "rule_ids_hit": [
+    "P8"
+  ],
+  "findings": [
+    {
+      "rule_id": "P8",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "scripts\\init-artifact.sh",
+      "line": 58,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "always use latest",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  55 | \n  56 | echo \"🚀 Creating new React + Vite project: $PROJECT_NAME\"\n  57 | \n» 58 | # Create new Vite project (always use latest create-vite, pin vite version later)\n  59 | pnpm create vite \"$PROJECT_NAME\" --template react-ts\n  60 | \n  61 | # Navigate into project directory",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "# Create new Vite project (always use latest create-vite, pin vite version later)",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

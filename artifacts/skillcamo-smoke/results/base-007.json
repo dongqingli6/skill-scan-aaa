@@ -1,0 +1,137 @@
+{
+  "record": {
+    "sample_id": "base-007",
+    "base_id": "base-007",
+    "family": "clean-base",
+    "expectation": "benign",
+    "path": "skills/base-007",
+    "zip_path": "skill_zips/base-007.skill.zip",
+    "payload_class": "none"
+  },
+  "evaluation": {
+    "sample_id": "base-007",
+    "base_id": "base-007",
+    "family": "clean-base",
+    "expectation": "benign",
+    "detected": false,
+    "static_detected": false,
+    "media_detected": false,
+    "status": "PASS",
+    "actionable_static_finding_count": 0,
+    "media_instruction_count": 0,
+    "projected_tool_call_count": 0,
+    "cross_media_hypothesis_count": 0,
+    "cross_media_instruction_count": 0,
+    "static_rule_ids": [],
+    "media_rule_ids": [],
+    "error": null
+  },
+  "static_scan": {
+    "skill_path": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\artifacts\\skillcamo-smoke\\skills\\base-007",
+    "skill_name": "base-007",
+    "files_scanned": [
+      "SKILL.md"
+    ],
+    "files_scanned_count": 1,
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "findings": []
+  },
+  "media_pipeline": {
+    "pipeline_version": "0.6.0",
+    "triggered": false,
+    "trigger_reason": "no_supported_multimodal_resource",
+    "execution_policy": "analysis_only_no_recovered_instruction_execution",
+    "semantic_method": "sentence_tags_plus_coreference_taint_and_cross_media_evidence_graph",
+    "skill_profile": {
+      "skill_md_present": true,
+      "title": "Books Review Helper",
+      "declared_actions": [
+        "READ"
+      ],
+      "declared_objects": [],
+      "profile_method": "static_action_object_tags"
+    },
+    "resource_budgets": {
+      "max_raster_adapter_files": 24,
+      "raster_adapter_files_attempted": 0,
+      "raster_files_skipped_by_budget": 0
+    },
+    "stage_order": [
+      "raw_bytes",
+      "parse_decode",
+      "symbol_recovery",
+      "cross_media_evidence_graph",
+      "instruction_reconstruction",
+      "tool_call"
+    ],
+    "media_file_count": 0,
+    "image_file_count": 0,
+    "audio_file_count": 0,
+    "video_file_count": 0,
+    "document_file_count": 0,
+    "instruction_count": 0,
+    "semantic_sentence_count": 0,
+    "denoised_sentence_count": 0,
+    "behavior_chain_count": 0,
+    "resolved_reference_count": 0,
+    "ambiguous_reference_count": 0,
+    "tainted_entity_count": 0,
+    "projected_tool_call_count": 0,
+    "finding_count": 0,
+    "files": [],
+    "cross_media_evidence_graph": {
+      "triggered": false,
+      "method": "bounded_provenance_graph_with_explicit_ordering",
+      "limits": {
+        "max_candidates": 160,
+        "max_hypotheses": 24,
+        "max_fragments_per_hypothesis": 8
+      },
+      "node_count": 1,
+      "edge_count": 0,
+      "nodes": [
+        {
+          "id": "D1",
+          "type": "DOCUMENT",
+          "file": "SKILL.md"
+        }
+      ],
+      "edges": [],
+      "document_references": [],
+      "hypotheses": [],
+      "instruction_reconstruction": {
+        "instruction_count": 0,
+        "instructions": [],
+        "semantic_sentence_count": 0,
+        "denoised_sentence_count": 0,
+        "semantic_sentences": [],
+        "behavior_graph": {
+          "event_count": 0,
+          "entity_count": 0,
+          "reference_count": 0,
+          "events": [],
+          "entities": [],
+          "references": [],
+          "edges": [],
+          "chains": []
+        }
+      },
+      "tool_call": {
+        "policy": "never execute cross-media reconstructed instructions during scanning",
+        "projected_count": 0,
+        "calls": []
+      },
+      "findings": []
+    },
+    "findings": []
+  }
+}

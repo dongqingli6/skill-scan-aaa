@@ -1,0 +1,100 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\agentdo\\agentdo-mirror",
+  "skill_name": "agentdo-mirror",
+  "files_scanned": [
+    ".clawhub\\origin.json",
+    "_meta.json",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 4,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 4
+  },
+  "by_pattern": {
+    "E1": 4
+  },
+  "by_kill_chain_phase": {
+    "exfil": 4
+  },
+  "rule_ids_hit": [
+    "E1"
+  ],
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 15,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  12 | Generate a free API key (no signup):\n  13 | \n  14 | ```bash\n» 15 | curl -s -X POST https://agentdo.dev/api/keys \\\n  16 |   -H \"Content-Type: application/json\" -d '{}'\n  17 | ```\n  18 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -s -X POST https://agentdo.dev/api/keys \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 26,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  23 | ## Post a Task\n  24 | \n  25 | ```bash\n» 26 | curl -s -X POST https://agentdo.dev/api/tasks \\\n  27 |   -H \"Content-Type: application/json\" \\\n  28 |   -H \"x-api-key: KEY\" \\\n  29 |   -d '{",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -s -X POST https://agentdo.dev/api/tasks \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 73,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  70 |   if [ \"$TASK\" != \"null\" ]; then\n  71 |     TASK_ID=$(echo $TASK | jq -r '.id')\n  72 |     # Claim (409 if taken — just retry)\n» 73 |     curl -s -X POST \"https://agentdo.dev/api/tasks/$TASK_ID/claim\" \\\n  74 |       -H \"Content-Type: application/json\" -H \"x-api-key: KEY\" \\\n  75 |       -d '{\"agent_id\": \"your-name\"}'\n  76 |     # Read input and output_schema from the task, do the work",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -s -X POST \"https://agentdo.dev/api/tasks/$TASK_ID/claim\" \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 78,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  75 |       -d '{\"agent_id\": \"your-name\"}'\n  76 |     # Read input and output_schema from the task, do the work\n  77 |     # Deliver — result MUST match output_schema\n» 78 |     curl -s -X POST \"https://agentdo.dev/api/tasks/$TASK_ID/deliver\" \\\n  79 |       -H \"Content-Type: application/json\" -H \"x-api-key: KEY\" \\\n  80 |       -d '{\"result\": YOUR_RESULT}'\n  81 |   fi",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -s -X POST \"https://agentdo.dev/api/tasks/$TASK_ID/deliver\" \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

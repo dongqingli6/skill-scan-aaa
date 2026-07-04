@@ -1,0 +1,263 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:42.728795+00:00",
+  "skill_name": "discord",
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\discord",
+  "skill_contents": {
+    "file_count": 5,
+    "total_bytes": 25793,
+    "files": [
+      {
+        "path": "assets/discord-small.svg",
+        "size_bytes": 1392,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/discord.png",
+        "size_bytes": 4794,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE",
+        "size_bytes": 1089,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/discord_cli.py",
+        "size_bytes": 12626,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"Lightweight Discord CLI for AI agents. Wraps the Discord REST API v10.\"\"\"\n\nimport argparse\nimport json\nimport os\nimport sys\nfrom urllib.request import Request, urlopen\nfrom urllib.error import HTTPError\nfrom urllib.parse import quote, urlencode\n\nBASE = \"https://discord.com/api/v10\"\n\n\ndef get_token():\n    token = os.environ.get(\"DISCORD_BOT_TOKEN\") or os.environ.get(\"DISCORD_TOKEN\")\n    if not token:\n        print(\n            json.dumps(\n                {\n                    \"error\": \"DISCORD_BOT_TOKEN is not set. Export it: export DISCORD_BOT_TOKEN=your_token\"\n                }\n            ),\n            file=sys.stderr,\n        )\n        sys.exit(1)\n    return token\n\n\ndef api(method, path, token, body=None, params=None):\n    url = f\"{BASE}{path}\"\n    if params:\n        url += \"?\" + urlencode(params)\n    headers = {\n        \"Authorization\": f\"Bot {token}\",\n        \"Content-Type\": \"application/json\",\n        \"User-Agent\": \"DiscordBot (https://letta.com, 1.0)\",\n    }\n    data = json.dumps(body).encode() if body else None\n    req = Request(url, data=data, headers=headers, method=method)\n    try:\n        with urlopen(req) as resp:\n            raw = resp.read()\n            return json.loads(raw) if raw else {}\n    except HTTPError as e:\n        raw = e.read().decode()\n        try:\n            err = json.loads(raw)\n        except Exception:\n            err = {\"error\": raw}\n        err[\"status\"] = e.code\n        print(json.dumps(err), file=sys.stderr)\n        sys.exit(1)\n\n\ndef out(data):\n    print(json.dumps(data, indent=2, ensure_ascii=False))\n\n\n# --- Commands ---\n\n\ndef cmd_auth_test(args, token):\n    data = api(\"GET\", \"/users/@me\", token)\n    out(\n        {\n            \"ok\": True,\n            \"user\": data.get(\"username\"),\n            \"id\": data.get(\"id\"),\n            \"discriminator\": data.get(\"discriminator\"),\n        }\n    )\n\n\ndef cmd_server_list(args, token):\n    guilds = api(\"GET\", \"/users/@me/guilds\", token)\n    out([{\"id\": g[\"id\"], \"name\": g[\"name\"]} for g in guilds])\n\n\ndef cmd_server_info(args, token):\n    data = api(\n        \"GET\", f\"/guilds/{args.server_id}\", token, params={\"with_counts\": \"true\"}\n    )\n    out(\n        {\n            \"id\": data[\"id\"],\n            \"name\": data[\"name\"],\n            \"member_count\": data.get(\"approximate_member_count\"),\n            \"online_count\": data.get(\"approximate_presence_count\"),\n            \"owner_id\": data.get(\"owner_id\"),\n        }\n    )\n\n\ndef cmd_channel_list(args, token):\n    channels = api(\"GET\", f\"/guilds/{args.server_id}/channels\", token)\n    # Filter to text-like channels and sort by position\n    text_types = {0, 5, 15}  # text, announcement, forum\n    filtered = [c for c in channels if c.get(\"type\") in text_types]\n    filtered.sort(key=lambda c: (c.get(\"parent_id\") or \"\", c.get(\"position\", 0)))\n    out(\n        [\n            {\n                \"id\": c[\"id\"],\n                \"name\": c[\"name\"],\n                \"type\": c[\"type\"],\n                \"category\": c.get(\"parent_id\"),\n                \"topic\": c.get(\"topic\"),\n            }\n            for c in filtered\n        ]\n    )\n\n\ndef cmd_message_list(args, token):\n    params = {\"limit\": str(args.limit)}\n    messages = api(\"GET\", f\"/channels/{args.channel_id}/messages\", token, params=params)\n    messages.reverse()  # chronological order\n    out([_fmt_msg(m) for m in messages])\n\n\ndef cmd_message_get(args, token):\n    m = api(\"GET\", f\"/channels/{args.channel_id}/messages/{args.message_id}\", token)\n    out(_fmt_msg(m))\n\n\ndef cmd_message_send(args, token):\n    body = {\"content\": args.content}\n    m = api(\"POST\", f\"/channels/{args.channel_id}/messages\", token, body=body)\n    out({\"id\": m[\"id\"], \"channel_id\": m[\"channel_id\"]})\n\n\ndef cmd_message_edit(args, token):\n    body = {\"content\": args.content}\n    m = api(\n        \"PATCH\",\n        f\"/channels/{args.channel_id}/messages/{args.message_id}\",\n        token,\n        body=body,\n    )\n    out({\"id\": m[\"id\"], \"edited\": True})\n\n\ndef cmd_message_delete(args, token):\n  ",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 5892,
+        "kind": "text",
+        "content_preview": "---\nname: discord\ndescription: Discord automation CLI — send/read/search messages, manage channels and servers, react, create threads, pin messages, and look up users.\n---\n\n# Discord automation with `discord_cli.py`\n\nA bundled Python script that wraps the Discord REST API v10. Zero external dependencies — uses only Python stdlib (`urllib`, `json`, `argparse`).\n\nInvoke as: `python3 <path-to-skill>/scripts/discord_cli.py <command> <subcommand> [args]`\n\n## Setup\n\n### 1. Create a Discord bot\n\n1. Go to [Discord Developer Portal](https://discord.com/developers/applications) → **New Application**\n2. Click **Bot** on the sidebar → click **Reset Token** → copy the token\n3. **Critical**: Scroll down to **Privileged Gateway Intents** and enable **Message Content Intent** — without this, message content will be empty in API responses\n4. Optionally enable **Server Members Intent** (needed for `user list`)\n\n### 2. Add the bot to your server\n\n1. Click **OAuth2** on the sidebar → scroll to **OAuth2 URL Generator**\n2. Check scopes: `bot` + `applications.commands`\n3. Under **Bot Permissions**, check: View Channels, Send Messages, Read Message History, Add Reactions, Attach Files\n4. Copy the generated URL → open in browser → select your server → **Authorize**\n\nShortcut if you know the client ID:\n```\nhttps://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot+applications.commands&permissions=274877975552\n```\n\n### 3. Set your bot token\n\n```bash\nexport DISCORD_BOT_TOKEN=\"your_token_here\"\n```\n\n### 4. Verify\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py auth test\n```\n\nExpected output:\n```json\n{\"ok\": true, \"user\": \"your-bot-name\", \"id\": \"...\", \"discriminator\": \"...\"}\n```\n\n## Commands\n\n### Auth\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py auth test\n```\n\n### Servers\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py server list\npython3 <path-to-skill>/scripts/discord_cli.py server info <server-id>\n```\n\n### Channels\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py channel list <server-id>\n```\n\nReturns text, announcement, and forum channels sorted by category and position. Each channel has `id`, `name`, `type`, `category`, and `topic`.\n\n### Messages\n\n```bash\n# List recent messages (default 25, chronological order)\npython3 <path-to-skill>/scripts/discord_cli.py message list <channel-id>\npython3 <path-to-skill>/scripts/discord_cli.py message list <channel-id> --limit 50\n\n# Get a single message\npython3 <path-to-skill>/scripts/discord_cli.py message get <channel-id> <message-id>\n\n# Send a message\npython3 <path-to-skill>/scripts/discord_cli.py message send <channel-id> \"Hello from the agent!\"\n\n# Edit a message (bot can only edit its own messages)\npython3 <path-to-skill>/scripts/discord_cli.py message edit <channel-id> <message-id> \"Updated text\"\n\n# Delete a message\npython3 <path-to-skill>/scripts/discord_cli.py message delete <channel-id> <message-id>\n\n# Search messages in a server\npython3 <path-to-skill>/scripts/discord_cli.py message search <server-id> \"query\"\npython3 <path-to-skill>/scripts/discord_cli.py message search <server-id> \"query\" --channel-id <id> --author-id <id> --limit 10\n```\n\n### Reactions\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py reaction add <channel-id> <message-id> 👍\npython3 <path-to-skill>/scripts/discord_cli.py reaction remove <channel-id> <message-id> 👍\npython3 <path-to-skill>/scripts/discord_cli.py reaction list <channel-id> <message-id>\n```\n\n### Threads\n\n```bash\n# Create a new thread in a channel\npython3 <path-to-skill>/scripts/discord_cli.py thread create <channel-id> \"Discussion Topic\"\n\n# Create a thread from a specific message\npython3 <path-to-skill>/scripts/discord_cli.py thread create <channel-id> \"Bug Triage\" --message-id <id>\n```\n\n### Pins\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py pin list <channel-id>\npython3 <path-to-skill>/scripts/discord_cli.py pin add <channel-id> <message-id>\npython3 <path-to-skill>/scripts/discord_cli.py pin remove <channel-id> <me",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: discord\ndescription: Discord automation CLI — send/read/search messages, manage channels and servers, react, create threads, pin messages, and look up users.\n---\n\n# Discord automation with `discord_cli.py`\n\nA bundled Python script that wraps the Discord REST API v10. Zero external dependencies — uses only Python stdlib (`urllib`, `json`, `argparse`).\n\nInvoke as: `python3 <path-to-skill>/scripts/discord_cli.py <command> <subcommand> [args]`\n\n## Setup\n\n### 1. Create a Discord bot\n\n1. Go to [Discord Developer Portal](https://discord.com/developers/applications) → **New Application**\n2. Click **Bot** on the sidebar → click **Reset Token** → copy the token\n3. **Critical**: Scroll down to **Privileged Gateway Intents** and enable **Message Content Intent** — without this, message content will be empty in API responses\n4. Optionally enable **Server Members Intent** (needed for `user list`)\n\n### 2. Add the bot to your server\n\n1. Click **OAuth2** on the sidebar → scroll to **OAuth2 URL Generator**\n2. Check scopes: `bot` + `applications.commands`\n3. Under **Bot Permissions**, check: View Channels, Send Messages, Read Message History, Add Reactions, Attach Files\n4. Copy the generated URL → open in browser → select your server → **Authorize**\n\nShortcut if you know the client ID:\n```\nhttps://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot+applications.commands&permissions=274877975552\n```\n\n### 3. Set your bot token\n\n```bash\nexport DISCORD_BOT_TOKEN=\"your_token_here\"\n```\n\n### 4. Verify\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py auth test\n```\n\nExpected output:\n```json\n{\"ok\": true, \"user\": \"your-bot-name\", \"id\": \"...\", \"discriminator\": \"...\"}\n```\n\n## Commands\n\n### Auth\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py auth test\n```\n\n### Servers\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py server list\npython3 <path-to-skill>/scripts/discord_cli.py server info <server-id>\n```\n\n### Channels\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py channel list <server-id>\n```\n\nReturns text, announcement, and forum channels sorted by category and position. Each channel has `id`, `name`, `type`, `category`, and `topic`.\n\n### Messages\n\n```bash\n# List recent messages (default 25, chronological order)\npython3 <path-to-skill>/scripts/discord_cli.py message list <channel-id>\npython3 <path-to-skill>/scripts/discord_cli.py message list <channel-id> --limit 50\n\n# Get a single message\npython3 <path-to-skill>/scripts/discord_cli.py message get <channel-id> <message-id>\n\n# Send a message\npython3 <path-to-skill>/scripts/discord_cli.py message send <channel-id> \"Hello from the agent!\"\n\n# Edit a message (bot can only edit its own messages)\npython3 <path-to-skill>/scripts/discord_cli.py message edit <channel-id> <message-id> \"Updated text\"\n\n# Delete a message\npython3 <path-to-skill>/scripts/discord_cli.py message delete <channel-id> <message-id>\n\n# Search messages in a server\npython3 <path-to-skill>/scripts/discord_cli.py message search <server-id> \"query\"\npython3 <path-to-skill>/scripts/discord_cli.py message search <server-id> \"query\" --channel-id <id> --author-id <id> --limit 10\n```\n\n### Reactions\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py reaction add <channel-id> <message-id> 👍\npython3 <path-to-skill>/scripts/discord_cli.py reaction remove <channel-id> <message-id> 👍\npython3 <path-to-skill>/scripts/discord_cli.py reaction list <channel-id> <message-id>\n```\n\n### Threads\n\n```bash\n# Create a new thread in a channel\npython3 <path-to-skill>/scripts/discord_cli.py thread create <channel-id> \"Discussion Topic\"\n\n# Create a thread from a specific message\npython3 <path-to-skill>/scripts/discord_cli.py thread create <channel-id> \"Bug Triage\" --message-id <id>\n```\n\n### Pins\n\n```bash\npython3 <path-to-skill>/scripts/discord_cli.py pin list <channel-id>\npython3 <path-to-skill>/scripts/discord_cli.py pin add <channel-id> <message-id>\npython3 <path-to-skill>/scripts/discord_cli.py pin remove <channel-id> <me"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 3,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "MEDIUM": 2,
+      "LOW": 0
+    },
+    "by_pattern": {
+      "E2": 1,
+      "E1": 2
+    },
+    "by_kill_chain_phase": {
+      "cred_access": 1,
+      "exfil": 2
+    },
+    "rule_ids_hit": [
+      "E1",
+      "E2"
+    ],
+    "files_scanned_count": 2
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 2,
+      "label": "Intermediate",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 3
+    },
+    "chains_triggered": [
+      {
+        "chain_id": "E2_E1",
+        "name": "Data Exfiltration Chain",
+        "required_rules": [
+          "E2",
+          "E1"
+        ],
+        "phase_sequence": [
+          "cred_access",
+          "exfil"
+        ],
+        "severity_boost": "HIGH",
+        "paper_evidence": "OR=2.31, p=0.020; 36.9% of malicious skills (§4.2)",
+        "description": "Credential harvesting followed by external transmission."
+      }
+    ],
+    "chain_count": 1,
+    "kill_chain_phases_covered": [
+      "cred_access",
+      "exfil"
+    ],
+    "kill_chain_phase_coverage_count": 2
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 16,
+    "verdict": "SUSPICIOUS",
+    "sub_scores": {
+      "S_static": 0.1875,
+      "S_static_raw": 0.1875,
+      "S_chain": 0.25,
+      "S_soph": 0.67,
+      "S_phases": 0.3333,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "verdict floor #2: E2 凭证读取 + E1 外联非白名单端点 — 经典窃取链",
+      "分数与判定对齐: SUSPICIOUS 区间下限 15, composite_score 14.15 -> 16"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    },
+    "composite_score_pre_align": 14.15
+  },
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\discord_cli.py",
+      "line": 16,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.environ.get(\"DISCORD_BOT_TOKEN\") or os.environ.get(\"DISCORD_TOKEN",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  13 | \n  14 | \n  15 | def get_token():\n» 16 |     token = os.environ.get(\"DISCORD_BOT_TOKEN\") or os.environ.get(\"DISCORD_TOKEN\")\n  17 |     if not token:\n  18 |         print(\n  19 |             json.dumps(",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "token = os.environ.get(\"DISCORD_BOT_TOKEN\") or os.environ.get(\"DISCORD_TOKEN\")",
+      "downgraded": false,
+      "downgrade_reason": "Bumped to HIGH: co-located with real E1 exfiltration in same file"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "exfil",
+      "file": "scripts\\discord_cli.py",
+      "line": 40,
+      "pattern": "<ast>",
+      "matched_text": "urllib.request.Request",
+      "description": "AST: 外联 urllib.request.Request",
+      "confidence": 0.92,
+      "context": "  37 |         \"User-Agent\": \"DiscordBot (https://letta.com, 1.0)\",\n  38 |     }\n  39 |     data = json.dumps(body).encode() if body else None\n» 40 |     req = Request(url, data=data, headers=headers, method=method)\n  41 |     try:\n  42 |         with urlopen(req) as resp:\n  43 |             raw = resp.read()",
+      "original_severity": "MEDIUM",
+      "evidence_type": "exfiltration",
+      "context_type": "main_skill_logic",
+      "snippet": "req = Request(url, data=data, headers=headers, method=method)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "exfil",
+      "file": "scripts\\discord_cli.py",
+      "line": 42,
+      "pattern": "<ast>",
+      "matched_text": "urllib.request.urlopen",
+      "description": "AST: 外联 urllib.request.urlopen",
+      "confidence": 0.92,
+      "context": "  39 |     data = json.dumps(body).encode() if body else None\n  40 |     req = Request(url, data=data, headers=headers, method=method)\n  41 |     try:\n» 42 |         with urlopen(req) as resp:\n  43 |             raw = resp.read()\n  44 |             return json.loads(raw) if raw else {}\n  45 |     except HTTPError as e:",
+      "original_severity": "MEDIUM",
+      "evidence_type": "exfiltration",
+      "context_type": "main_skill_logic",
+      "snippet": "with urlopen(req) as resp:",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

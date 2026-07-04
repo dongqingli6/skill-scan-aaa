@@ -1,0 +1,46 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_pool\\skills\\algorithmic-art",
+  "skill_name": "algorithmic-art",
+  "files_scanned": [
+    "LICENSE.txt",
+    "SKILL.md",
+    "templates\\generator_template.js"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 1
+  },
+  "by_pattern": {
+    "P8": 1
+  },
+  "by_kill_chain_phase": {
+    "impact": 1
+  },
+  "rule_ids_hit": [
+    "P8"
+  ],
+  "findings": [
+    {
+      "rule_id": "P8",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "templates\\generator_template.js",
+      "line": 41,
+      "pattern": "(?i)\\balways\\s+use\\s+(?:this|[A-Z][a-zA-Z]+)\\b",
+      "matched_text": "ALWAYS use seeded",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  38 | // ============================================================================\n  39 | // 2. SEEDED RANDOMNESS (Critical for reproducibility)\n  40 | // ============================================================================\n» 41 | // ALWAYS use seeded random for Art Blocks-style reproducible output\n  42 | \n  43 | function initializeSeed(seed) {\n  44 |     randomSeed(seed);",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "// ALWAYS use seeded random for Art Blocks-style reproducible output",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    }
+  ]
+}

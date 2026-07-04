@@ -1,0 +1,169 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:43.861894+00:00",
+  "skill_name": "github",
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\github",
+  "skill_contents": {
+    "file_count": 4,
+    "total_bytes": 12609,
+    "files": [
+      {
+        "path": "assets/github-small.svg",
+        "size_bytes": 841,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/github.png",
+        "size_bytes": 6965,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE",
+        "size_bytes": 1095,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 3708,
+        "kind": "text",
+        "content_preview": "---\nname: github\ndescription: \"GitHub operations via `gh` CLI: issues, PRs, CI runs, code review, API queries. Use when: (1) checking PR status or CI, (2) creating/commenting on issues, (3) listing/filtering PRs or issues, (4) viewing run logs. NOT for: complex web UI interactions requiring manual browser flows (use browser tooling when available), bulk operations across many repos (script with gh api), or when gh auth is not configured.\"\n\n---\n\n# GitHub Skill\n\nUse the `gh` CLI to interact with GitHub repositories, issues, PRs, and CI.\n\n## When to Use\n\n✅ **USE this skill when:**\n\n- Checking PR status, reviews, or merge readiness\n- Viewing CI/workflow run status and logs\n- Creating, closing, or commenting on issues\n- Creating or merging pull requests\n- Querying GitHub API for repository data\n- Listing repos, releases, or collaborators\n\n## When NOT to Use\n\n❌ **DON'T use this skill when:**\n\n- Local git operations (commit, push, pull, branch) → use `git` directly\n- Non-GitHub repos (GitLab, Bitbucket, self-hosted) → different CLIs\n- Cloning repositories → use `git clone`\n- Reviewing actual code changes → use `coding-agent` skill\n- Complex multi-file diffs → use `coding-agent` or read files directly\n\n## Setup\n\n```bash\n# Authenticate (one-time)\ngh auth login\n\n# Verify\ngh auth status\n```\n\n## Common Commands\n\n### Pull Requests\n\n```bash\n# List PRs\ngh pr list --repo owner/repo\n\n# Check CI status\ngh pr checks 55 --repo owner/repo\n\n# View PR details\ngh pr view 55 --repo owner/repo\n\n# Create PR\ngh pr create --title \"feat: add feature\" --body \"Description\"\n\n# Merge PR\ngh pr merge 55 --squash --repo owner/repo\n```\n\n### Issues\n\n```bash\n# List issues\ngh issue list --repo owner/repo --state open\n\n# Create issue\ngh issue create --title \"Bug: something broken\" --body \"Details...\"\n\n# Close issue\ngh issue close 42 --repo owner/repo\n```\n\n### CI/Workflow Runs\n\n```bash\n# List recent runs\ngh run list --repo owner/repo --limit 10\n\n# View specific run\ngh run view <run-id> --repo owner/repo\n\n# View failed step logs only\ngh run view <run-id> --repo owner/repo --log-failed\n\n# Re-run failed jobs\ngh run rerun <run-id> --failed --repo owner/repo\n```\n\n### API Queries\n\n```bash\n# Get PR with specific fields\ngh api repos/owner/repo/pulls/55 --jq '.title, .state, .user.login'\n\n# List all labels\ngh api repos/owner/repo/labels --jq '.[].name'\n\n# Get repo stats\ngh api repos/owner/repo --jq '{stars: .stargazers_count, forks: .forks_count}'\n```\n\n## JSON Output\n\nMost commands support `--json` for structured output with `--jq` filtering:\n\n```bash\ngh issue list --repo owner/repo --json number,title --jq '.[] | \"\\(.number): \\(.title)\"'\ngh pr list --json number,title,state,mergeable --jq '.[] | select(.mergeable == \"MERGEABLE\")'\n```\n\n## Templates\n\n### PR Review Summary\n\n```bash\n# Get PR overview for review\nPR=55 REPO=owner/repo\necho \"## PR #$PR Summary\"\ngh pr view $PR --repo $REPO --json title,body,author,additions,deletions,changedFiles \\\n  --jq '\"**\\(.title)** by @\\(.author.login)\\n\\n\\(.body)\\n\\n📊 +\\(.additions) -\\(.deletions) across \\(.changedFiles) files\"'\ngh pr checks $PR --repo $REPO\n```\n\n### Issue Triage\n\n```bash\n# Quick issue triage view\ngh issue list --repo owner/repo --state open --json number,title,labels,createdAt \\\n  --jq '.[] | \"[\\(.number)] \\(.title) - \\([.labels[].name] | join(\", \")) (\\(.createdAt[:10]))\"'\n```\n\n## Notes\n\n- Always specify `--repo owner/repo` when not in a git directory\n- Use URLs directly: `gh pr view https://github.com/owner/repo/pull/55`\n- Rate limits apply; use `gh api --cache 1h` for repeated queries\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: github\ndescription: \"GitHub operations via `gh` CLI: issues, PRs, CI runs, code review, API queries. Use when: (1) checking PR status or CI, (2) creating/commenting on issues, (3) listing/filtering PRs or issues, (4) viewing run logs. NOT for: complex web UI interactions requiring manual browser flows (use browser tooling when available), bulk operations across many repos (script with gh api), or when gh auth is not configured.\"\n\n---\n\n# GitHub Skill\n\nUse the `gh` CLI to interact with GitHub repositories, issues, PRs, and CI.\n\n## When to Use\n\n✅ **USE this skill when:**\n\n- Checking PR status, reviews, or merge readiness\n- Viewing CI/workflow run status and logs\n- Creating, closing, or commenting on issues\n- Creating or merging pull requests\n- Querying GitHub API for repository data\n- Listing repos, releases, or collaborators\n\n## When NOT to Use\n\n❌ **DON'T use this skill when:**\n\n- Local git operations (commit, push, pull, branch) → use `git` directly\n- Non-GitHub repos (GitLab, Bitbucket, self-hosted) → different CLIs\n- Cloning repositories → use `git clone`\n- Reviewing actual code changes → use `coding-agent` skill\n- Complex multi-file diffs → use `coding-agent` or read files directly\n\n## Setup\n\n```bash\n# Authenticate (one-time)\ngh auth login\n\n# Verify\ngh auth status\n```\n\n## Common Commands\n\n### Pull Requests\n\n```bash\n# List PRs\ngh pr list --repo owner/repo\n\n# Check CI status\ngh pr checks 55 --repo owner/repo\n\n# View PR details\ngh pr view 55 --repo owner/repo\n\n# Create PR\ngh pr create --title \"feat: add feature\" --body \"Description\"\n\n# Merge PR\ngh pr merge 55 --squash --repo owner/repo\n```\n\n### Issues\n\n```bash\n# List issues\ngh issue list --repo owner/repo --state open\n\n# Create issue\ngh issue create --title \"Bug: something broken\" --body \"Details...\"\n\n# Close issue\ngh issue close 42 --repo owner/repo\n```\n\n### CI/Workflow Runs\n\n```bash\n# List recent runs\ngh run list --repo owner/repo --limit 10\n\n# View specific run\ngh run view <run-id> --repo owner/repo\n\n# View failed step logs only\ngh run view <run-id> --repo owner/repo --log-failed\n\n# Re-run failed jobs\ngh run rerun <run-id> --failed --repo owner/repo\n```\n\n### API Queries\n\n```bash\n# Get PR with specific fields\ngh api repos/owner/repo/pulls/55 --jq '.title, .state, .user.login'\n\n# List all labels\ngh api repos/owner/repo/labels --jq '.[].name'\n\n# Get repo stats\ngh api repos/owner/repo --jq '{stars: .stargazers_count, forks: .forks_count}'\n```\n\n## JSON Output\n\nMost commands support `--json` for structured output with `--jq` filtering:\n\n```bash\ngh issue list --repo owner/repo --json number,title --jq '.[] | \"\\(.number): \\(.title)\"'\ngh pr list --json number,title,state,mergeable --jq '.[] | select(.mergeable == \"MERGEABLE\")'\n```\n\n## Templates\n\n### PR Review Summary\n\n```bash\n# Get PR overview for review\nPR=55 REPO=owner/repo\necho \"## PR #$PR Summary\"\ngh pr view $PR --repo $REPO --json title,body,author,additions,deletions,changedFiles \\\n  --jq '\"**\\(.title)** by @\\(.author.login)\\n\\n\\(.body)\\n\\n📊 +\\(.additions) -\\(.deletions) across \\(.changedFiles) files\"'\ngh pr checks $PR --repo $REPO\n```\n\n### Issue Triage\n\n```bash\n# Quick issue triage view\ngh issue list --repo owner/repo --state open --json number,title,labels,createdAt \\\n  --jq '.[] | \"[\\(.number)] \\(.title) - \\([.labels[].name] | join(\", \")) (\\(.createdAt[:10]))\"'\n```\n\n## Notes\n\n- Always specify `--repo owner/repo` when not in a git directory\n- Use URLs directly: `gh pr view https://github.com/owner/repo/pull/55`\n- Rate limits apply; use `gh api --cache 1h` for repeated queries\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 1
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": []
+}

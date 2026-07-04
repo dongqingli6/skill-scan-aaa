@@ -1,0 +1,84 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\discord",
+  "skill_name": "discord",
+  "files_scanned": [
+    "scripts\\discord_cli.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 2,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "E2": 1,
+    "E1": 2
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 1,
+    "exfil": 2
+  },
+  "rule_ids_hit": [
+    "E1",
+    "E2"
+  ],
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\discord_cli.py",
+      "line": 16,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.environ.get(\"DISCORD_BOT_TOKEN\") or os.environ.get(\"DISCORD_TOKEN",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  13 | \n  14 | \n  15 | def get_token():\n» 16 |     token = os.environ.get(\"DISCORD_BOT_TOKEN\") or os.environ.get(\"DISCORD_TOKEN\")\n  17 |     if not token:\n  18 |         print(\n  19 |             json.dumps(",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "token = os.environ.get(\"DISCORD_BOT_TOKEN\") or os.environ.get(\"DISCORD_TOKEN\")",
+      "downgraded": false,
+      "downgrade_reason": "Bumped to HIGH: co-located with real E1 exfiltration in same file"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "exfil",
+      "file": "scripts\\discord_cli.py",
+      "line": 40,
+      "pattern": "<ast>",
+      "matched_text": "urllib.request.Request",
+      "description": "AST: 外联 urllib.request.Request",
+      "confidence": 0.92,
+      "context": "  37 |         \"User-Agent\": \"DiscordBot (https://letta.com, 1.0)\",\n  38 |     }\n  39 |     data = json.dumps(body).encode() if body else None\n» 40 |     req = Request(url, data=data, headers=headers, method=method)\n  41 |     try:\n  42 |         with urlopen(req) as resp:\n  43 |             raw = resp.read()",
+      "original_severity": "MEDIUM",
+      "evidence_type": "exfiltration",
+      "context_type": "main_skill_logic",
+      "snippet": "req = Request(url, data=data, headers=headers, method=method)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "exfil",
+      "file": "scripts\\discord_cli.py",
+      "line": 42,
+      "pattern": "<ast>",
+      "matched_text": "urllib.request.urlopen",
+      "description": "AST: 外联 urllib.request.urlopen",
+      "confidence": 0.92,
+      "context": "  39 |     data = json.dumps(body).encode() if body else None\n  40 |     req = Request(url, data=data, headers=headers, method=method)\n  41 |     try:\n» 42 |         with urlopen(req) as resp:\n  43 |             raw = resp.read()\n  44 |             return json.loads(raw) if raw else {}\n  45 |     except HTTPError as e:",
+      "original_severity": "MEDIUM",
+      "evidence_type": "exfiltration",
+      "context_type": "main_skill_logic",
+      "snippet": "with urlopen(req) as resp:",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

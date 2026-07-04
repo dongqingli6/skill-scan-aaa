@@ -1,0 +1,65 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\nlp-sentiment\\Nlp Sentiment",
+  "skill_name": "Nlp Sentiment",
+  "files_scanned": [
+    "scripts\\fetch_sentiment.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 1,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "E2": 1,
+    "P9": 1
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 2
+  },
+  "rule_ids_hit": [
+    "E2",
+    "P9"
+  ],
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\fetch_sentiment.py",
+      "line": 9,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.environ.get(\"OPENNEWS_TOKEN",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "   6 | from datetime import datetime\n   7 | \n   8 | # API Token (User provided for opennews-mcp)\n»  9 | TOKEN = os.environ.get(\"OPENNEWS_TOKEN\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkM …\n  10 | \n  11 | def fetch_news(query=\"\"):\n  12 |     url = \"https://ai.6551.io/open/news_search\"",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "TOKEN = os.environ.get(\"OPENNEWS_TOKEN\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkMzUwZDQ3ZTlhYiIsImlhd",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P9",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\fetch_sentiment.py",
+      "line": 9,
+      "pattern": "\\beyJ[A-Za-z0-9_-]+\\.eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\b",
+      "matched_text": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkMzU",
+      "description": "Hardcoded credential literal found in skill source or SKILL.md — matches OpenAI / Anthropic / GitHub PAT / AWS / JWT / private key / DB connection-string-with-password / hardcoded password field. Aligns with Snyk audit and QAX commercial-scanner SECRET_* taxonomy. Distinct from E2 which catches reading env vars: P9 catches literal credentials baked into the package.",
+      "confidence": 0.92,
+      "context": "   6 | from datetime import datetime\n   7 | \n   8 | # API Token (User provided for opennews-mcp)\n»  9 | TOKEN = os.environ.get(\"OPENNEWS_TOKEN\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkM …\n  10 | \n  11 | def fetch_news(query=\"\"):\n  12 |     url = \"https://ai.6551.io/open/news_search\"",
+      "original_severity": "HIGH",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "TOKEN = os.environ.get(\"OPENNEWS_TOKEN\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNmhURnJSaThBTW8yQ2pwYnJhUjFrRlM4eWRXS1ZUajl5eFV1NmZjWGdxVkUiLCJub25jZSI6IjkzNDE2ZTAxLTIwMTUtNDJjNy1iNTBiLTRkMzUwZDQ3ZTlhYiIsImlhd",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

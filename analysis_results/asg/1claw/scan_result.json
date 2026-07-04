@@ -1,0 +1,140 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\1claw",
+  "skill_name": "1claw",
+  "files_scanned": [
+    "_meta.json",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 6,
+  "by_severity": {
+    "CRITICAL": 3,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 2
+  },
+  "by_pattern": {
+    "E2": 1,
+    "PE3": 2,
+    "E1": 3
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 3,
+    "exfil": 3
+  },
+  "rule_ids_hit": [
+    "E1",
+    "E2",
+    "PE3"
+  ],
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "SKILL.md",
+      "line": 139,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.ONECLAW_AGENT_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  136 | \n  137 | const client = createClient({\n  138 |     baseUrl: \"https://api.1claw.xyz\",\n» 139 |     apiKey: process.env.ONECLAW_AGENT_API_KEY,\n  140 | });\n  141 | ```\n  142 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "skill_md_instruction",
+      "snippet": "apiKey: process.env.ONECLAW_AGENT_API_KEY,",
+      "downgraded": false,
+      "downgrade_reason": "Bumped to HIGH: co-located with real E1 exfiltration in same file"
+    },
+    {
+      "rule_id": "PE3",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "cred_access",
+      "file": "SKILL.md",
+      "line": 639,
+      "pattern": "/etc/(?:shadow|passwd)",
+      "matched_text": "/etc/passwd",
+      "description": "Reading auth tokens or password stores from filesystem.",
+      "confidence": 0.85,
+      "context": "  636 | | `social_engineering_detection` | object | Detect urgency, authority claims, secrecy requests, bypass attempts |\n  637 | | `encoding_detection`           | object | Detect base64, hex, Unicode escapes that may hide payloads          |\n  638 | | `network_detection`            | object | Detect blocked domains, IP URLs, data exfiltration patterns         |\n» 639 | | `filesystem_detection`         | object | Detect sensitive paths (/etc/passwd, .ssh/, .env, etc.)             |\n  640 | | `sanitization_mode`            | string | `\"block\"` (reject threats), `\"sanitize\"` (strip), `\"warn\"` (log)    |\n  641 | | `threat_logging`               | boolean| Log detected threats for audit (default: true)                      |\n  642 | ",
+      "original_severity": "CRITICAL",
+      "evidence_type": "sensitive_access",
+      "context_type": "skill_md_instruction",
+      "snippet": "| `filesystem_detection`         | object | Detect sensitive paths (/etc/passwd, .ssh/, .env, etc.)             |",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "PE3",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "cred_access",
+      "file": "SKILL.md",
+      "line": 688,
+      "pattern": "/etc/(?:shadow|passwd)",
+      "matched_text": "/etc/passwd",
+      "description": "Reading auth tokens or password stores from filesystem.",
+      "confidence": 0.85,
+      "context": "  685 | | Field          | Type     | Default              | Description                       |\n  686 | | -------------- | -------- | -------------------- | --------------------------------- |\n  687 | | `action`       | string   | `\"log\"`              | `\"block\"`, `\"sanitize\"`, or `\"log\"` |\n» 688 | | `blocked_paths`| string[] | /etc/passwd, .ssh/, .env, etc. | Paths to detect            |\n  689 | \n  690 | **SDK:**\n  691 | ",
+      "original_severity": "CRITICAL",
+      "evidence_type": "sensitive_access",
+      "context_type": "skill_md_instruction",
+      "snippet": "| `blocked_paths`| string[] | /etc/passwd, .ssh/, .env, etc. | Paths to detect            |",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 82,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  79 | \n  80 | ```bash\n  81 | # curl\n» 82 | curl -s -X POST https://api.1claw.xyz/v1/agents/enroll \\\n  83 |   -H \"Content-Type: application/json\" \\\n  84 |   -d '{\"name\":\"my-agent\",\"human_email\":\"human@example.com\"}'\n  85 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -s -X POST https://api.1claw.xyz/v1/agents/enroll \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 149,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  146 | \n  147 | ```bash\n  148 | # Exchange agent API key for a JWT (key-only — agent_id is auto-resolved)\n» 149 | RESP=$(curl -s -X POST https://api.1claw.xyz/v1/auth/agent-token \\\n  150 |   -H \"Content-Type: application/json\" \\\n  151 |   -d '{\"api_key\":\"<key>\"}')\n  152 | TOKEN=$(echo \"$RESP\" | jq -r .access_token)",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "RESP=$(curl -s -X POST https://api.1claw.xyz/v1/auth/agent-token \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 708,
+      "pattern": "pastebin\\.com",
+      "matched_text": "pastebin.com",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  705 |         command_injection_detection: { action: \"block\", strictness: \"default\" },\n  706 |         social_engineering_detection: { action: \"warn\", sensitivity: \"medium\" },\n  707 |         encoding_detection: { action: \"warn\", detect_base64: true },\n» 708 |         network_detection: { action: \"warn\", blocked_domains: [\"pastebin.com\"] },\n  709 |         filesystem_detection: { action: \"log\" },\n  710 |         sanitization_mode: \"block\",\n  711 |         threat_logging: true,",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "network_detection: { action: \"warn\", blocked_domains: [\"pastebin.com\"] },",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

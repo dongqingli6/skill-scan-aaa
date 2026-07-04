@@ -1,0 +1,1130 @@
+{
+  "pipeline_version": "0.6.0",
+  "triggered": true,
+  "trigger_reason": "multimodal_resource_present",
+  "execution_policy": "analysis_only_no_recovered_instruction_execution",
+  "semantic_method": "sentence_tags_plus_coreference_taint_and_cross_media_evidence_graph",
+  "skill_profile": {
+    "skill_md_present": true,
+    "title": "Local Configuration Reference",
+    "declared_actions": [
+      "EXECUTE"
+    ],
+    "declared_objects": [
+      "CREDENTIAL",
+      "SYSTEM_CONFIG"
+    ],
+    "profile_method": "static_action_object_tags"
+  },
+  "resource_budgets": {
+    "max_raster_adapter_files": 24,
+    "raster_adapter_files_attempted": 1,
+    "raster_files_skipped_by_budget": 0
+  },
+  "stage_order": [
+    "raw_bytes",
+    "parse_decode",
+    "symbol_recovery",
+    "cross_media_evidence_graph",
+    "instruction_reconstruction",
+    "tool_call"
+  ],
+  "media_file_count": 1,
+  "image_file_count": 1,
+  "audio_file_count": 0,
+  "video_file_count": 0,
+  "document_file_count": 0,
+  "instruction_count": 0,
+  "semantic_sentence_count": 12,
+  "denoised_sentence_count": 12,
+  "behavior_chain_count": 0,
+  "resolved_reference_count": 0,
+  "ambiguous_reference_count": 0,
+  "tainted_entity_count": 1,
+  "projected_tool_call_count": 0,
+  "finding_count": 0,
+  "files": [
+    {
+      "file": "resources/guide.png",
+      "kind": "image",
+      "media_type": "image/png",
+      "raw_bytes": {
+        "size_bytes": 7993,
+        "sha256": "d391887a0d23f5624e8ad371bc7e5d64bef79d5362cb74b5cc8a1c58b128dfa7",
+        "extension_type": "image/png",
+        "detected_type": "image/png",
+        "bytes_truncated": false
+      },
+      "parse_decode": {
+        "media_type": "image/png",
+        "extractors": [
+          "png-chunks",
+          "png-lsb",
+          "raster-symbol-adapters"
+        ],
+        "symbol_adapters": {
+          "capabilities": {
+            "ocr": {
+              "available": true,
+              "backend": "windows-media-ocr",
+              "attempted": true,
+              "observation_count": 1,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_pixels": 4000000,
+                "max_frames": 12,
+                "timeout_seconds": 20
+              },
+              "width": 900,
+              "height": 360,
+              "frame_count": 1,
+              "successful": true,
+              "operational": true
+            },
+            "qr": {
+              "available": true,
+              "backend": "opencv-qrcode-detector",
+              "attempted": true,
+              "observation_count": 0,
+              "errors": [],
+              "limits": {
+                "max_file_bytes": 16777216,
+                "max_symbols": 16
+              },
+              "successful": false,
+              "operational": true
+            }
+          },
+          "observation_count": 1,
+          "execution_policy": "symbol_recovery_only_never_execute"
+        },
+        "details": {
+          "parser": "png",
+          "chunks": [
+            {
+              "type": "IHDR",
+              "length": 13
+            },
+            {
+              "type": "IDAT",
+              "length": 7936
+            },
+            {
+              "type": "IEND",
+              "length": 0
+            }
+          ],
+          "logical_end": 7993
+        },
+        "unsupported_but_declared": []
+      },
+      "symbol_recovery": {
+        "candidate_count": 12,
+        "candidates": [
+          {
+            "file": "resources/guide.png",
+            "preview": "5o]lJVVV",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "confidence": 0.45
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "q$ly#A",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": ";8&I%\"I",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "I&cQpzI",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "confidence": 0.82
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "Ir Il<",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "confidence": 0.72
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "`Ir IB I",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "confidence": 0.72
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "Ir IB I",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "confidence": 0.72
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "Ir IB",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "confidence": 0.72
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "<Ir I:",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "confidence": 0.72
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "$I,'IB`I",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "confidence": 0.72
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "$I4HIJ$I",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "confidence": 0.72
+          },
+          {
+            "file": "resources/guide.png",
+            "preview": "Reference diagram: validate configuration locally before continuing.",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "confidence": 0.84,
+            "adapter": "ocr",
+            "backend": "windows-media-ocr",
+            "kind": "ocr_text",
+            "regions": [
+              {
+                "text": "Reference diagram: validate configuration locally before continuing.",
+                "words": [
+                  {
+                    "text": "Reference",
+                    "region": [
+                      54,
+                      64,
+                      110,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "diagram:",
+                    "region": [
+                      170,
+                      65,
+                      94,
+                      22
+                    ]
+                  },
+                  {
+                    "text": "validate",
+                    "region": [
+                      270,
+                      65,
+                      85,
+                      17
+                    ]
+                  },
+                  {
+                    "text": "configuration",
+                    "region": [
+                      361,
+                      64,
+                      148,
+                      23
+                    ]
+                  },
+                  {
+                    "text": "locally",
+                    "region": [
+                      518,
+                      65,
+                      69,
+                      22
+                    ]
+                  },
+                  {
+                    "text": "before",
+                    "region": [
+                      594,
+                      64,
+                      71,
+                      18
+                    ]
+                  },
+                  {
+                    "text": "continuing.",
+                    "region": [
+                      671,
+                      65,
+                      124,
+                      22
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "instruction_reconstruction": {
+        "instruction_count": 0,
+        "instructions": [],
+        "semantic_sentence_count": 12,
+        "denoised_sentence_count": 12,
+        "semantic_sentences": [
+          {
+            "candidate_id": "C1",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "ocr:windows-media-ocr",
+            "transform_chain": [
+              "raster-ocr"
+            ],
+            "text_preview": "Reference diagram: validate configuration locally before continuing.",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [
+              "SYSTEM_CONFIG"
+            ],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": true,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.84,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C2",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "q$ly#A",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C3",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "8&I%\"I",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C4",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes"
+            ],
+            "text_preview": "I&cQpzI",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.82,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C5",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "text_preview": "Ir Il<",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.72,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C6",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "text_preview": "`Ir IB I",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.72,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C7",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "text_preview": "Ir IB I",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.72,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C8",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "text_preview": "Ir IB",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.72,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C9",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "text_preview": "<Ir I:",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.72,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C10",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "text_preview": "$I,'IB`I",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.72,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C11",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "png-pixels:lsb-little:all",
+            "transform_chain": [
+              "least-significant-bit",
+              "bits-to-bytes-little-endian"
+            ],
+            "text_preview": "$I4HIJ$I",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "HIDDEN_OR_AUXILIARY",
+              "DECODED_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.72,
+            "events": [],
+            "reference_mentions": []
+          },
+          {
+            "candidate_id": "C12",
+            "sentence_index": 1,
+            "file": "resources/guide.png",
+            "source": "raw-bytes:strings",
+            "transform_chain": [
+              "printable-strings"
+            ],
+            "text_preview": "5o]lJVVV",
+            "provenance_tags": [
+              "UNTRUSTED_MULTIMODAL",
+              "SURFACE_CONTENT"
+            ],
+            "speech_act": "STATEMENT",
+            "context_role": "DESCRIPTION",
+            "polarity": "AFFIRMATIVE_OR_MIXED",
+            "modality": "UNSPECIFIED",
+            "actors": [
+              "IMPLICIT_AGENT"
+            ],
+            "objects": [],
+            "destination": "LOCAL_OR_UNSPECIFIED",
+            "condition_present": false,
+            "concealment": false,
+            "task_alignment": "NOT_APPLICABLE",
+            "raw_signal_score": 0,
+            "raw_categories": [],
+            "actionable_categories": [],
+            "context_adjustment": 0,
+            "adjustment_reasons": [],
+            "adjusted_signal_score": 0,
+            "hard_risk_floor": false,
+            "context_decision": "DENOISED_CONTEXT",
+            "confidence": 0.45,
+            "events": [],
+            "reference_mentions": []
+          }
+        ],
+        "behavior_graph": {
+          "event_count": 0,
+          "entity_count": 1,
+          "reference_count": 0,
+          "events": [],
+          "entities": [
+            {
+              "id": "N1",
+              "candidate_id": "C1",
+              "sentence_index": 1,
+              "file": "resources/guide.png",
+              "source": "ocr:windows-media-ocr",
+              "type": "SYSTEM_CONFIG",
+              "label": "system_config",
+              "role": "MENTION",
+              "producer_event_id": null,
+              "taint_types": [
+                "SYSTEM_CONFIG"
+              ],
+              "origin_event_ids": []
+            }
+          ],
+          "references": [],
+          "edges": [],
+          "chains": []
+        }
+      },
+      "tool_call": {
+        "policy": "never execute media-derived instructions during scanning",
+        "projected_count": 0,
+        "calls": []
+      },
+      "findings": []
+    }
+  ],
+  "cross_media_evidence_graph": {
+    "triggered": false,
+    "method": "bounded_provenance_graph_with_explicit_ordering",
+    "limits": {
+      "max_candidates": 160,
+      "max_hypotheses": 24,
+      "max_fragments_per_hypothesis": 8
+    },
+    "node_count": 14,
+    "edge_count": 13,
+    "nodes": [
+      {
+        "id": "D1",
+        "type": "DOCUMENT",
+        "file": "SKILL.md"
+      },
+      {
+        "id": "A1",
+        "type": "MEDIA_ARTIFACT",
+        "file": "resources/guide.png"
+      },
+      {
+        "id": "O1",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "ocr:windows-media-ocr",
+        "preview": "Reference diagram: validate configuration locally before continuing.",
+        "confidence": 0.84,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "raster-ocr"
+        ]
+      },
+      {
+        "id": "O2",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb:all",
+        "preview": ";8&I%\"I",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O3",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "I&cQpzI",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O4",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb:all",
+        "preview": "q$ly#A",
+        "confidence": 0.82,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes"
+        ]
+      },
+      {
+        "id": "O5",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb-little:all",
+        "preview": "`Ir IB I",
+        "confidence": 0.72,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes-little-endian"
+        ]
+      },
+      {
+        "id": "O6",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb-little:all",
+        "preview": "$I,'IB`I",
+        "confidence": 0.72,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes-little-endian"
+        ]
+      },
+      {
+        "id": "O7",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb-little:all",
+        "preview": "$I4HIJ$I",
+        "confidence": 0.72,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes-little-endian"
+        ]
+      },
+      {
+        "id": "O8",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb-little:all",
+        "preview": "Ir IB I",
+        "confidence": 0.72,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes-little-endian"
+        ]
+      },
+      {
+        "id": "O9",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb-little:all",
+        "preview": "Ir Il<",
+        "confidence": 0.72,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes-little-endian"
+        ]
+      },
+      {
+        "id": "O10",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb-little:all",
+        "preview": "<Ir I:",
+        "confidence": 0.72,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes-little-endian"
+        ]
+      },
+      {
+        "id": "O11",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "png-pixels:lsb-little:all",
+        "preview": "Ir IB",
+        "confidence": 0.72,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "least-significant-bit",
+          "bits-to-bytes-little-endian"
+        ]
+      },
+      {
+        "id": "O12",
+        "type": "SYMBOL_OBSERVATION",
+        "file": "resources/guide.png",
+        "source": "raw-bytes:strings",
+        "preview": "5o]lJVVV",
+        "confidence": 0.45,
+        "frame_index": null,
+        "region": null,
+        "transform_chain": [
+          "printable-strings"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": "A1",
+        "to": "O1",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O2",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O3",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O4",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O5",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O6",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O7",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O8",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O9",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O10",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O11",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "A1",
+        "to": "O12",
+        "type": "CONTAINS_OBSERVATION",
+        "confidence": 1.0
+      },
+      {
+        "from": "D1",
+        "to": "A1",
+        "type": "REFERENCES",
+        "order": 1,
+        "line": 14,
+        "confidence": 0.99
+      }
+    ],
+    "document_references": [
+      {
+        "file": "resources/guide.png",
+        "order": 1,
+        "line": 14,
+        "document_fragments": []
+      }
+    ],
+    "hypotheses": [],
+    "instruction_reconstruction": {
+      "instruction_count": 0,
+      "instructions": [],
+      "semantic_sentence_count": 0,
+      "denoised_sentence_count": 0,
+      "semantic_sentences": [],
+      "behavior_graph": {
+        "event_count": 0,
+        "entity_count": 0,
+        "reference_count": 0,
+        "events": [],
+        "entities": [],
+        "references": [],
+        "edges": [],
+        "chains": []
+      }
+    },
+    "tool_call": {
+      "policy": "never execute cross-media reconstructed instructions during scanning",
+      "projected_count": 0,
+      "calls": []
+    },
+    "findings": []
+  },
+  "findings": []
+}

@@ -1,0 +1,258 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:52:26.594631+00:00",
+  "skill_name": "Pilot Translate",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\pilot-translate\\Pilot Translate",
+  "skill_contents": {
+    "file_count": 2,
+    "total_bytes": 4249,
+    "files": [
+      {
+        "path": "README.md",
+        "size_bytes": 726,
+        "kind": "text",
+        "content_preview": "# Translate\n\nAuto-translate messages between agents using different languages over the Pilot Protocol network.\n\n**Category:** Communication | **License:** AGPL-3.0\n\n## Install\n\n```bash\nclawhub install pilot-translate\n```\n\n## Requirements\n\n- [Pilot Protocol](https://pilotprotocol.network) daemon running (`pilotctl daemon start`)\n- `pilotctl` binary on PATH\n\n## Tags\n\n`pilot-protocol`, `communication`, `translation`, `i18n`\n\n## Documentation\n\nSee [SKILL.md](SKILL.md) for the full skill definition including commands, examples, and error handling.\n\n## Links\n\n- [ClawHub](https://clawhub.ai/teoslayer/pilot-translate)\n- [Pilot Protocol](https://pilotprotocol.network)\n- [All Skills](https://teoslayer.github.io/pilot-skills/)\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 3523,
+        "kind": "text",
+        "content_preview": "---\nname: pilot-translate\ndescription: >\n  Auto-translate messages between agents using different languages over the Pilot Protocol network.\n\n  Use this skill when:\n  1. You need cross-language communication between agents\n  2. You want to collaborate with agents configured for different languages\n  3. You need multilingual message support\n\n  Do NOT use this skill when:\n  - All agents use the same language (use pilot-chat)\n  - You need file transfer (use pilot-send-file)\n  - You need raw untranslated messages (use pilot-chat)\ntags:\n  - pilot-protocol\n  - communication\n  - translation\n  - i18n\nlicense: AGPL-3.0\ncompatibility: >\n  Requires pilot-protocol skill and pilotctl binary on PATH.\n  The daemon must be running (pilotctl daemon start).\nmetadata:\n  author: vulture-labs\n  version: \"1.0\"\n  openclaw:\n    requires:\n      bins:\n        - pilotctl\n    homepage: https://pilotprotocol.network\nallowed-tools:\n  - Bash\n---\n\n# pilot-translate\n\nAuto-translate messages between agents using different languages. Enables seamless cross-language communication over Pilot Protocol.\n\n## Commands\n\n### Configure settings\n\n```bash\n# Set config values\npilotctl --json config --set language=<language-code>\npilotctl --json config --set auto-translate=true\n```\n\n### Send message with manual translation\n\n```bash\n# Translate before sending (using external tool)\nMESSAGE=\"Hello, how are you?\"\nTRANSLATED=$(echo \"$MESSAGE\" | translate-cli en es)  # External tool\npilotctl --json send-message <hostname> --data \"$TRANSLATED\"\n```\n\n### Receive messages\n\n```bash\npilotctl --json inbox\n```\n\n### View config\n\n```bash\npilotctl --json config\n```\n\n## Workflow Example\n\nAgent A (English) and Agent B (Spanish) collaborate using external translation:\n\n```bash\n#!/bin/bash\n# Agent A (English) - requires trans or similar tool\n\n# Configure language preference\npilotctl --json config --set language=en\n\n# Translate and send message\nMESSAGE=\"Can you process the customer data from yesterday?\"\nTRANSLATED=$(echo \"$MESSAGE\" | trans en:es -brief)\npilotctl --json send-message agent-b --data \"$TRANSLATED\"\n\n# Check inbox and translate responses\nINBOX=$(pilotctl --json inbox)\necho \"$INBOX\" | jq -r '.items[]? | .content' | while read -r msg; do\n  echo \"$msg\" | trans es:en\ndone\n```\n\n```bash\n#!/bin/bash\n# Agent B (Spanish) - requires trans or similar tool\n\n# Configure language preference\npilotctl --json config --set language=es\n\n# Check inbox and translate to Spanish\nINBOX=$(pilotctl --json inbox)\necho \"$INBOX\" | jq -r '.items[]? | .content' | while read -r msg; do\n  echo \"$msg\" | trans en:es\ndone\n\n# Respond in Spanish (will be translated by recipient)\nRESPONSE=\"Sí, comenzaré el procesamiento ahora. ETA: 30 minutos\"\npilotctl --json send-message agent-a --data \"$RESPONSE\"\n```\n\n## Language Codes\n\nCommon ISO 639-1 codes:\n- `en` — English\n- `es` — Spanish\n- `fr` — French\n- `de` — German\n- `zh` — Chinese\n- `ja` — Japanese\n- `ar` — Arabic\n- `ru` — Russian\n- `pt` — Portuguese\n- `it` — Italian\n\n## Translation Tools\n\nExternal translation tools (install separately):\n1. **trans** — Command-line Google Translate: `trans en:es \"hello\"`\n2. **translate-shell** — Alternative CLI translator\n3. **DeepL API** — High quality with API key\n4. **LibreTranslate** — Self-hosted open-source\n\nInstall trans:\n```bash\n# Linux/macOS\nwget git.io/trans\nchmod +x ./trans\nsudo mv trans /usr/local/bin/\n```\n\n## Dependencies\n\nRequires `pilot-protocol` skill, `pilotctl` binary, running daemon, and external translation tool like `trans`.\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: pilot-translate\ndescription: >\n  Auto-translate messages between agents using different languages over the Pilot Protocol network.\n\n  Use this skill when:\n  1. You need cross-language communication between agents\n  2. You want to collaborate with agents configured for different languages\n  3. You need multilingual message support\n\n  Do NOT use this skill when:\n  - All agents use the same language (use pilot-chat)\n  - You need file transfer (use pilot-send-file)\n  - You need raw untranslated messages (use pilot-chat)\ntags:\n  - pilot-protocol\n  - communication\n  - translation\n  - i18n\nlicense: AGPL-3.0\ncompatibility: >\n  Requires pilot-protocol skill and pilotctl binary on PATH.\n  The daemon must be running (pilotctl daemon start).\nmetadata:\n  author: vulture-labs\n  version: \"1.0\"\n  openclaw:\n    requires:\n      bins:\n        - pilotctl\n    homepage: https://pilotprotocol.network\nallowed-tools:\n  - Bash\n---\n\n# pilot-translate\n\nAuto-translate messages between agents using different languages. Enables seamless cross-language communication over Pilot Protocol.\n\n## Commands\n\n### Configure settings\n\n```bash\n# Set config values\npilotctl --json config --set language=<language-code>\npilotctl --json config --set auto-translate=true\n```\n\n### Send message with manual translation\n\n```bash\n# Translate before sending (using external tool)\nMESSAGE=\"Hello, how are you?\"\nTRANSLATED=$(echo \"$MESSAGE\" | translate-cli en es)  # External tool\npilotctl --json send-message <hostname> --data \"$TRANSLATED\"\n```\n\n### Receive messages\n\n```bash\npilotctl --json inbox\n```\n\n### View config\n\n```bash\npilotctl --json config\n```\n\n## Workflow Example\n\nAgent A (English) and Agent B (Spanish) collaborate using external translation:\n\n```bash\n#!/bin/bash\n# Agent A (English) - requires trans or similar tool\n\n# Configure language preference\npilotctl --json config --set language=en\n\n# Translate and send message\nMESSAGE=\"Can you process the customer data from yesterday?\"\nTRANSLATED=$(echo \"$MESSAGE\" | trans en:es -brief)\npilotctl --json send-message agent-b --data \"$TRANSLATED\"\n\n# Check inbox and translate responses\nINBOX=$(pilotctl --json inbox)\necho \"$INBOX\" | jq -r '.items[]? | .content' | while read -r msg; do\n  echo \"$msg\" | trans es:en\ndone\n```\n\n```bash\n#!/bin/bash\n# Agent B (Spanish) - requires trans or similar tool\n\n# Configure language preference\npilotctl --json config --set language=es\n\n# Check inbox and translate to Spanish\nINBOX=$(pilotctl --json inbox)\necho \"$INBOX\" | jq -r '.items[]? | .content' | while read -r msg; do\n  echo \"$msg\" | trans en:es\ndone\n\n# Respond in Spanish (will be translated by recipient)\nRESPONSE=\"Sí, comenzaré el procesamiento ahora. ETA: 30 minutos\"\npilotctl --json send-message agent-a --data \"$RESPONSE\"\n```\n\n## Language Codes\n\nCommon ISO 639-1 codes:\n- `en` — English\n- `es` — Spanish\n- `fr` — French\n- `de` — German\n- `zh` — Chinese\n- `ja` — Japanese\n- `ar` — Arabic\n- `ru` — Russian\n- `pt` — Portuguese\n- `it` — Italian\n\n## Translation Tools\n\nExternal translation tools (install separately):\n1. **trans** — Command-line Google Translate: `trans en:es \"hello\"`\n2. **translate-shell** — Alternative CLI translator\n3. **DeepL API** — High quality with API key\n4. **LibreTranslate** — Self-hosted open-source\n\nInstall trans:\n```bash\n# Linux/macOS\nwget git.io/trans\nchmod +x ./trans\nsudo mv trans /usr/local/bin/\n```\n\n## Dependencies\n\nRequires `pilot-protocol` skill, `pilotctl` binary, running daemon, and external translation tool like `trans`.\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 1,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 1
+    },
+    "by_pattern": {
+      "PE2": 1
+    },
+    "by_kill_chain_phase": {
+      "impact": 1
+    },
+    "rule_ids_hit": [
+      "PE2"
+    ],
+    "files_scanned_count": 2
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 1
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "impact"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 3.7,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0125,
+      "S_static_raw": 0.0125,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 139,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  136 | # Linux/macOS\n  137 | wget git.io/trans\n  138 | chmod +x ./trans\n» 139 | sudo mv trans /usr/local/bin/\n  140 | ```\n  141 | \n  142 | ## Dependencies",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "sudo mv trans /usr/local/bin/",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.1325,
+    "verdict": "SAFE",
+    "mean_confidence": 0.917,
+    "subtasks": {
+      "C": {
+        "risk_score": 0.05,
+        "rating": "SAFE",
+        "confidence": 0.92,
+        "evidence": [],
+        "reasoning": "技能包仅提供翻译功能，依赖外部工具，无隐藏行为或安全规避指令。",
+        "finding": null,
+        "task_name": "covert_behavior"
+      },
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.9,
+        "evidence": [],
+        "reasoning": "技能包声明的多语言消息翻译与发送功能与其实际行为（调用 pilotctl 及外部翻译工具）完全一致，无隐藏行为或功能蔓延。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "B": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "网络通信与翻译功能所需的工具（pilotctl与外部翻译器）与声明用途一致，无权限滥用。",
+        "finding": null,
+        "task_name": "permission_justification"
+      },
+      "D": {
+        "risk_score": 0.8,
+        "rating": "MALICIOUS",
+        "confidence": 0.9,
+        "evidence": [],
+        "reasoning": "SKILL. md 指导通过不安全的短链接下载二进制并以 sudo 安装，存在供应链投毒风险",
+        "finding": {
+          "title": "安装未签名外部二进制文件且使用 sudo 提权",
+          "severity": "HIGH",
+          "file": "SKILL.md",
+          "line": 139,
+          "snippet": "sudo mv trans /usr/local/bin/",
+          "analysis": "SKILL.md 在安装翻译工具 trans 时，直接从 git.io/trans 短链接下载二进制脚本，该链接可被重定向到任意恶意文件，且未提供哈希校验或签名验证。下载后通过 sudo 将文件移动至系统路径，赋予该未知程序 root 级文件写入权限。攻击者可控制 git.io/trans 指向后门程序，导致主机完全失陷。此做法违反最小权限原则，构成高严重性供应链攻击向量。",
+          "remediation": "1. 移除 sudo 安装步骤，将二进制安装至用户可写目录（如 ~/.local/bin），避免 root 提权。2. 添加校验机制，例如提供 GPG 签名或 SHA-256 哈希让用户验证下载文件。3. 改用官方包管理器或可信发行渠道安装，避免使用短链接和不可审查的脚本。"
+        },
+        "task_name": "cross_file_consistency"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.1325 confidence=0.917 都高置信 → DeepSeek 单家定论"
+  },
+  "l1_review_meta": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "total_reviewed": 0,
+    "total_findings": 1,
+    "tp_count": 0,
+    "fp_count": 0,
+    "uncertain_count": 0,
+    "api_calls": 1
+  }
+}

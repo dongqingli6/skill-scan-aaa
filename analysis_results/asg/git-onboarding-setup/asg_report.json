@@ -1,0 +1,148 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-13T14:52:03.549654+00:00",
+  "skill_name": "Git Onboarding Setup",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\git-onboarding-setup\\Git Onboarding Setup",
+  "skill_contents": {
+    "file_count": 1,
+    "total_bytes": 10685,
+    "files": [
+      {
+        "path": "SKILL.md",
+        "size_bytes": 10685,
+        "kind": "text",
+        "content_preview": "---\nname: git-onboarding-setup\ndescription: Git과 GitHub 초기 설정을 단계별로 진행합니다. \"git 설정\", \"처음 시작\", \"GitHub 로그인\", \"깃 세팅\" 같은 요청에 사용됩니다.\n---\n\n# Git 초기 설정 가이드\n\nGit과 GitHub를 처음 사용하기 위한 설정을 단계별로 진행합니다.\n이미 완료된 단계는 자동으로 건너뜁니다.\n\n## 상태 수집\n\n아래 9개 명령어를 **모두 병렬로** 실행하세요:\n\n1. `which git` — Git 설치 여부\n2. `git config --global user.name` — 사용자 이름\n3. `git config --global user.email` — 이메일\n4. `which gh 2>/dev/null && echo \"installed\" || echo \"none\"` — GitHub CLI 설치 여부\n5. `gh auth status 2>&1` — GitHub 인증 상태 (출력에 \"Logged in\"이 포함되면 성공)\n6. `git rev-parse --git-dir 2>/dev/null && echo \"repo\" || echo \"no-repo\"` — Git 저장소 여부\n7. `git remote get-url origin 2>/dev/null || echo \"no-remote\"` — 원격 저장소 연결 여부\n8. `git ls-remote --heads origin main 2>/dev/null | grep -q main && echo \"remote-branch: exists\" || echo \"remote-branch: none\"` — 원격 main 브랜치 여부\n9. `for hook in pre-commit commit-msg pre-push; do test -x .git/hooks/$hook && echo \"$hook: exists\" || echo \"$hook: none\"; done` — git hooks 설치 여부\n\n## 진행 규칙\n\n- 결과를 분석하여 이미 완료된 단계는 건너뛰세요.\n- 첫 번째 미완료 단계부터 순서대로 진행하세요.\n- 각 단계를 하나씩 완료한 후 다음 단계로 넘어가세요.\n- 사용자 입력이 필요한 단계에서는 반드시 AskUserQuestion을 사용하세요.\n- 모든 설명은 한국어로, Git을 처음 쓰는 사용자 눈높이에 맞추세요.\n\n## 단계 1: Git 설치 확인\n\n**완료 조건:** `which git`이 경로를 반환함\n\n미설치인 경우 안내하세요:\n\n```\nGit이 설치되어 있지 않습니다.\n\n터미널에서 아래 명령어를 직접 실행하세요:\n  xcode-select --install\n\n설치 팝업이 나타나면 \"설치\" 버튼을 클릭하세요.\n설치가 완료되면 다시 /git-onboarding-setup 을 실행해주세요.\n```\n\nxcode-select는 GUI 팝업이 필요하므로 Claude가 직접 실행하지 마세요. 안내만 제공하고 이 단계에서 멈추세요.\n\n## 단계 2: 사용자 이름 설정\n\n**완료 조건:** `git config --global user.name`이 비어있지 않음\n\nAskUserQuestion으로 이름을 물어보세요:\n\n- question: \"Git에서 사용할 이름을 입력하세요. 커밋 기록에 남는 이름입니다.\"\n- header: \"이름\"\n- options:\n  - 현재 시스템 사용자 이름을 기본 옵션으로 제안\n\n이름을 받으면 실행하세요:\n\n```\ngit config --global user.name \"<입력받은 이름>\"\n```\n\n## 단계 3: 이메일 설정\n\n**완료 조건:** `git config --global user.email`이 비어있지 않음\n\nAskUserQuestion으로 이메일을 물어보세요:\n\n- question: \"Git에서 사용할 이메일을 입력하세요. GitHub 계정과 같은 이메일을 권장합니다. 이메일을 공개하고 싶지 않다면 GitHub의 noreply 이메일을 사용할 수 있습니다 (GitHub > Settings > Emails에서 확인).\"\n- header: \"이메일\"\n- options:\n  - \"noreply 이메일 사용\" — GitHub Settings > Emails에서 제공하는 비공개 이메일 (username@users.noreply.github.com)\n  - \"직접 입력\" — 본인 이메일 주소를 직접 입력\n\n이메일을 받으면 실행하세요:\n\n```\ngit config --global user.email \"<입력받은 이메일>\"\n```\n\n## 단계 4: GitHub CLI 설치 확인\n\n**완료 조건:** `which gh`가 경로를 반환함\n\n미설치인 경우, AskUserQuestion으로 설치 방법을 안내하세요:\n\n- question: \"GitHub CLI(gh)가 설치되어 있지 않습니다. 어떤 방법으로 설치하시겠습니까?\"\n- header: \"gh 설치\"\n- options:\n  - \"Homebrew로 설치 (Recommended)\" — Mac 사용자에게 권장. `brew install gh`\n  - \"직접 설치\" — https://cli.github.com 에서 다운로드\n\nHomebrew를 선택한 경우:\n\n```bash\nbrew install gh\n```\n\n직접 설치를 선택한 경우, 사용자에게 안내하세요:\n\n```\n아래 링크에서 GitHub CLI를 다운로드하여 설치하세요:\n  https://cli.github.com\n\n설치가 완료되면 다시 /git-onboarding-setup 을 실행해주세요.\n```\n\n직접 설치는 Claude가 실행할 수 없으므로 안내만 제공하고 이 단계에서 멈추세요.\n\n## 단계 5: GitHub 로그인\n\n**완료 조건:** `gh auth status 2>&1` 출력에 \"Logged in\"이 포함됨\n\nGitHub에 로그인되어 있지 않은 경우, 사용자에게 안내하세요:\n\n```\nGitHub에 로그인해야 합니다.\n\n터미널에서 아래 명령어를 직접 실행하세요:\n  gh auth login\n\n실행하면 몇 가지 선택지가 나옵니다:\n  1. \"GitHub.com\" 선택\n  2. 프로토콜은 \"HTTPS\" 선택\n  3. 인증 방법은 \"Login with a web browser\" 선택\n  4. 화면에 나오는 코드를 복사한 뒤 Enter\n  5. 브라우저에서 코드를 붙여넣고 인증 완료\n\n완료되면 다시 /git-onboarding-setup 을 실행해주세요.\n```\n\n`gh auth login`은 브라우저 인터랙션이 필요하므로 Claude가 직접 실행하지 마세요. 안내만 제공하고 이 단계에서 멈추세요.\n\n사용자가 완료를 알리면 인증 상태를 확인하세요:\n\n```bash\ngh auth status 2>&1\n```\n\n\"Logged in\" 메시지가 나오면 성공입니다. 실패하면 로그인 과정을 다시 안내하세요.\n\n## 단계 6: 저장소 준비\n\n**완료 조건:** `git rev-parse --git-dir`이 성공 (현재 디렉토리가 Git 저장소)\n\nGit 저장소가 아닌 경우, AskUserQuestion으로 방법을 물어보세요:\n\n- question: \"현재 디렉토리는 Git 저장소가 아닙니다. 어떻게 시작하시겠습니까?\"\n- header: \"저장소\"\n- options:\n  - \"기존 저장소 clone\" — GitHub에 이미 있는 저장소를 가져옴\n  - \"새 저장소 만들기\" — 현재 폴더를 Git 저장소로 초기화\n\nclone을 선택한 경우:\n저장소 URL을 물어본 후 실행하세요:\n\n```bash\ngit clone <URL>\n```\n\n새 저장소를 선택한 경우:\n\n```bash\ngit init\n```\n\n## 단계 7: GitHub 원격 저장소 연결\n\n**완료 조건:** `git remote get-url origin`이 GitHub URL을 반환함\n\n원격 저장소가 없는 경우 (`no-remote`), AskUserQuestion으로 방법을 물어보세요:\n\n- question: \"GitHub에 원격 저장소를 만들겠습니까?\"\n- header: \"원격 저장소\"\n- options:\n  - \"새 저장소 만들기 (Recommended)\" — GitHub에 저장소를 생성하고 자동으로 연결합니다\n  - \"기",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: git-onboarding-setup\ndescription: Git과 GitHub 초기 설정을 단계별로 진행합니다. \"git 설정\", \"처음 시작\", \"GitHub 로그인\", \"깃 세팅\" 같은 요청에 사용됩니다.\n---\n\n# Git 초기 설정 가이드\n\nGit과 GitHub를 처음 사용하기 위한 설정을 단계별로 진행합니다.\n이미 완료된 단계는 자동으로 건너뜁니다.\n\n## 상태 수집\n\n아래 9개 명령어를 **모두 병렬로** 실행하세요:\n\n1. `which git` — Git 설치 여부\n2. `git config --global user.name` — 사용자 이름\n3. `git config --global user.email` — 이메일\n4. `which gh 2>/dev/null && echo \"installed\" || echo \"none\"` — GitHub CLI 설치 여부\n5. `gh auth status 2>&1` — GitHub 인증 상태 (출력에 \"Logged in\"이 포함되면 성공)\n6. `git rev-parse --git-dir 2>/dev/null && echo \"repo\" || echo \"no-repo\"` — Git 저장소 여부\n7. `git remote get-url origin 2>/dev/null || echo \"no-remote\"` — 원격 저장소 연결 여부\n8. `git ls-remote --heads origin main 2>/dev/null | grep -q main && echo \"remote-branch: exists\" || echo \"remote-branch: none\"` — 원격 main 브랜치 여부\n9. `for hook in pre-commit commit-msg pre-push; do test -x .git/hooks/$hook && echo \"$hook: exists\" || echo \"$hook: none\"; done` — git hooks 설치 여부\n\n## 진행 규칙\n\n- 결과를 분석하여 이미 완료된 단계는 건너뛰세요.\n- 첫 번째 미완료 단계부터 순서대로 진행하세요.\n- 각 단계를 하나씩 완료한 후 다음 단계로 넘어가세요.\n- 사용자 입력이 필요한 단계에서는 반드시 AskUserQuestion을 사용하세요.\n- 모든 설명은 한국어로, Git을 처음 쓰는 사용자 눈높이에 맞추세요.\n\n## 단계 1: Git 설치 확인\n\n**완료 조건:** `which git`이 경로를 반환함\n\n미설치인 경우 안내하세요:\n\n```\nGit이 설치되어 있지 않습니다.\n\n터미널에서 아래 명령어를 직접 실행하세요:\n  xcode-select --install\n\n설치 팝업이 나타나면 \"설치\" 버튼을 클릭하세요.\n설치가 완료되면 다시 /git-onboarding-setup 을 실행해주세요.\n```\n\nxcode-select는 GUI 팝업이 필요하므로 Claude가 직접 실행하지 마세요. 안내만 제공하고 이 단계에서 멈추세요.\n\n## 단계 2: 사용자 이름 설정\n\n**완료 조건:** `git config --global user.name`이 비어있지 않음\n\nAskUserQuestion으로 이름을 물어보세요:\n\n- question: \"Git에서 사용할 이름을 입력하세요. 커밋 기록에 남는 이름입니다.\"\n- header: \"이름\"\n- options:\n  - 현재 시스템 사용자 이름을 기본 옵션으로 제안\n\n이름을 받으면 실행하세요:\n\n```\ngit config --global user.name \"<입력받은 이름>\"\n```\n\n## 단계 3: 이메일 설정\n\n**완료 조건:** `git config --global user.email`이 비어있지 않음\n\nAskUserQuestion으로 이메일을 물어보세요:\n\n- question: \"Git에서 사용할 이메일을 입력하세요. GitHub 계정과 같은 이메일을 권장합니다. 이메일을 공개하고 싶지 않다면 GitHub의 noreply 이메일을 사용할 수 있습니다 (GitHub > Settings > Emails에서 확인).\"\n- header: \"이메일\"\n- options:\n  - \"noreply 이메일 사용\" — GitHub Settings > Emails에서 제공하는 비공개 이메일 (username@users.noreply.github.com)\n  - \"직접 입력\" — 본인 이메일 주소를 직접 입력\n\n이메일을 받으면 실행하세요:\n\n```\ngit config --global user.email \"<입력받은 이메일>\"\n```\n\n## 단계 4: GitHub CLI 설치 확인\n\n**완료 조건:** `which gh`가 경로를 반환함\n\n미설치인 경우, AskUserQuestion으로 설치 방법을 안내하세요:\n\n- question: \"GitHub CLI(gh)가 설치되어 있지 않습니다. 어떤 방법으로 설치하시겠습니까?\"\n- header: \"gh 설치\"\n- options:\n  - \"Homebrew로 설치 (Recommended)\" — Mac 사용자에게 권장. `brew install gh`\n  - \"직접 설치\" — https://cli.github.com 에서 다운로드\n\nHomebrew를 선택한 경우:\n\n```bash\nbrew install gh\n```\n\n직접 설치를 선택한 경우, 사용자에게 안내하세요:\n\n```\n아래 링크에서 GitHub CLI를 다운로드하여 설치하세요:\n  https://cli.github.com\n\n설치가 완료되면 다시 /git-onboarding-setup 을 실행해주세요.\n```\n\n직접 설치는 Claude가 실행할 수 없으므로 안내만 제공하고 이 단계에서 멈추세요.\n\n## 단계 5: GitHub 로그인\n\n**완료 조건:** `gh auth status 2>&1` 출력에 \"Logged in\"이 포함됨\n\nGitHub에 로그인되어 있지 않은 경우, 사용자에게 안내하세요:\n\n```\nGitHub에 로그인해야 합니다.\n\n터미널에서 아래 명령어를 직접 실행하세요:\n  gh auth login\n\n실행하면 몇 가지 선택지가 나옵니다:\n  1. \"GitHub.com\" 선택\n  2. 프로토콜은 \"HTTPS\" 선택\n  3. 인증 방법은 \"Login with a web browser\" 선택\n  4. 화면에 나오는 코드를 복사한 뒤 Enter\n  5. 브라우저에서 코드를 붙여넣고 인증 완료\n\n완료되면 다시 /git-onboarding-setup 을 실행해주세요.\n```\n\n`gh auth login`은 브라우저 인터랙션이 필요하므로 Claude가 직접 실행하지 마세요. 안내만 제공하고 이 단계에서 멈추세요.\n\n사용자가 완료를 알리면 인증 상태를 확인하세요:\n\n```bash\ngh auth status 2>&1\n```\n\n\"Logged in\" 메시지가 나오면 성공입니다. 실패하면 로그인 과정을 다시 안내하세요.\n\n## 단계 6: 저장소 준비\n\n**완료 조건:** `git rev-parse --git-dir`이 성공 (현재 디렉토리가 Git 저장소)\n\nGit 저장소가 아닌 경우, AskUserQuestion으로 방법을 물어보세요:\n\n- question: \"현재 디렉토리는 Git 저장소가 아닙니다. 어떻게 시작하시겠습니까?\"\n- header: \"저장소\"\n- options:\n  - \"기존 저장소 clone\" — GitHub에 이미 있는 저장소를 가져옴\n  - \"새 저장소 만들기\" — 현재 폴더를 Git 저장소로 초기화\n\nclone을 선택한 경우:\n저장소 URL을 물어본 후 실행하세요:\n\n```bash\ngit clone <URL>\n```\n\n새 저장소를 선택한 경우:\n\n```bash\ngit init\n```\n\n## 단계 7: GitHub 원격 저장소 연결\n\n**완료 조건:** `git remote get-url origin`이 GitHub URL을 반환함\n\n원격 저장소가 없는 경우 (`no-remote`), AskUserQuestion으로 방법을 물어보세요:\n\n- question: \"GitHub에 원격 저장소를 만들겠습니까?\"\n- header: \"원격 저장소\"\n- options:\n  - \"새 저장소 만들기 (Recommended)\" — GitHub에 저장소를 생성하고 자동으로 연결합니다\n  - \"기"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 1
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": []
+}

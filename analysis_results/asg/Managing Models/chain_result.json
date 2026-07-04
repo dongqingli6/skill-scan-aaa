@@ -1,0 +1,23 @@
+{
+  "archetype": {
+    "archetype": "Data Thief",
+    "confidence": 0.7,
+    "paper_archetype_share_percent": 70.5,
+    "has_SC2": false,
+    "has_P1": false,
+    "has_PE1": false
+  },
+  "sophistication": {
+    "level": 1,
+    "label": "Basic",
+    "criterion_evasion_present": false,
+    "criterion_shadow_features": false,
+    "criterion_pattern_count": 1
+  },
+  "chains_triggered": [],
+  "chain_count": 0,
+  "kill_chain_phases_covered": [
+    "exfil"
+  ],
+  "kill_chain_phase_coverage_count": 1
+}

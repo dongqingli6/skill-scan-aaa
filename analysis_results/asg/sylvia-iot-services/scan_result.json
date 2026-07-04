@@ -1,0 +1,101 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\sylvia-iot-services\\Sylvia Iot Services",
+  "skill_name": "Sylvia Iot Services",
+  "files_scanned": [
+    "evals\\evals.json",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 4,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 1,
+    "LOW": 3
+  },
+  "by_pattern": {
+    "PE2": 3,
+    "P8": 1
+  },
+  "by_kill_chain_phase": {
+    "impact": 4
+  },
+  "rule_ids_hit": [
+    "P8",
+    "PE2"
+  ],
+  "findings": [
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 50,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  47 | - **Docker**: `docker info` (all methods except systemd for infra)\n  48 | - **sqlite3**: `command -v sqlite3` (scripts method with sqlite)\n  49 | - **kubectl + kustomize**: `kubectl version` (kustomize method)\n» 50 | - **sudo access**: systemd method requires `sudo`\n  51 | \n  52 | If something is missing, tell the user what to install and stop.\n  53 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "- **sudo access**: systemd method requires `sudo`",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 111,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  108 | cd /tmp/sylvia-iot-deployment/systemd\n  109 | \n  110 | # Install and start\n» 111 | sudo ./install.sh [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]\n  112 | \n  113 | # Uninstall\n  114 | sudo ./install.sh --uninstall",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "sudo ./install.sh [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 114,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  111 | sudo ./install.sh [--bin core|router] [--with lora-ifroglab,app-demo] [--gui] [--host HOSTNAME]\n  112 | \n  113 | # Uninstall\n» 114 | sudo ./install.sh --uninstall\n  115 | ```\n  116 | \n  117 | ## Default Credentials",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "sudo ./install.sh --uninstall",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 12,
+      "pattern": "(?i)\\bthe\\s+(?:source|single\\s+source)\\s+of\\s+truth",
+      "matched_text": "the source of truth",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "   9 | Core modules: auth, broker, coremgr, data. The `sylvia-router` binary bundles all core modules plus IP router functionality.\n  10 | \n  11 | All deployment logic lives in the [woofdogtw/sylvia-iot-deployment](https://github.com/woofdogtw/sylvia-iot-deployment) repo.\n» 12 | **Always download the latest scripts from GitHub to `/tmp/sylvia-iot-deployment/` before running anything** — these scripts are the source of truth and handle all the complexity.\n  13 | \n  14 | ## Step 1: Download Scripts\n  15 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "**Always download the latest scripts from GitHub to `/tmp/sylvia-iot-deployment/` before running anything** — these scripts are the source of truth and handle all the complexity.",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

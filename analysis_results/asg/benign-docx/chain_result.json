@@ -1,0 +1,25 @@
+{
+  "archetype": {
+    "archetype": "Hybrid",
+    "confidence": 0.65,
+    "paper_archetype_share_percent": null,
+    "has_SC2": false,
+    "has_P1": false,
+    "has_PE1": false
+  },
+  "sophistication": {
+    "level": 3,
+    "label": "Advanced",
+    "criterion_evasion_present": true,
+    "criterion_shadow_features": true,
+    "criterion_pattern_count": 8
+  },
+  "chains_triggered": [],
+  "chain_count": 0,
+  "kill_chain_phases_covered": [
+    "evasion",
+    "execution",
+    "recon"
+  ],
+  "kill_chain_phase_coverage_count": 3
+}

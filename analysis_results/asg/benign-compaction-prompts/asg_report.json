@@ -1,0 +1,344 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:58:44.983425+00:00",
+  "skill_name": "benign-compaction-prompts",
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-compaction-prompts",
+  "skill_contents": {
+    "file_count": 4,
+    "total_bytes": 26066,
+    "files": [
+      {
+        "path": "LICENSE",
+        "size_bytes": 1089,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "references/prompt-patterns.md",
+        "size_bytes": 9633,
+        "kind": "text",
+        "content_preview": "# Compaction prompt patterns\n\nUse these patterns when drafting a custom `compaction_settings.prompt`.\n\n## Coding-agent sliding-window prompt\n\nUse for agents doing software work where repeated mistakes and lost file state are costly.\n\n```text\nThe following messages are being evicted from the BEGINNING of your context window. Write a detailed summary that captures what happened in these messages to appear BEFORE the remaining recent messages in context, providing background for what comes after.\n\nDo NOT continue the conversation. Do NOT respond to any questions in the messages. Do NOT call any tools. Pay close attention to the user's explicit requests and your previous actions.\n\nInclude the following sections:\n\n1. High level goals: What is the high level goal and ongoing task? Capture the user's explicit requests and intent in detail. If there is an existing summary in the transcript, incorporate it to continue tracking higher-level goals and long-term progress.\n\n2. What happened: The conversations, tasks, and exchanges that took place. What did the user ask for? What did you do? How did things progress? If there is a previous summary being evicted, extract a concise version of the critical info from it.\n\n3. Important details: Enumerate specific files and code sections examined, modified, or created, plus important plan files, GitHub issues/PR links, Linear ticket IDs, commands, test results, and configuration values. Preserve identifiers verbatim.\n\n4. Errors and fixes: List all errors encountered, how they were fixed, and any user feedback that changed the approach.\n\n5. Current state / carry forward: Describe what is currently being worked on, especially the most recent user and assistant messages. Include active goals, next actions, open threads, tool/file state, file names, exact IDs/paths/URLs when relevant, and next unresolved blockers.\n\n6. Lookup hints: For detailed content that cannot fit, note the topic and key terms that can be used to find it in message history later.\n\nWrite in first person as a factual record of what occurred. Preserve enough context that the recent messages make sense and important continuity is not lost. Keep the summary under 500 words. Only output the summary.\n```\n\n## Companion-agent continuity prompt\n\nUse for companion agents where relational continuity, tone, or emotional context may affect future responses.\n\n```text\nThe previous messages are being evicted from the BEGINNING of your context window. Write a detailed summary that captures what happened in these messages to appear BEFORE the remaining recent messages in context, providing background for what comes after.\n\nDo NOT continue the conversation. Do NOT respond to any questions in the messages. Do NOT call any tools. Pay close attention to the user's explicit requests and your previous actions. Preserve emotional or relational context only when it affects continuity, user preferences, safety, repair, or why a decision mattered.\n\nInclude the following sections:\n\n1. High level goals: What is the user trying to work through, decide, feel, build, remember, or maintain? If there is an existing summary in the transcript, incorporate it to preserve long-term continuity.\n\n2. Conversation themes: What topics have been recurring? What is the user interested in, worried about, excited about, or avoiding?\n\n3. What happened: What did the user share? How did you respond? How did the conversation flow? If a prior summary is being evicted, extract the critical parts.\n\n4. Important details: Preserve names, places, dates, projects, preferences, commitments, opinions, stories, and recurring references verbatim. Quote the user's exact phrasing when it carries emotional weight or relationship meaning.\n\n5. Tone and voice: How was the user communicating: casual, earnest, playful, frustrated, vulnerable, tired, excited? How were you responding, and what landed well or fell flat?\n\n6. User feedback: Note any pushback, preferences, boundary-setting, corrections, or ",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/update-compaction-prompt.ts",
+        "size_bytes": 5067,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env tsx\nimport { readFileSync } from \"node:fs\";\nimport { existsSync } from \"node:fs\";\n\ntype Args = Record<string, string | boolean>;\n\nfunction parseArgs(argv: string[]): Args {\n  const out: Args = {};\n  for (let i = 0; i < argv.length; i++) {\n    const arg = argv[i];\n    if (arg === \"--help\" || arg === \"-h\") {\n      usage();\n    }\n    if (!arg.startsWith(\"--\")) {\n      throw new Error(`Unexpected positional argument: ${arg}`);\n    }\n    const key = arg.slice(2);\n    if ([\"dry-run\", \"prompt-acknowledgement\"].includes(key)) {\n      out[key] = true;\n      continue;\n    }\n    const value = argv[++i];\n    if (!value || value.startsWith(\"--\")) {\n      throw new Error(`Missing value for --${key}`);\n    }\n    out[key] = value;\n  }\n  return out;\n}\n\nfunction usage(): never {\n  console.error(`Usage:\n  npx tsx scripts/update-compaction-prompt.ts --prompt-file prompt.txt [options]\n\nOptions:\n  --agent-id <id>                  Defaults to AGENT_ID\n  --base-url <url>                 Defaults to LETTA_BASE_URL or https://api.letta.com\n  --mode <mode>                    sliding_window | all | self_compact_sliding_window | self_compact_all\n  --model <provider/model>         Optional summarizer model\n  --clip-chars <int|null>          Optional summary character cap\n  --sliding-window-percentage <n>  Optional fraction for sliding-window modes\n  --prompt-acknowledgement         Set prompt_acknowledgement=true\n  --dry-run                        Print patch body without sending\n`);\n  process.exit(2);\n}\n\nasync function requestJson(url: string, init: RequestInit) {\n  const response = await fetch(url, init);\n  const text = await response.text();\n  let body: unknown = null;\n  try {\n    body = text ? JSON.parse(text) : null;\n  } catch {\n    body = text;\n  }\n  if (!response.ok) {\n    throw new Error(`HTTP ${response.status} ${response.statusText}: ${typeof body === \"string\" ? body : JSON.stringify(body)}`);\n  }\n  return body as Record<string, unknown>;\n}\n\nconst VALID_MODES = new Set([\n  \"sliding_window\",\n  \"all\",\n  \"self_compact_sliding_window\",\n  \"self_compact_all\",\n]);\n\nfunction parseIntegerOption(name: string, value: string): number {\n  if (!/^\\d+$/.test(value)) {\n    throw new Error(`--${name} must be a non-negative integer or null`);\n  }\n  return Number.parseInt(value, 10);\n}\n\nfunction parseNumberOption(name: string, value: string): number {\n  const parsed = Number.parseFloat(value);\n  if (!Number.isFinite(parsed)) {\n    throw new Error(`--${name} must be a number`);\n  }\n  return parsed;\n}\n\nasync function main() {\n  const args = parseArgs(process.argv.slice(2));\n  if (!args[\"prompt-file\"]) usage();\n\n  const dryRun = args[\"dry-run\"] === true;\n\n  const apiKey = process.env.LETTA_API_KEY;\n  if (!dryRun && !apiKey) throw new Error(\"Set LETTA_API_KEY\");\n\n  const agentId = String(args[\"agent-id\"] || process.env.AGENT_ID || \"\");\n  if (!dryRun && !agentId) throw new Error(\"Set AGENT_ID or pass --agent-id\");\n\n  const baseUrl = String(args[\"base-url\"] || process.env.LETTA_BASE_URL || \"https://api.letta.com\").replace(/\\/$/, \"\");\n  const promptFile = String(args[\"prompt-file\"]);\n  if (!existsSync(promptFile)) {\n    throw new Error(`Prompt file not found: ${promptFile}`);\n  }\n  const prompt = readFileSync(promptFile, \"utf8\");\n  if (!prompt.trim()) throw new Error(\"Prompt file is empty\");\n\n  const headers = { Authorization: `Bearer ${apiKey}`, \"Content-Type\": \"application/json\" };\n  const currentSettings = dryRun\n    ? {}\n    : ((await requestJson(`${baseUrl}/v1/agents/${agentId}`, { headers })).compaction_settings ?? {}) as Record<string, unknown>;\n\n  const nextSettings: Record<string, unknown> = { ...currentSettings, prompt };\n\n  if (args.mode) {\n    const mode = String(args.mode);\n    if (!VALID_MODES.has(mode)) {\n      throw new Error(`Invalid --mode: ${mode}`);\n    }\n    nextSettings.mode = mode;\n  }\n  if (args.model) nextSettings.model = args.model;\n  if (args[\"prompt-acknowledgement\"]) nextSettings.prompt_acknowledgement = true;\n  if (args[\"clip-c",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 10277,
+        "kind": "text",
+        "content_preview": "---\nname: compaction-prompts\ndescription: Configures Letta agent compaction settings and custom summarization prompts. Use when a user asks to change an agent's compaction prompt, improve summaries after context eviction, tune sliding-window or all-message compaction, or design companion/coding-agent continuity summaries.\nlicense: MIT\n---\n\n# Compaction prompts\n\nUse this skill to inspect, design, and update `compaction_settings.prompt` for a Letta agent.\n\nCompaction runs when message history grows too large for the context window. Letta replaces older messages with a summary while keeping recent messages in context. The summary appears before the remaining recent messages, so the prompt should preserve enough background for the later messages to make sense. The goal is continuity, not just factual compression.\n\nOfficial docs: https://docs.letta.com/guides/core-concepts/messages/compaction\n\n## Compaction lifecycle\n\nThink of compaction as a lifecycle contract, not just a prompt string:\n\n1. Message history approaches the context window limit.\n2. Letta selects messages to compact according to the mode and sliding-window settings.\n3. A summarizer reads the selected messages. If an existing summary is being evicted, the new summary must incorporate it.\n4. Letta reinserts the summary before the retained recent messages.\n5. The next model turn relies on the summary plus recent raw messages as continuation context.\n\nThe summary is not a reply to the user. It is context for the next turn. It should be readable before the retained recent messages and should not require access to the evicted transcript.\n\nA good compaction prompt should explicitly preserve current goals, exact decisions, unresolved threads, tool and file state, errors and corrections, and lookup hints for anything omitted. Emotional or relational context may also be important for companion or long-running agents, but only preserve it when it affects continuity, user preferences, safety, repair, or why a decision mattered. Custom compaction should turn context compression from amnesia into a controlled handoff.\n\n## When to customize\n\nCustomize compaction settings when the default summary loses important continuity, tone, relationship context, implementation details, or user feedback.\n\nCommon cases:\n\n- Companion agents: preserve names, voice, recurring references, user preferences, and emotional or relationship context when it is relevant to future continuity.\n- Coding agents: preserve explicit requests, files touched, commands run, errors, fixes, current state, next steps, IDs, URLs, and exact feedback.\n- Long-running agents: preserve higher-level goals across repeated compactions by incorporating any existing summary in the transcript.\n\nFor complete prompt templates, read [references/prompt-patterns.md](references/prompt-patterns.md).\n\n## Operational checklist\n\nBefore changing settings:\n\n1. Read the official compaction docs if you need field semantics, default values, or mode behavior.\n2. Inspect current `compaction_settings`, model, and effective context window.\n3. Identify the failure mode: weak prompt, wrong mode, too aggressive `sliding_window_percentage`, too-small `clip_chars`, or summarizer model mismatch.\n4. If possible, review a recent bad summary or the point where continuity was lost.\n5. Draft the replacement prompt with explicit reinsertion and no-continuation instructions.\n6. Run the update script with `--dry-run` and review the PATCH body.\n7. Patch settings only after confirming preserved fields and target agent ID.\n8. Fetch the agent afterward and verify the stored settings.\n9. If possible, observe the next compaction or next turn and check that goals, current task, identifiers, user feedback, and unresolved blockers survived.\n\n## Compaction fields\n\n`compaction_settings` is an agent-level object. Relevant fields:\n\n| Field | Use |\n| --- | --- |\n| `mode` | `sliding_window`, `all`, `self_compact_sliding_window`, or `self_compact_all`. |\n| `prompt` | Custom summa",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: compaction-prompts\ndescription: Configures Letta agent compaction settings and custom summarization prompts. Use when a user asks to change an agent's compaction prompt, improve summaries after context eviction, tune sliding-window or all-message compaction, or design companion/coding-agent continuity summaries.\nlicense: MIT\n---\n\n# Compaction prompts\n\nUse this skill to inspect, design, and update `compaction_settings.prompt` for a Letta agent.\n\nCompaction runs when message history grows too large for the context window. Letta replaces older messages with a summary while keeping recent messages in context. The summary appears before the remaining recent messages, so the prompt should preserve enough background for the later messages to make sense. The goal is continuity, not just factual compression.\n\nOfficial docs: https://docs.letta.com/guides/core-concepts/messages/compaction\n\n## Compaction lifecycle\n\nThink of compaction as a lifecycle contract, not just a prompt string:\n\n1. Message history approaches the context window limit.\n2. Letta selects messages to compact according to the mode and sliding-window settings.\n3. A summarizer reads the selected messages. If an existing summary is being evicted, the new summary must incorporate it.\n4. Letta reinserts the summary before the retained recent messages.\n5. The next model turn relies on the summary plus recent raw messages as continuation context.\n\nThe summary is not a reply to the user. It is context for the next turn. It should be readable before the retained recent messages and should not require access to the evicted transcript.\n\nA good compaction prompt should explicitly preserve current goals, exact decisions, unresolved threads, tool and file state, errors and corrections, and lookup hints for anything omitted. Emotional or relational context may also be important for companion or long-running agents, but only preserve it when it affects continuity, user preferences, safety, repair, or why a decision mattered. Custom compaction should turn context compression from amnesia into a controlled handoff.\n\n## When to customize\n\nCustomize compaction settings when the default summary loses important continuity, tone, relationship context, implementation details, or user feedback.\n\nCommon cases:\n\n- Companion agents: preserve names, voice, recurring references, user preferences, and emotional or relationship context when it is relevant to future continuity.\n- Coding agents: preserve explicit requests, files touched, commands run, errors, fixes, current state, next steps, IDs, URLs, and exact feedback.\n- Long-running agents: preserve higher-level goals across repeated compactions by incorporating any existing summary in the transcript.\n\nFor complete prompt templates, read [references/prompt-patterns.md](references/prompt-patterns.md).\n\n## Operational checklist\n\nBefore changing settings:\n\n1. Read the official compaction docs if you need field semantics, default values, or mode behavior.\n2. Inspect current `compaction_settings`, model, and effective context window.\n3. Identify the failure mode: weak prompt, wrong mode, too aggressive `sliding_window_percentage`, too-small `clip_chars`, or summarizer model mismatch.\n4. If possible, review a recent bad summary or the point where continuity was lost.\n5. Draft the replacement prompt with explicit reinsertion and no-continuation instructions.\n6. Run the update script with `--dry-run` and review the PATCH body.\n7. Patch settings only after confirming preserved fields and target agent ID.\n8. Fetch the agent afterward and verify the stored settings.\n9. If possible, observe the next compaction or next turn and check that goals, current task, identifiers, user feedback, and unresolved blockers survived.\n\n## Compaction fields\n\n`compaction_settings` is an agent-level object. Relevant fields:\n\n| Field | Use |\n| --- | --- |\n| `mode` | `sliding_window`, `all`, `self_compact_sliding_window`, or `self_compact_all`. |\n| `prompt` | Custom summa"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 3,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 2,
+      "LOW": 1
+    },
+    "by_pattern": {
+      "E2": 2,
+      "E1": 1
+    },
+    "by_kill_chain_phase": {
+      "cred_access": 2,
+      "exfil": 1
+    },
+    "rule_ids_hit": [
+      "E1",
+      "E2"
+    ],
+    "files_scanned_count": 3,
+    "ai_downgraded_count": 3
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 2,
+      "label": "Intermediate",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 3
+    },
+    "chains_triggered": [
+      {
+        "chain_id": "E2_E1",
+        "name": "Data Exfiltration Chain",
+        "required_rules": [
+          "E2",
+          "E1"
+        ],
+        "phase_sequence": [
+          "cred_access",
+          "exfil"
+        ],
+        "severity_boost": "HIGH",
+        "paper_evidence": "OR=2.31, p=0.020; 36.9% of malicious skills (§4.2)",
+        "description": "Credential harvesting followed by external transmission."
+      }
+    ],
+    "chain_count": 1,
+    "kill_chain_phases_covered": [
+      "cred_access",
+      "exfil"
+    ],
+    "kill_chain_phase_coverage_count": 2
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 12.8,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.1125,
+      "S_static_raw": 0.1125,
+      "S_chain": 0.25,
+      "S_soph": 0.67,
+      "S_phases": 0.3333,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "L1 review: 3 条命中被 AI 标为 FP，composite_score 12.8 → 12.8"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\update-compaction-prompt.ts",
+      "line": 91,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.LETTA_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  88 | \n  89 |   const dryRun = args[\"dry-run\"] === true;\n  90 | \n» 91 |   const apiKey = process.env.LETTA_API_KEY;\n  92 |   if (!dryRun && !apiKey) throw new Error(\"Set LETTA_API_KEY\");\n  93 | \n  94 |   const agentId = String(args[\"agent-id\"] || process.env.AGENT_ID || \"\");",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "const apiKey = process.env.LETTA_API_KEY;",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 代码仅从环境变量读取 API 密钥，这是安全的最佳实践，并未硬编码凭据",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "代码仅从环境变量读取 API 密钥，这是安全的最佳实践，并未硬编码凭据"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "代码仅从环境变量读取 API 密钥，这是安全的最佳实践，并未硬编码凭据"
+    },
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "SKILL.md",
+      "line": 132,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.LETTA_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  129 | ```typescript\n  130 | const baseUrl = process.env.LETTA_BASE_URL ?? \"https://api.letta.com\";\n  131 | const agentId = process.env.AGENT_ID!;\n» 132 | const apiKey = process.env.LETTA_API_KEY!;\n  133 | \n  134 | const currentResponse = await fetch(`${baseUrl}/v1/agents/${agentId}`, {\n  135 |   headers: { Authorization: `Bearer ${apiKey}` },",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "skill_md_instruction",
+      "snippet": "const apiKey = process.env.LETTA_API_KEY!;",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 文档中的代码示例演示如何从环境变量读取密钥，属于教学用途，并非实际暴露凭据",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "文档中的代码示例演示如何从环境变量读取密钥，属于教学用途，并非实际暴露凭据"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "文档中的代码示例演示如何从环境变量读取密钥，属于教学用途，并非实际暴露凭据"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 184,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -sS -X PATCH",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  181 |       clip_chars: 50000\n  182 |   }) }' > /tmp/compaction-patch.json\n  183 | \n» 184 | curl -sS -X PATCH \"$BASE_URL/v1/agents/$AGENT_ID\" \\\n  185 |   -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  186 |   -H \"Content-Type: application/json\" \\\n  187 |   --data-binary @/tmp/compaction-patch.json",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -sS -X PATCH \"$BASE_URL/v1/agents/$AGENT_ID\" \\",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 文档中展示的 curl PATCH 命令是配置更新示例，不是恶意外发或攻击行为",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "文档中展示的 curl PATCH 命令是配置更新示例，不是恶意外发或攻击行为"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "文档中展示的 curl PATCH 命令是配置更新示例，不是恶意外发或攻击行为"
+    }
+  ],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.06,
+    "verdict": "SAFE",
+    "mean_confidence": 0.962,
+    "subtasks": {
+      "D": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "技能包提供合法的Letta代理压缩提示管理功能，无恶意代码或凭据泄露",
+        "finding": null,
+        "task_name": "cross_file_consistency"
+      },
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 1.0,
+        "evidence": [],
+        "reasoning": "技能包仅提供压缩提示词配置和更新工具，无隐蔽指令或安全绕过行为。",
+        "finding": null,
+        "task_name": "covert_behavior"
+      },
+      "B": {
+        "risk_score": 0.1,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "技能包声明的功能为管理 Letta 代理的压缩设置，所读取的 API 密钥和环境变量、访问的 Letta API 端点均与功能一致，无越权行为。",
+        "finding": null,
+        "task_name": "permission_justification"
+      },
+      "A": {
+        "risk_score": 0.1,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该 skill 仅实现 Letta 压缩提示自定义功能，通过 API 更新 compaction_settings，无功能蔓延或隐蔽行为。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.06 confidence=0.962 都高置信 → DeepSeek 单家定论"
+  },
+  "l1_review_meta": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "total_reviewed": 3,
+    "total_findings": 3,
+    "tp_count": 0,
+    "fp_count": 3,
+    "uncertain_count": 0,
+    "api_calls": 1
+  }
+}

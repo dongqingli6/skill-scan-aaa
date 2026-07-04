@@ -1,0 +1,25 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_pool\\skills\\slack-gif-creator",
+  "skill_name": "slack-gif-creator",
+  "files_scanned": [
+    "core\\easing.py",
+    "core\\frame_composer.py",
+    "core\\gif_builder.py",
+    "core\\validators.py",
+    "LICENSE.txt",
+    "requirements.txt",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 7,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

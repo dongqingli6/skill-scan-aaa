@@ -1,0 +1,21 @@
+{
+  "bundle_id": "20260621_181851_1password",
+  "timestamp": "20260621_181851",
+  "label": "1password",
+  "original_input": "analysis_results/asg/1password/",
+  "report": {
+    "sandbox_path": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\asg\\1password",
+    "skills": [],
+    "edges": [],
+    "verdict": "SAFE",
+    "verdict_reason": "no SKILL.md found in sandbox",
+    "scr_floor_triggered": false,
+    "stats": {
+      "n_skills": 0,
+      "n_edges": 0,
+      "by_type": {},
+      "llm_calls": 0
+    }
+  },
+  "skill_details": []
+}

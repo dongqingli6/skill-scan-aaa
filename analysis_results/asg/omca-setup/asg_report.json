@@ -1,0 +1,155 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-13T14:52:01.270376+00:00",
+  "skill_name": "Omca Setup",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\omca-setup\\Omca Setup",
+  "skill_contents": {
+    "file_count": 2,
+    "total_bytes": 38373,
+    "files": [
+      {
+        "path": "orchestration-block.md",
+        "size_bytes": 5214,
+        "kind": "text",
+        "content_preview": "# oh-my-claudeagent orchestration guidance\n\nClaude Code session with **oh-my-claudeagent** (OMCA) installed. OMCA is a multi-agent orchestration layer. This block is user-scope (auto-loaded for every Claude Code session). The lightweight output-style at `output-styles/omca-default.md` carries the principles + delegation table; this file carries the practical operational guidance.\n\n## Entrypoints\n\nSlash commands always available. Keyword triggers activate only when `enableKeywordTriggers` is on (opt-in, off by default).\n\n| Need                     | Keyword                | Slash command                            |\n| ------------------------ | ---------------------- | ---------------------------------------- |\n| Setup                    | \"setup omca\"           | /oh-my-claudeagent:omca-setup            |\n| Create plan              | \"create plan\"          | /oh-my-claudeagent:plan <task>           |\n| Gap-analyze a draft plan | —                      | /oh-my-claudeagent:metis                 |\n| Review a draft plan      | —                      | /oh-my-claudeagent:momus                 |\n| Start execution          | —                      | /oh-my-claudeagent:start-work            |\n| Parallel work            | \"ultrawork\" / \"ulw\"    | /oh-my-claudeagent:ultrawork <task list> |\n| Must-finish persistence  | \"ralph\" / \"don't stop\" | /oh-my-claudeagent:ralph <task>          |\n| Fix broken build         | \"fix build\"            | /oh-my-claudeagent:hephaestus            |\n| Session handoff          | \"handoff\"              | /oh-my-claudeagent:handoff               |\n| Stop all continuation    | \"stop continuation\"    | /oh-my-claudeagent:stop-continuation     |\n\n## Agent catalog\n\n| Agent             | Model  | Use when                                                                 |\n| ----------------- | ------ | ------------------------------------------------------------------------ |\n| sisyphus          | opus   | Orchestration — free-form and plan execution (via `/start-work` command) |\n| prometheus        | opus   | Interviewing the user, Socratic deep-dive, producing structured plans    |\n| metis             | opus   | Pre-execution gap analysis on a draft plan                               |\n| momus             | opus   | Critical review of a draft plan for clarity and risk                     |\n| executor          | sonnet | Focused implementation of a known, scoped task                           |\n| explore           | sonnet | Finding code and patterns inside the local repo                          |\n| librarian         | sonnet | External docs, library usage, OSS examples, research                     |\n| oracle            | opus   | Architecture, tradeoffs, stuck debugging, craft review                   |\n| hephaestus        | sonnet | Build failures, type errors, toolchain/dep fixes                         |\n| multimodal-looker | sonnet | Screenshots, PDFs, diagrams, visual inputs                               |\n\n## Workflow\n\nPipeline: **prometheus → metis → momus → user approval → `/oh-my-claudeagent:start-work`.**\n\n1. `prometheus` interviews user (optionally in Socratic Interview Mode), drafts plan.\n2. `metis` gap-analyzes the draft.\n3. `momus` reviews for clarity, verifiability, completeness.\n4. **User approves** (ExitPlanMode or confirmation).\n5. `/oh-my-claudeagent:start-work` executes the approved plan end-to-end at depth 0 — the main session (sisyphus identity) spawns `executor` for each task (parallel where the plan declares `Parallel Execution: YES`), invokes `oracle` for F1 independent review, logs evidence per task with `plan_sha256`, and reports completion back to the user.\n\nUser runs `/oh-my-claudeagent:start-work [plan path]`. Do not auto-start execution.\n\n## Parallel execution\n\nMultiple background agents when tasks are independent:\n\n1. Multiple `Agent` blocks with `run_in_background=true` in ONE message → parallel fan-out.\n2. Remaining work depends on results → end response, wait for notifications",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 33159,
+        "kind": "text",
+        "content_preview": "---\nname: omca-setup\ndescription: Configure ~/.claude/ for oh-my-claudeagent (deps check, block injection, settings, statusline).\nwhen_to_use: |\n  Use when:\n  - Installing or updating oh-my-claudeagent for the first time\n  - User says \"setup omca\", \"configure omca\", or \"install oh-my-claudeagent\"\n  - Diagnosing a broken or misconfigured plugin (--check, --doctor)\n  - Uninstalling the plugin (--uninstall)\nuser-invocable: true\nshell: bash\nargument-hint: \"[--uninstall | --check | --doctor]\"\n---\n\n# omca-setup — Plugin Configuration\n\nOne-command setup: update orchestration block in `~/.claude/CLAUDE.md`, check dependencies, inspect plugin state, print rollout guidance.\n\n**Out of scope**: marketplace install commands, auto-registering in `~/.claude/settings.json`, editing shared/managed settings, enforcing enterprise policy keys (`strictKnownMarketplaces`, `blockedMarketplaces`, `allowManagedHooksOnly`, `allowManagedPermissionRulesOnly`, `allowManagedMcpServersOnly`).\n\n**Policy baseline**: Claude Code native settings authoritative. `teammateMode: \"auto\"` is normal. Managed settings are non-overridable policy. `permission-filter.sh` is guardrail-only — does not auto-allow.\n\n**Install/update flow**:\n\n- Install: `/plugin marketplace add UtsavBalar1231/oh-my-claudeagent` then `/plugin install oh-my-claudeagent@omca`\n- Update: `/plugin marketplace update omca` then `/plugin install oh-my-claudeagent@omca`\n- Apply in-session: `/reload-plugins`\n\n**`--bare` caveat**: `claude --bare` skips plugin, hooks, skills, MCP, and CLAUDE.md auto-discovery. Run setup in normal (non-`--bare`) sessions.\n\n**Plugin options**:\n\n- `enableKeywordTriggers`: bool, default `false`\n- `statuslineMode`: `off|direct|daemon`, default `direct`\n- `disableForceOrchestrationStyle`: bool, default `false` — strips `force-for-plugin: true` from the installed style cache copy so your own `outputStyle` takes precedence; re-run setup after each plugin update\n\n**Sandbox**: For fail-closed environments, use `sandbox.failIfUnavailable: true` in managed settings. This skill reports sandbox posture but does not bypass host enforcement.\n\n**Output style**: `output-styles/omca-default.md` (manifest `\"outputStyles\": \"./output-styles/\"`).\n\n---\n\n## Mode Detection\n\nParse `$ARGUMENTS` for flags:\n- `--uninstall` → jump to UNINSTALL MODE\n- `--check` → jump to CHECK MODE\n- `--doctor` → jump to DOCTOR MODE\n- No flag → SETUP MODE (default)\n\n---\n\n## SETUP MODE\n\n### Phase 1: Dependency Check\n\nRun these checks in parallel:\n\n```bash\ncommand -v jq && jq --version\n```\n→ PASS/FAIL. If jq is missing, **STOP** — hooks will not work without it.\n\n```bash\ncommand -v uv && uv --version\n```\n→ PASS/FAIL. If uv is missing, **STOP** — MCP servers will not start without it.\n\n```bash\ncommand -v python3 && python3 --version\n```\n→ PASS/WARN (needed for ast-grep MCP server; uv manages the Python environment)\n\n```bash\nif command -v ast-grep >/dev/null 2>&1; then ast-grep --version 2>&1 | head -1; else command -v sg >/dev/null 2>&1 && sg --version 2>&1 | head -1; fi\n```\n→ PASS/WARN (optional — needed for structural code search MCP tools; accepts either `ast-grep` or `sg`)\n\nRecord each result (binary path + version or \"not found\") for the health report.\n\n---\n\n### Phase 2: Read Plugin Version\n\n1. Determine the plugin root. Navigate from this skill's location:\n   - This SKILL.md is at `skills/omca-setup/SKILL.md`\n   - Plugin root = two directories up from this file\n   - Use `Bash: dirname` of the skill path or use `CLAUDE_PLUGIN_ROOT` env var\n\n2. Read the plugin version:\n   ```\n   Read(\"${PLUGIN_ROOT}/.claude-plugin/plugin.json\")\n   ```\n   Extract the `version` field with jq.\n\n---\n\n### Phase 3: Backup and Read Existing\n\n**If `~/.claude/CLAUDE.md` exists:**\n\n1. Create a backup:\n   ```bash\n   cp ~/.claude/CLAUDE.md ~/.claude/CLAUDE.md.bak\n   ```\n\n2. Read the existing file:\n   ```\n   Read(\"~/.claude/CLAUDE.md\")\n   ```\n\n3. **Migration check (old developer's format):**\n   - Detect `<!-- OMCA:START -->` OR `<\\!-- OMCA:START --",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: omca-setup\ndescription: Configure ~/.claude/ for oh-my-claudeagent (deps check, block injection, settings, statusline).\nwhen_to_use: |\n  Use when:\n  - Installing or updating oh-my-claudeagent for the first time\n  - User says \"setup omca\", \"configure omca\", or \"install oh-my-claudeagent\"\n  - Diagnosing a broken or misconfigured plugin (--check, --doctor)\n  - Uninstalling the plugin (--uninstall)\nuser-invocable: true\nshell: bash\nargument-hint: \"[--uninstall | --check | --doctor]\"\n---\n\n# omca-setup — Plugin Configuration\n\nOne-command setup: update orchestration block in `~/.claude/CLAUDE.md`, check dependencies, inspect plugin state, print rollout guidance.\n\n**Out of scope**: marketplace install commands, auto-registering in `~/.claude/settings.json`, editing shared/managed settings, enforcing enterprise policy keys (`strictKnownMarketplaces`, `blockedMarketplaces`, `allowManagedHooksOnly`, `allowManagedPermissionRulesOnly`, `allowManagedMcpServersOnly`).\n\n**Policy baseline**: Claude Code native settings authoritative. `teammateMode: \"auto\"` is normal. Managed settings are non-overridable policy. `permission-filter.sh` is guardrail-only — does not auto-allow.\n\n**Install/update flow**:\n\n- Install: `/plugin marketplace add UtsavBalar1231/oh-my-claudeagent` then `/plugin install oh-my-claudeagent@omca`\n- Update: `/plugin marketplace update omca` then `/plugin install oh-my-claudeagent@omca`\n- Apply in-session: `/reload-plugins`\n\n**`--bare` caveat**: `claude --bare` skips plugin, hooks, skills, MCP, and CLAUDE.md auto-discovery. Run setup in normal (non-`--bare`) sessions.\n\n**Plugin options**:\n\n- `enableKeywordTriggers`: bool, default `false`\n- `statuslineMode`: `off|direct|daemon`, default `direct`\n- `disableForceOrchestrationStyle`: bool, default `false` — strips `force-for-plugin: true` from the installed style cache copy so your own `outputStyle` takes precedence; re-run setup after each plugin update\n\n**Sandbox**: For fail-closed environments, use `sandbox.failIfUnavailable: true` in managed settings. This skill reports sandbox posture but does not bypass host enforcement.\n\n**Output style**: `output-styles/omca-default.md` (manifest `\"outputStyles\": \"./output-styles/\"`).\n\n---\n\n## Mode Detection\n\nParse `$ARGUMENTS` for flags:\n- `--uninstall` → jump to UNINSTALL MODE\n- `--check` → jump to CHECK MODE\n- `--doctor` → jump to DOCTOR MODE\n- No flag → SETUP MODE (default)\n\n---\n\n## SETUP MODE\n\n### Phase 1: Dependency Check\n\nRun these checks in parallel:\n\n```bash\ncommand -v jq && jq --version\n```\n→ PASS/FAIL. If jq is missing, **STOP** — hooks will not work without it.\n\n```bash\ncommand -v uv && uv --version\n```\n→ PASS/FAIL. If uv is missing, **STOP** — MCP servers will not start without it.\n\n```bash\ncommand -v python3 && python3 --version\n```\n→ PASS/WARN (needed for ast-grep MCP server; uv manages the Python environment)\n\n```bash\nif command -v ast-grep >/dev/null 2>&1; then ast-grep --version 2>&1 | head -1; else command -v sg >/dev/null 2>&1 && sg --version 2>&1 | head -1; fi\n```\n→ PASS/WARN (optional — needed for structural code search MCP tools; accepts either `ast-grep` or `sg`)\n\nRecord each result (binary path + version or \"not found\") for the health report.\n\n---\n\n### Phase 2: Read Plugin Version\n\n1. Determine the plugin root. Navigate from this skill's location:\n   - This SKILL.md is at `skills/omca-setup/SKILL.md`\n   - Plugin root = two directories up from this file\n   - Use `Bash: dirname` of the skill path or use `CLAUDE_PLUGIN_ROOT` env var\n\n2. Read the plugin version:\n   ```\n   Read(\"${PLUGIN_ROOT}/.claude-plugin/plugin.json\")\n   ```\n   Extract the `version` field with jq.\n\n---\n\n### Phase 3: Backup and Read Existing\n\n**If `~/.claude/CLAUDE.md` exists:**\n\n1. Create a backup:\n   ```bash\n   cp ~/.claude/CLAUDE.md ~/.claude/CLAUDE.md.bak\n   ```\n\n2. Read the existing file:\n   ```\n   Read(\"~/.claude/CLAUDE.md\")\n   ```\n\n3. **Migration check (old developer's format):**\n   - Detect `<!-- OMCA:START -->` OR `<\\!-- OMCA:START --"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 2
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": []
+}

@@ -1,0 +1,84 @@
+{
+  "skill_name": "7dca1bbc4f9973a7e64ad02598717a2acb1e0058_20260626_193725",
+  "total_dur_s": 16.42,
+  "stages": {
+    "stage0_static": {
+      "iocs": {
+        "hardcoded_urls": [],
+        "hardcoded_ips": [],
+        "shell_commands": [],
+        "network_calls": [],
+        "sensitive_paths_in_code": [],
+        "dangerous_eval": [],
+        "subprocess_calls": [],
+        "summary": {
+          "n_hardcoded_external_urls": 0,
+          "n_hardcoded_external_ips": 0,
+          "n_shell_commands": 0,
+          "n_benign_cli_uses": 0,
+          "n_network_calls": 0,
+          "n_sensitive_paths": 0,
+          "n_dangerous_eval": 0,
+          "n_pi_payloads": 0
+        },
+        "pi_payloads": [],
+        "risk_score": 0.0
+      },
+      "summary": "静态预扫: 未发现硬编码外站/IP、shell 调用、敏感路径、eval 等可疑模式。",
+      "risk_score": 0.0,
+      "dur_s": 0.1
+    },
+    "stage1_ds_prejudge": {
+      "verdict": "SAFE",
+      "confidence": 0.95,
+      "behavior": "业务操作日志记录与统计分析",
+      "reason": "技能仅实现日志记录和NAS存储，调用方式与声明用途一致；文档虽硬编码NAS密码但无恶意代码、无PI话术、无外联IP或shell调用，静态risk_score为0.00。",
+      "dur_s": 16.31,
+      "source": "ds_prejudge"
+    },
+    "stage2a_claude_api": null,
+    "stage2b_opencode_ds": null,
+    "stage3_claude_docker": null
+  },
+  "verdict": "SAFE",
+  "fusion": {
+    "verdict": "SAFE",
+    "risk_score": 2.5,
+    "score_band": "LOW",
+    "score_breakdown": [
+      {
+        "channel": "ds_prejudge",
+        "weight": 0.6,
+        "factor": -1.0,
+        "confidence": 0.95,
+        "contribution": -0.57
+      }
+    ],
+    "winning_channels": [
+      "ds_prejudge"
+    ],
+    "all_evidence": [
+      {
+        "channel": "ds_prejudge",
+        "verdict": "SAFE",
+        "confidence": 0.95,
+        "note": "技能仅实现日志记录和NAS存储，调用方式与声明用途一致；文档虽硬编码NAS密码但无恶意代码、无PI话术、无外联IP或shell调用，静态risk_score为0.00。"
+      }
+    ],
+    "evidence_count": 1
+  },
+  "counter": {
+    "total_scans": 12,
+    "last_stage3_at": 0
+  },
+  "stage3_triggered": false,
+  "log": [
+    "Stage 0 静态 IOC ...",
+    "  → risk_score=0.00, dur=0.1s",
+    "Stage 1 DS 语义审计 ...",
+    "  → SAFE conf=0.95, dur=16.31s",
+    "Stage 2 跳过：DS conf 0.95 ≥ 0.9",
+    "Stage 3 跳过（未到抽样间隔 / 未启用 enable_stage3）",
+    "最终：SAFE，命中证据通道：['ds_prejudge']，总耗时 16.42s"
+  ]
+}

@@ -1,0 +1,420 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:59:07.080602+00:00",
+  "skill_name": "benign-conversations",
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-conversations",
+  "skill_contents": {
+    "file_count": 4,
+    "total_bytes": 37719,
+    "files": [
+      {
+        "path": "LICENSE",
+        "size_bytes": 1089,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/conversations_cli.py",
+        "size_bytes": 15851,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"\nConversations CLI - Interactive TUI for Letta Conversations API\n\nA simple terminal interface for managing and chatting across multiple\nconversations with a single agent.\n\nCommands:\n    /new [name]     - Create a new conversation (optional name for display)\n    /list           - List all conversations\n    /switch <num>   - Switch to conversation by number\n    /history [n]    - Show last n messages (default: 10)\n    /info           - Show current conversation info\n    /agents         - List available agents\n    /agent <id>     - Switch to a different agent\n    /quit           - Exit the CLI\n\nUsage:\n    LETTA_API_KEY=your-key uv run examples/conversations_cli.py\n    LETTA_API_KEY=your-key uv run examples/conversations_cli.py --agent agent-xxx\n\"\"\"\n\nimport argparse\nimport os\nimport sys\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom typing import Optional\n\nfrom letta_client import Letta\n\n\n# ANSI color codes for terminal output\nclass Colors:\n    RESET = \"\\033[0m\"\n    BOLD = \"\\033[1m\"\n    DIM = \"\\033[2m\"\n    \n    RED = \"\\033[31m\"\n    GREEN = \"\\033[32m\"\n    YELLOW = \"\\033[33m\"\n    BLUE = \"\\033[34m\"\n    MAGENTA = \"\\033[35m\"\n    CYAN = \"\\033[36m\"\n    WHITE = \"\\033[37m\"\n    \n    BG_BLUE = \"\\033[44m\"\n\n\ndef colored(text: str, color: str) -> str:\n    \"\"\"Wrap text in ANSI color codes.\"\"\"\n    return f\"{color}{text}{Colors.RESET}\"\n\n\n@dataclass\nclass ConversationInfo:\n    \"\"\"Track conversation metadata for display.\"\"\"\n    id: str\n    name: str\n    created_at: datetime\n    message_count: int = 0\n\n\n@dataclass\nclass AppState:\n    \"\"\"Application state.\"\"\"\n    client: Letta\n    agent_id: str\n    agent_name: str\n    conversations: list[ConversationInfo] = field(default_factory=list)\n    current_conversation: Optional[ConversationInfo] = None\n\n\ndef print_header(state: AppState):\n    \"\"\"Print the app header with current context.\"\"\"\n    print()\n    print(colored(\"=\" * 60, Colors.DIM))\n    print(colored(\"  LETTA CONVERSATIONS CLI\", Colors.BOLD + Colors.CYAN))\n    print(colored(f\"  Agent: {state.agent_name}\", Colors.DIM))\n    if state.current_conversation:\n        print(colored(f\"  Conversation: {state.current_conversation.name}\", Colors.GREEN))\n    else:\n        print(colored(\"  Conversation: (none selected)\", Colors.YELLOW))\n    print(colored(\"=\" * 60, Colors.DIM))\n    print(colored(\"  Commands: /new /list /switch /history /info /agents /agent /quit\", Colors.DIM))\n    print(colored(\"=\" * 60, Colors.DIM))\n    print()\n\n\ndef print_error(msg: str):\n    \"\"\"Print an error message.\"\"\"\n    print(colored(f\"Error: {msg}\", Colors.RED))\n\n\ndef print_success(msg: str):\n    \"\"\"Print a success message.\"\"\"\n    print(colored(f\"✓ {msg}\", Colors.GREEN))\n\n\ndef print_info(msg: str):\n    \"\"\"Print an info message.\"\"\"\n    print(colored(f\"ℹ {msg}\", Colors.CYAN))\n\n\ndef refresh_conversations(state: AppState):\n    \"\"\"Refresh the list of conversations from the server.\"\"\"\n    convs = state.client.conversations.list(agent_id=state.agent_id)\n    state.conversations = []\n    \n    for i, conv in enumerate(convs):\n        # Generate a friendly name\n        created = conv.created_at\n        name = f\"Conversation {i + 1} ({created.strftime('%m/%d %H:%M')})\"\n        \n        info = ConversationInfo(\n            id=conv.id,\n            name=name,\n            created_at=created,\n            message_count=len(conv.in_context_message_ids),\n        )\n        state.conversations.append(info)\n        \n        # Update current conversation reference if it matches\n        if state.current_conversation and state.current_conversation.id == conv.id:\n            state.current_conversation = info\n\n\ndef cmd_new(state: AppState, args: list[str]):\n    \"\"\"Create a new conversation.\"\"\"\n    conv = state.client.conversations.create(agent_id=state.agent_id)\n    \n    # Create friendly name\n    name = \" \".join(args) if args else f\"Conversation {len(state.conversations) + 1}\"\n    \n    info = ConversationInfo(\n        id=conv.id,\n        name=name,\n        create",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/conversations_demo.py",
+        "size_bytes": 13963,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"\nConversations API Demo Script\n\nThis script demonstrates the full capabilities of Letta's Conversations API,\nwhich allows multiple isolated message threads on a single agent.\n\nUse cases:\n- Multi-user chat: Each user gets their own conversation with the same agent\n- Session management: Separate conversations for different topics/contexts\n- A/B testing: Compare agent responses across isolated conversations\n\nRequirements:\n- pip install letta-client\n- Set LETTA_API_KEY environment variable (or pass token directly)\n\nUsage:\n    uv run examples/conversations_demo.py\n\"\"\"\n\nimport os\nimport time\n\nfrom letta_client import Letta\n\n\ndef create_client() -> Letta:\n    \"\"\"Create a Letta client using environment variables or defaults.\"\"\"\n    base_url = os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\")\n    api_key = os.getenv(\"LETTA_API_KEY\")\n    \n    if api_key:\n        return Letta(base_url=base_url, api_key=api_key)\n    else:\n        # For local development without auth\n        return Letta(base_url=base_url)\n\n\ndef create_demo_agent(client: Letta) -> str:\n    \"\"\"Create a demo agent for testing conversations.\"\"\"\n    print(\"\\n\" + \"=\" * 60)\n    print(\"CREATING DEMO AGENT\")\n    print(\"=\" * 60)\n    \n    agent = client.agents.create(\n        name=f\"conversations-demo-{int(time.time())}\",\n        model=\"openai/gpt-4o-mini\",\n        embedding=\"openai/text-embedding-3-small\",\n        memory_blocks=[\n            {\n                \"label\": \"human\",\n                \"value\": \"The user is testing the conversations API.\",\n            },\n            {\n                \"label\": \"persona\",\n                \"value\": (\n                    \"You are a helpful assistant demonstrating the conversations API. \"\n                    \"Keep responses brief and friendly. When asked to remember something, \"\n                    \"acknowledge it clearly.\"\n                ),\n            },\n        ],\n    )\n    \n    print(f\"Created agent: {agent.name}\")\n    print(f\"Agent ID: {agent.id}\")\n    return agent.id\n\n\ndef demo_basic_conversation(client: Letta, agent_id: str) -> str:\n    \"\"\"Demonstrate basic conversation creation and messaging.\"\"\"\n    print(\"\\n\" + \"=\" * 60)\n    print(\"DEMO 1: Basic Conversation Flow\")\n    print(\"=\" * 60)\n    \n    # Create a new conversation\n    print(\"\\n[1] Creating a new conversation...\")\n    conversation = client.conversations.create(agent_id=agent_id)\n    print(f\"    Conversation ID: {conversation.id}\")\n    print(f\"    Agent ID: {conversation.agent_id}\")\n    print(f\"    Created at: {conversation.created_at}\")\n    \n    # Send a message and stream the response\n    print(\"\\n[2] Sending message: 'Hello! What can you help me with today?'\")\n    print(\"    Streaming response:\")\n    \n    stream = client.conversations.messages.create(\n        conversation_id=conversation.id,\n        messages=[{\"role\": \"user\", \"content\": \"Hello! What can you help me with today?\"}],\n    )\n    \n    # Collect and display streamed messages\n    for msg in stream:\n        if hasattr(msg, \"message_type\"):\n            if msg.message_type == \"assistant_message\":\n                print(f\"    Assistant: {msg.content}\")\n            elif msg.message_type == \"reasoning_message\":\n                print(f\"    [Reasoning]: {msg.content[:100]}...\" if len(msg.content) > 100 else f\"    [Reasoning]: {msg.content}\")\n    \n    # Send a follow-up message\n    print(\"\\n[3] Sending follow-up: 'Remember that my favorite color is blue.'\")\n    stream = client.conversations.messages.create(\n        conversation_id=conversation.id,\n        messages=[{\"role\": \"user\", \"content\": \"Remember that my favorite color is blue.\"}],\n    )\n    \n    for msg in stream:\n        if hasattr(msg, \"message_type\") and msg.message_type == \"assistant_message\":\n            print(f\"    Assistant: {msg.content}\")\n    \n    # List all messages in the conversation\n    print(\"\\n[4] Listing all messages in conversation:\")\n    messages = client.conversations.messages.list(conversation_id=conversation.id)\n    \n    for",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 6816,
+        "kind": "text",
+        "content_preview": "---\nname: Letta Conversations API\ndescription: Guide for using the Letta Conversations API to manage isolated message threads on agents. Use when building multi-user chat applications, session management, or any scenario requiring separate conversation contexts on a single agent.\n---\n\n# Letta Conversations API\n\nThe Conversations API allows multiple isolated message threads on a single agent. Each conversation maintains its own message history while sharing the agent's memory blocks and tools.\n\n## When to Use This Skill\n\n- Building multi-user chat applications (each user gets their own conversation)\n- Implementing session management with separate contexts\n- A/B testing agent responses across isolated conversations\n- Any scenario where you need multiple independent chat threads with one agent\n\n## Key Concepts\n\n| Concept | Description |\n|---------|-------------|\n| **Conversation** | An isolated message thread on an agent (`conv-xxx` ID) |\n| **Isolation** | Each conversation has separate message history |\n| **Shared State** | Memory blocks and tools are shared across conversations |\n| **In-Context Messages** | Messages currently in the conversation's context window |\n\n## Python SDK Usage\n\n### Setup\n\n```python\nfrom letta_client import Letta\n\nclient = Letta(base_url=\"https://api.letta.com\", api_key=\"your-key\")\n```\n\n### Create a Conversation\n\n```python\nconversation = client.conversations.create(agent_id=\"agent-xxx\")\n# conversation.id -> \"conv-xxx\"\n```\n\n### Send Messages (Streaming)\n\n```python\nstream = client.conversations.messages.create(\n    conversation_id=conversation.id,\n    messages=[{\"role\": \"user\", \"content\": \"Hello!\"}],\n)\n\nfor msg in stream:\n    if hasattr(msg, \"message_type\") and msg.message_type == \"assistant_message\":\n        print(msg.content)\n```\n\n### List Messages in a Conversation\n\n```python\nmessages = client.conversations.messages.list(\n    conversation_id=conversation.id,\n    limit=50,  # Optional: default 100\n    after=\"message-xxx\",  # Optional: cursor for pagination\n    before=\"message-yyy\",  # Optional: cursor for pagination\n)\n```\n\n### List All Conversations for an Agent\n\n```python\nconversations = client.conversations.list(\n    agent_id=\"agent-xxx\",\n    limit=50,  # Optional\n    after=\"conv-xxx\",  # Optional: cursor for pagination\n)\n```\n\n### Retrieve a Specific Conversation\n\n```python\nconv = client.conversations.retrieve(conversation_id=\"conv-xxx\")\n# conv.in_context_message_ids -> list of message IDs in context window\n```\n\n## REST API Endpoints\n\n| Method | Endpoint | Description |\n|--------|----------|-------------|\n| `POST` | `/v1/conversations?agent_id=xxx` | Create a conversation |\n| `GET` | `/v1/conversations?agent_id=xxx` | List conversations |\n| `GET` | `/v1/conversations/{conversation_id}` | Get a conversation |\n| `GET` | `/v1/conversations/{conversation_id}/messages` | List messages |\n| `POST` | `/v1/conversations/{conversation_id}/messages` | Send message (streams response) |\n| `POST` | `/v1/conversations/{conversation_id}/stream` | Resume a background stream |\n\n### REST Example: Create and Send Message\n\n```bash\n# Create conversation\ncurl -X POST \"https://api.letta.com/v1/conversations?agent_id=agent-xxx\" \\\n  -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  -H \"Content-Type: application/json\"\n\n# Send message (streaming response)\ncurl -X POST \"https://api.letta.com/v1/conversations/conv-xxx/messages\" \\\n  -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d '{\"messages\": [{\"role\": \"user\", \"content\": \"Hello!\"}]}'\n```\n\n## Conversation Schema\n\n```python\nclass Conversation:\n    id: str                      # \"conv-xxx\"\n    agent_id: str                # Associated agent ID\n    created_at: datetime         # Creation timestamp\n    summary: Optional[str]       # Optional conversation summary\n    in_context_message_ids: List[str]  # Message IDs in context window\n```\n\n## Common Patterns\n\n### Multi-User Chat Application\n\n```python\n# Each user gets ",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: Letta Conversations API\ndescription: Guide for using the Letta Conversations API to manage isolated message threads on agents. Use when building multi-user chat applications, session management, or any scenario requiring separate conversation contexts on a single agent.\n---\n\n# Letta Conversations API\n\nThe Conversations API allows multiple isolated message threads on a single agent. Each conversation maintains its own message history while sharing the agent's memory blocks and tools.\n\n## When to Use This Skill\n\n- Building multi-user chat applications (each user gets their own conversation)\n- Implementing session management with separate contexts\n- A/B testing agent responses across isolated conversations\n- Any scenario where you need multiple independent chat threads with one agent\n\n## Key Concepts\n\n| Concept | Description |\n|---------|-------------|\n| **Conversation** | An isolated message thread on an agent (`conv-xxx` ID) |\n| **Isolation** | Each conversation has separate message history |\n| **Shared State** | Memory blocks and tools are shared across conversations |\n| **In-Context Messages** | Messages currently in the conversation's context window |\n\n## Python SDK Usage\n\n### Setup\n\n```python\nfrom letta_client import Letta\n\nclient = Letta(base_url=\"https://api.letta.com\", api_key=\"your-key\")\n```\n\n### Create a Conversation\n\n```python\nconversation = client.conversations.create(agent_id=\"agent-xxx\")\n# conversation.id -> \"conv-xxx\"\n```\n\n### Send Messages (Streaming)\n\n```python\nstream = client.conversations.messages.create(\n    conversation_id=conversation.id,\n    messages=[{\"role\": \"user\", \"content\": \"Hello!\"}],\n)\n\nfor msg in stream:\n    if hasattr(msg, \"message_type\") and msg.message_type == \"assistant_message\":\n        print(msg.content)\n```\n\n### List Messages in a Conversation\n\n```python\nmessages = client.conversations.messages.list(\n    conversation_id=conversation.id,\n    limit=50,  # Optional: default 100\n    after=\"message-xxx\",  # Optional: cursor for pagination\n    before=\"message-yyy\",  # Optional: cursor for pagination\n)\n```\n\n### List All Conversations for an Agent\n\n```python\nconversations = client.conversations.list(\n    agent_id=\"agent-xxx\",\n    limit=50,  # Optional\n    after=\"conv-xxx\",  # Optional: cursor for pagination\n)\n```\n\n### Retrieve a Specific Conversation\n\n```python\nconv = client.conversations.retrieve(conversation_id=\"conv-xxx\")\n# conv.in_context_message_ids -> list of message IDs in context window\n```\n\n## REST API Endpoints\n\n| Method | Endpoint | Description |\n|--------|----------|-------------|\n| `POST` | `/v1/conversations?agent_id=xxx` | Create a conversation |\n| `GET` | `/v1/conversations?agent_id=xxx` | List conversations |\n| `GET` | `/v1/conversations/{conversation_id}` | Get a conversation |\n| `GET` | `/v1/conversations/{conversation_id}/messages` | List messages |\n| `POST` | `/v1/conversations/{conversation_id}/messages` | Send message (streams response) |\n| `POST` | `/v1/conversations/{conversation_id}/stream` | Resume a background stream |\n\n### REST Example: Create and Send Message\n\n```bash\n# Create conversation\ncurl -X POST \"https://api.letta.com/v1/conversations?agent_id=agent-xxx\" \\\n  -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  -H \"Content-Type: application/json\"\n\n# Send message (streaming response)\ncurl -X POST \"https://api.letta.com/v1/conversations/conv-xxx/messages\" \\\n  -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d '{\"messages\": [{\"role\": \"user\", \"content\": \"Hello!\"}]}'\n```\n\n## Conversation Schema\n\n```python\nclass Conversation:\n    id: str                      # \"conv-xxx\"\n    agent_id: str                # Associated agent ID\n    created_at: datetime         # Creation timestamp\n    summary: Optional[str]       # Optional conversation summary\n    in_context_message_ids: List[str]  # Message IDs in context window\n```\n\n## Common Patterns\n\n### Multi-User Chat Application\n\n```python\n# Each user gets "
+  },
+  "layer_1_static_scan": {
+    "total_findings": 6,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 4,
+      "LOW": 0,
+      "INFO": 2
+    },
+    "by_pattern": {
+      "E2": 4,
+      "E1": 2
+    },
+    "by_kill_chain_phase": {
+      "cred_access": 4,
+      "exfil": 2
+    },
+    "rule_ids_hit": [
+      "E1",
+      "E2"
+    ],
+    "files_scanned_count": 3,
+    "ai_downgraded_count": 6
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 2,
+      "label": "Intermediate",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 6
+    },
+    "chains_triggered": [
+      {
+        "chain_id": "E2_E1",
+        "name": "Data Exfiltration Chain",
+        "required_rules": [
+          "E2",
+          "E1"
+        ],
+        "phase_sequence": [
+          "cred_access",
+          "exfil"
+        ],
+        "severity_boost": "HIGH",
+        "paper_evidence": "OR=2.31, p=0.020; 36.9% of malicious skills (§4.2)",
+        "description": "Credential harvesting followed by external transmission."
+      }
+    ],
+    "chain_count": 1,
+    "kill_chain_phases_covered": [
+      "cred_access",
+      "exfil"
+    ],
+    "kill_chain_phase_coverage_count": 2
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 14.37,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.2,
+      "S_static_raw": 0.2,
+      "S_chain": 0.25,
+      "S_soph": 0.67,
+      "S_phases": 0.3333,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "L1 review: 6 条命中被 AI 标为 FP，composite_score 14.37 → 14.37"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\conversations_cli.py",
+      "line": 385,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.getenv(\"LETTA_BASE_URL\", \"https://api",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  382 | def main():\n  383 |     parser = argparse.ArgumentParser(description=\"Letta Conversations CLI\")\n  384 |     parser.add_argument(\"--agent\", \"-a\", help=\"Agent ID to use\")\n» 385 |     parser.add_argument(\"--base-url\", \"-u\", default=os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\"))\n  386 |     args = parser.parse_args()\n  387 |     \n  388 |     # Create client",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "parser.add_argument(\"--base-url\", \"-u\", default=os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\"))",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 仅为从环境变量读取 API 地址的合法配置代码，无硬编码凭据或外发危险",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "仅为从环境变量读取 API 地址的合法配置代码，无硬编码凭据或外发危险"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "仅为从环境变量读取 API 地址的合法配置代码，无硬编码凭据或外发危险"
+    },
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\conversations_cli.py",
+      "line": 389,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.getenv(\"LETTA_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  386 |     args = parser.parse_args()\n  387 |     \n  388 |     # Create client\n» 389 |     api_key = os.getenv(\"LETTA_API_KEY\")\n  390 |     if api_key:\n  391 |         client = Letta(base_url=args.base_url, api_key=api_key)\n  392 |     else:",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "api_key = os.getenv(\"LETTA_API_KEY\")",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 仅为从环境变量读取 API 密钥的合法配置代码，无硬编码凭据泄露",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "仅为从环境变量读取 API 密钥的合法配置代码，无硬编码凭据泄露"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "仅为从环境变量读取 API 密钥的合法配置代码，无硬编码凭据泄露"
+    },
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\conversations_demo.py",
+      "line": 29,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.getenv(\"LETTA_BASE_URL\", \"https://api",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  26 | \n  27 | def create_client() -> Letta:\n  28 |     \"\"\"Create a Letta client using environment variables or defaults.\"\"\"\n» 29 |     base_url = os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\")\n  30 |     api_key = os.getenv(\"LETTA_API_KEY\")\n  31 |     \n  32 |     if api_key:",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "base_url = os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\")",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 示例脚本中环境变量读取配置，无实际凭据暴露或危险调用",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "示例脚本中环境变量读取配置，无实际凭据暴露或危险调用"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "示例脚本中环境变量读取配置，无实际凭据暴露或危险调用"
+    },
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\conversations_demo.py",
+      "line": 30,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.getenv(\"LETTA_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  27 | def create_client() -> Letta:\n  28 |     \"\"\"Create a Letta client using environment variables or defaults.\"\"\"\n  29 |     base_url = os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\")\n» 30 |     api_key = os.getenv(\"LETTA_API_KEY\")\n  31 |     \n  32 |     if api_key:\n  33 |         return Letta(base_url=base_url, api_key=api_key)",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "api_key = os.getenv(\"LETTA_API_KEY\")",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 示例脚本中环境变量读取配置，无实际凭据暴露或危险调用",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "示例脚本中环境变量读取配置，无实际凭据暴露或危险调用"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "示例脚本中环境变量读取配置，无实际凭据暴露或危险调用"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 99,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "   96 | \n   97 | ```bash\n   98 | # Create conversation\n»  99 | curl -X POST \"https://api.letta.com/v1/conversations?agent_id=agent-xxx\" \\\n  100 |   -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  101 |   -H \"Content-Type: application/json\"\n  102 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.letta.com/v1/conversations?agent_id=agent-xxx\" \\",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 文档中用于展示 API 调用的 curl 示例，使用环境变量占位，非真实凭据或恶意外发",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "文档中用于展示 API 调用的 curl 示例，使用环境变量占位，非真实凭据或恶意外发"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "文档中用于展示 API 调用的 curl 示例，使用环境变量占位，非真实凭据或恶意外发"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 104,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  101 |   -H \"Content-Type: application/json\"\n  102 | \n  103 | # Send message (streaming response)\n» 104 | curl -X POST \"https://api.letta.com/v1/conversations/conv-xxx/messages\" \\\n  105 |   -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  106 |   -H \"Content-Type: application/json\" \\\n  107 |   -H \"Accept: text/event-stream\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.letta.com/v1/conversations/conv-xxx/messages\" \\",
+      "downgraded": true,
+      "downgrade_reason": "AI 复核标 FP: 文档中用于展示 API 调用的 curl 示例，无实害",
+      "llm_review": {
+        "verdict": "FP",
+        "confidence": 0.95,
+        "reason": "文档中用于展示 API 调用的 curl 示例，无实害"
+      },
+      "ai_downgraded": true,
+      "ai_downgrade_reason": "文档中用于展示 API 调用的 curl 示例，无实害"
+    }
+  ],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.025,
+    "verdict": "SAFE",
+    "mean_confidence": 0.945,
+    "subtasks": {
+      "B": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "该技能包完全符合声明的 Letta Conversations API 使用指导功能，环境变量与网络访问均属合理行为，无恶意迹象。",
+        "finding": null,
+        "task_name": "permission_justification"
+      },
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.98,
+        "evidence": [],
+        "reasoning": "技能包实际行为与声明的Letta Conversations API使用指南完全一致，仅提供教程演示和交互工具，无隐藏或功能蔓延。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "D": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "Letta Conversations API 合法技能包，提供使用指南与示例脚本，未发现恶意行为。",
+        "finding": null,
+        "task_name": "cross_file_consistency"
+      },
+      "C": {
+        "risk_score": 0.1,
+        "rating": "SAFE",
+        "confidence": 0.9,
+        "evidence": [],
+        "reasoning": "未发现隐蔽行为：技能包为API使用文档和示例，无隐藏指令、静默异常或编码载荷。",
+        "finding": null,
+        "task_name": "covert_behavior"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.025 confidence=0.945 都高置信 → DeepSeek 单家定论"
+  },
+  "l1_review_meta": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "total_reviewed": 6,
+    "total_findings": 6,
+    "tp_count": 0,
+    "fp_count": 6,
+    "uncertain_count": 0,
+    "api_calls": 1
+  }
+}

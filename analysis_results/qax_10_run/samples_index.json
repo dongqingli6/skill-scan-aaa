@@ -1,0 +1,96 @@
+{
+  "extracted": {
+    "llm-ai-security": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\llm-ai-security\\skill",
+    "situation-report": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\situation-report\\skill",
+    "sub-memory-bootstrap": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\sub-memory-bootstrap\\skill",
+    "talos-governance-agent": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\talos-governance-agent\\skill",
+    "product-storer": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\product-storer\\skill",
+    "pre-package-pipeline": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\pre-package-pipeline\\skill",
+    "pdf": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\pdf\\skill",
+    "create-techboss": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\create-techboss\\skill",
+    "managing-models": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\managing-models\\skill",
+    "bet-kickoff": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\bet-kickoff\\skill"
+  },
+  "manifest": {
+    "llm-ai-security": {
+      "files_sha1": "79dba86435d9fc0d2e218cb384bbfee0d87fd59a",
+      "package_sha1": "dd6399f53314e2c6c883c4bc2c319f95d8b88ba4",
+      "skill_name": "llm-ai-security",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "CQ_MALICIOUS_GUIDANCE",
+      "severity": "CRITICAL"
+    },
+    "situation-report": {
+      "files_sha1": "de984e5d96ddf3a1e39a92ffb9b9d958258b7928",
+      "package_sha1": "9dec28fba6cf4ec0373d690c2acac5540bc4ac89",
+      "skill_name": "situation-report",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "BEHAV_CRED_LEAK",
+      "severity": "HIGH"
+    },
+    "sub-memory-bootstrap": {
+      "files_sha1": "0cd6f91ef1cff5122ddb403b59ea9515ada5d1f8",
+      "package_sha1": "c77ca35de7acbec9ed7a52e514ad480798d79c2b",
+      "skill_name": "sub-memory-bootstrap",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "BEHAV_COMMAND_EXEC",
+      "severity": "HIGH"
+    },
+    "talos-governance-agent": {
+      "files_sha1": "c626915ec5c57a81fdcd336a7618a84bbd560eef",
+      "package_sha1": "f26fadfe321db23cfae7bf005a799f476e061267",
+      "skill_name": "talos-governance-agent",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "BINARY_FILE_PRESENT",
+      "severity": "HIGH"
+    },
+    "product-storer": {
+      "files_sha1": "67e8eec98aac5087fddac0acb86b0f53dcf3eaf3",
+      "package_sha1": "f5891d10d432bcf8f2707d2731980753913d92b9",
+      "skill_name": "product-storer",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "CQ_SQL_INJECTION",
+      "severity": "HIGH"
+    },
+    "pre-package-pipeline": {
+      "files_sha1": "30e8ce94a33ba06d5a2694d922ac2385aa1fb2e7",
+      "package_sha1": "b7a3d0cf6dc357184699ce8149c5e1c3038c2234",
+      "skill_name": "pre-package-pipeline",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "CQ_DYNAMIC_EXEC",
+      "severity": "HIGH"
+    },
+    "pdf": {
+      "files_sha1": "79b100bf0bc9aad1729660fca3d835737cd0e8cf",
+      "package_sha1": "7f1c17e76decd2152f49fc8aea01696351de30ca",
+      "skill_name": "pdf",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "CQ_HARDCODED_SECRET",
+      "severity": "HIGH"
+    },
+    "create-techboss": {
+      "files_sha1": "d9cb120c78f14b7915368333b6e454d6319ce110",
+      "package_sha1": "3487f6665854d9f0adcacc62ff17383d4719acad",
+      "skill_name": "create-techboss",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "BEHAV_IMPORT_SUBPROCESS",
+      "severity": "LOW"
+    },
+    "managing-models": {
+      "files_sha1": "86298915f1fa8778eae789d01a3a4b27c5a7b7fa",
+      "package_sha1": "85b8cc73774d289f6d698dc59d26fab054ceee2d",
+      "skill_name": "managing-models",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "CQ_BROAD_EXCEPTION",
+      "severity": "INFO"
+    },
+    "bet-kickoff": {
+      "files_sha1": "a54cc73654f5875b5f2f753ccb02049c650fdf78",
+      "package_sha1": "06c09622957e233c8bd4f1a996759c90364089ed",
+      "skill_name": "bet-kickoff",
+      "verdict": "SUSPICIOUS",
+      "primary_rule": "(no_finding)",
+      "severity": "NONE"
+    }
+  }
+}

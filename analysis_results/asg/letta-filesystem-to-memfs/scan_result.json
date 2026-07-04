@@ -1,0 +1,48 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\letta\\letta-filesystem-to-memfs",
+  "skill_name": "letta-filesystem-to-memfs",
+  "files_scanned": [
+    "references\\design.md",
+    "scripts\\ingest_documents.py",
+    "scripts\\letta_fs_to_memfs.py",
+    "scripts\\search_corpus.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 5,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "SC1": 1
+  },
+  "by_kill_chain_phase": {
+    "execution": 1
+  },
+  "rule_ids_hit": [
+    "SC1"
+  ],
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\letta_fs_to_memfs.py",
+      "line": 598,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  595 | \n  596 | def qmd_run(args: list[str], *, check: bool = True, capture: bool = False) -> subprocess.CompletedProcess[str]:\n  597 |     qmd_bin, env = qmd_env()\n» 598 |     return subprocess.run(\n  599 |         [qmd_bin, *args],\n  600 |         env=env,\n  601 |         text=True,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "return subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

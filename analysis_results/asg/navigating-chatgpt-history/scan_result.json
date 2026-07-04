@@ -1,0 +1,26 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\letta\\navigating-chatgpt-history",
+  "skill_name": "navigating-chatgpt-history",
+  "files_scanned": [
+    "references\\repository-layout.md",
+    "scripts\\common.py",
+    "scripts\\inspect-export.py",
+    "scripts\\list-conversations.py",
+    "scripts\\render-conversation.py",
+    "scripts\\render-range.py",
+    "scripts\\search-conversations.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 8,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

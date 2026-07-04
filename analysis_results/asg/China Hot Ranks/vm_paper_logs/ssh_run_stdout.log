@@ -1,0 +1,150 @@
+=== Paper-mode Docker run ===
+Skill   : China Hot Ranks
+Path    : /skill
+LogDir  : /logs
+Timeout : 60s per script
+HOME    : /home/codexsafe
+CODEX_HOME: /home/codexsafe/.codex
+XDG_CONFIG_HOME: /home/codexsafe/.config
+
+=== Fake HOME visibility check ===
+total 32
+drwx------ 7 appuser appuser 4096 Jun 19 01:33 .
+drwxr-xr-x 1 root    root    4096 Jun 17 08:45 ..
+drwxrwxr-x 2 appuser appuser 4096 Jun 19 01:33 .aws
+drwxr-xr-x 3 root    root    4096 Jun 19 01:33 .cache
+drwxrwxr-x 2 appuser appuser 4096 Jun 19 01:33 .codex
+drwxrwxr-x 3 appuser appuser 4096 Jun 19 01:33 .config
+-rw------- 1 appuser appuser  390 Jun 19 01:33 .env
+drwx------ 2 appuser appuser 4096 Jun 19 01:33 .ssh
+total 16
+drwx------ 2 appuser appuser 4096 Jun 19 01:33 .
+drwx------ 7 appuser appuser 4096 Jun 19 01:33 ..
+-rw-rw-r-- 1 appuser appuser  167 Jun 19 01:33 config
+-rw------- 1 appuser appuser  178 Jun 19 01:33 id_rsa
+total 12
+drwxrwxr-x 2 appuser appuser 4096 Jun 19 01:33 .
+drwx------ 7 appuser appuser 4096 Jun 19 01:33 ..
+-rw------- 1 appuser appuser  210 Jun 19 01:33 credentials
+total 12
+drwxrwxr-x 2 appuser appuser 4096 Jun 19 01:33 .
+drwx------ 7 appuser appuser 4096 Jun 19 01:33 ..
+-rw------- 1 appuser appuser  259 Jun 19 01:33 config.json
+
+=== 依赖安装与导入路径准备 ===
+[paper-mode] 发现 requirements.txt，开始 pip install（300s 上限）...
+Requirement already satisfied: requests>=2.28.0 in /usr/local/lib/python3.11/site-packages (from -r /skill/requirements.txt (line 1)) (2.34.2)
+Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.11/site-packages (from requests>=2.28.0->-r /skill/requirements.txt (line 1)) (3.4.7)
+Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.11/site-packages (from requests>=2.28.0->-r /skill/requirements.txt (line 1)) (3.18)
+Requirement already satisfied: urllib3<3,>=1.26 in /usr/local/lib/python3.11/site-packages (from requests>=2.28.0->-r /skill/requirements.txt (line 1)) (2.7.0)
+Requirement already satisfied: certifi>=2023.5.7 in /usr/local/lib/python3.11/site-packages (from requests>=2.28.0->-r /skill/requirements.txt (line 1)) (2026.5.20)
+[paper-mode] PYTHONPATH=/skill:/skill/scripts:/skill/src:/skill/lib:
+
+[paper-mode] Found 2 script(s) to execute.
+--- executing: hot_ranks.py ---
+📊 开始获取热榜数据...
+目标平台：6 个
+API 地址：http://localhost:6688
+============================================================
+
+### 微博热搜
+网站：https://s.weibo.com/top/summary/
+
+⚠️  无法连接到 DailyHotApi 服务 (http://localhost:6688)
+⚠️  微博热搜暂时无法获取
+
+### 知乎热榜
+网站：https://www.zhihu.com/hot
+
+⚠️  无法连接到 DailyHotApi 服务 (http://localhost:6688)
+⚠️  知乎热榜暂时无法获取
+
+### B 站热门
+网站：https://www.bilibili.com/v/popular/rank/all
+
+⚠️  无法连接到 DailyHotApi 服务 (http://localhost:6688)
+⚠️  B 站热门暂时无法获取
+
+### 抖音热点
+网站：https://www.douyin.com/hot
+
+⚠️  无法连接到 DailyHotApi 服务 (http://localhost:6688)
+⚠️  抖音热点暂时无法获取
+
+### CSDN 热榜
+网站：https://blog.csdn.net/rank/list
+
+⚠️  无法连接到 DailyHotApi 服务 (http://localhost:6688)
+⚠️  CSDN 热榜暂时无法获取
+
+### 掘金热榜
+网站：https://juejin.cn/hot/items
+
+⚠️  无法连接到 DailyHotApi 服务 (http://localhost:6688)
+⚠️  掘金热榜暂时无法获取
+
+============================================================
+✅ 抓取完成：0/6 平台成功
+[exit_code: 0]
+--- executing: install.sh ---
+======================================
+📊 中国热榜聚合器 - 安装向导
+======================================
+
+🔍 检查 Python...
+✅ Python 3.11.15
+
+🔍 检查 curl...
+✅ curl 8.14.1 (x86_64-pc-linux-gnu) libcurl/8.14.1 OpenSSL/3.5.6 zlib/1.3.1 brotli/1.1.0 zstd/1.5.7 libidn2/2.3.8 libpsl/0.21.2 libssh2/1.11.1 nghttp2/1.64.0 nghttp3/1.8.0 librtmp/2.3 OpenLDAP/2.6.10
+
+🔍 检查 mcporter（可选）...
+⚠️  mcporter 未安装（可选）
+💡 安装 mcporter 可以使用微博/抖音 MCP:
+   npm install -g mcporter
+   或参考：https://github.com/modelcontextprotocol/mcporter
+
+🔍 检查代理配置...
+⚠️  未检测到代理配置
+💡 GitHub 访问可能需要代理，可以设置:
+   export HTTPS_PROXY=http://127.0.0.1:7890
+
+🧪 测试运行...
+📊 开始获取热榜数据...
+目标平台：1 个
+API 地址：http://localhost:6688
+============================================================
+
+
+======================================
+🔧 MCP 服务器配置（推荐）
+======================================
+
+MCP 服务器可以提供更准确的实时数据
+
+1. 复制配置到系统目录:
+   mkdir -p ~/.mcporter
+   cp config/mcporter.json ~/.mcporter/
+
+2. 验证 MCP 服务器:
+   mcporter list
+
+3. 测试微博热搜:
+   python3 hot_ranks.py weibo
+
+
+======================================
+✅ 安装完成！
+======================================
+
+使用方法:
+  python3 hot_ranks.py          # 获取所有热榜
+  python3 hot_ranks.py weibo    # 微博热搜
+  python3 hot_ranks.py github   # GitHub Trending
+
+详细说明请查看 README.md
+
+[exit_code: 0]
+
+=== Paper-mode run complete ===
+  scripts executed: 2
+  log dir: /logs

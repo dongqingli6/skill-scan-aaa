@@ -1,0 +1,21 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\memfs-search",
+  "skill_name": "memfs-search",
+  "files_scanned": [
+    "references\\qmd-setup.md",
+    "scripts\\memfs-search.sh",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

@@ -1,0 +1,88 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\china-hot-ranks\\China Hot Ranks",
+  "skill_name": "China Hot Ranks",
+  "files_scanned": [
+    "docs\\api_reference.md",
+    "examples\\output_sample.md",
+    "hot_ranks.py",
+    "install.sh",
+    "README.md",
+    "requirements.txt",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 7,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 1,
+    "HIGH": 0,
+    "MEDIUM": 2,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "PE2": 2,
+    "P6": 1
+  },
+  "by_kill_chain_phase": {
+    "impact": 3
+  },
+  "rule_ids_hit": [
+    "P6",
+    "PE2"
+  ],
+  "findings": [
+    {
+      "rule_id": "PE2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "install.sh",
+      "line": 32,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  29 | else\n  30 |     echo \"❌ curl 未安装\"\n  31 |     echo \"💡 请安装 curl:\"\n» 32 |     echo \"   Ubuntu/Debian: sudo apt install curl\"\n  33 |     echo \"   macOS: brew install curl\"\n  34 |     echo \"   CentOS: sudo yum install curl\"\n  35 |     exit 1",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "install_script",
+      "snippet": "echo \"   Ubuntu/Debian: sudo apt install curl\"",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "install.sh",
+      "line": 34,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  31 |     echo \"💡 请安装 curl:\"\n  32 |     echo \"   Ubuntu/Debian: sudo apt install curl\"\n  33 |     echo \"   macOS: brew install curl\"\n» 34 |     echo \"   CentOS: sudo yum install curl\"\n  35 |     exit 1\n  36 | fi\n  37 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "install_script",
+      "snippet": "echo \"   CentOS: sudo yum install curl\"",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P6",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "impact",
+      "file": "README.md",
+      "line": 219,
+      "pattern": "crontab\\s+-e",
+      "matched_text": "crontab -e",
+      "description": "Skill instructs persistent modification to system startup.",
+      "confidence": 0.85,
+      "context": "  216 | \n  217 | ```bash\n  218 | # 编辑 crontab\n» 219 | crontab -e\n  220 | \n  221 | # 添加任务\n  222 | 0 9 * * * cd /path/to/china-hot-ranks && python3 hot_ranks.py >> /var/log/hot-ranks.log 2>&1",
+      "original_severity": "CRITICAL",
+      "evidence_type": "persistence",
+      "context_type": "markdown_code_block",
+      "snippet": "crontab -e",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

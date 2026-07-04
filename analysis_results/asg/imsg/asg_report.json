@@ -1,0 +1,169 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:44.353797+00:00",
+  "skill_name": "imsg",
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\imsg",
+  "skill_contents": {
+    "file_count": 4,
+    "total_bytes": 169861,
+    "files": [
+      {
+        "path": "assets/imsg-small.svg",
+        "size_bytes": 475,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/imsg.png",
+        "size_bytes": 166070,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE",
+        "size_bytes": 1095,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 2221,
+        "kind": "text",
+        "content_preview": "---\nname: imsg\ndescription: iMessage/SMS CLI for listing chats, history, and sending messages via Messages.app.\nhomepage: https://imsg.to\n\n---\n\n# imsg\n\nUse `imsg` to read and send iMessage/SMS via macOS Messages.app.\n\n## Limitations\n\n- Group chat management (adding/removing members) is not supported\n- macOS only\n\n## Requirements\n\n- macOS with Messages.app signed in\n- Full Disk Access for terminal\n- Automation permission for Messages.app (for sending)\n\n## Common Commands\n\n### List Chats\n\n```bash\nimsg chats --limit 10 --json\n```\n\n### View History\n\n```bash\n# By chat ID\nimsg history --chat-id 1 --limit 20 --json\n\n# With attachments info\nimsg history --chat-id 1 --limit 20 --attachments --json\n\n# Filter by date\nimsg history --chat-id 1 --start 2026-01-01T00:00:00Z --json\n```\n\n### Watch for New Messages\n\n```bash\nimsg watch --chat-id 1 --attachments\nimsg watch --chat-id 1 --debounce 250ms\n```\n\n### Send Messages\n\n```bash\n# Send to phone number\nimsg send --to \"+14155551212\" --text \"Hello!\"\n\n# Send to existing chat by ID (useful for replies)\nimsg send --chat-id 86 --text \"Hello!\"\n\n# With attachment\nimsg send --to \"+14155551212\" --text \"Check this out\" --file /path/to/image.jpg\n\n# Specify service\nimsg send --to \"+14155551212\" --text \"Hi\" --service imessage\nimsg send --to \"+14155551212\" --text \"Hi\" --service sms\n```\n\n## Service Options\n\n- `--service imessage` — Force iMessage (requires recipient has iMessage)\n- `--service sms` — Force SMS (green bubble)\n- `--service auto` — Let Messages.app decide (default)\n\n## Safety Rules\n\n1. **Always confirm recipient and message content** before sending\n2. **Never send to unknown numbers** without explicit user approval\n3. **Be careful with attachments** — confirm file path exists\n4. **Rate limit yourself** — don't spam\n\n## Example Workflow\n\nUser: \"Text mom that I'll be late\"\n\n```bash\n# 1. Find mom's chat\nimsg chats --limit 20 --json | jq '.[] | select(.displayName | contains(\"Mom\"))'\n\n# 2. Confirm with user\n# \"Found Mom at +1555123456. Send 'I'll be late' via iMessage?\"\n\n# 3. Send after confirmation\nimsg send --to \"+1555123456\" --text \"I'll be late\"\n```\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: imsg\ndescription: iMessage/SMS CLI for listing chats, history, and sending messages via Messages.app.\nhomepage: https://imsg.to\n\n---\n\n# imsg\n\nUse `imsg` to read and send iMessage/SMS via macOS Messages.app.\n\n## Limitations\n\n- Group chat management (adding/removing members) is not supported\n- macOS only\n\n## Requirements\n\n- macOS with Messages.app signed in\n- Full Disk Access for terminal\n- Automation permission for Messages.app (for sending)\n\n## Common Commands\n\n### List Chats\n\n```bash\nimsg chats --limit 10 --json\n```\n\n### View History\n\n```bash\n# By chat ID\nimsg history --chat-id 1 --limit 20 --json\n\n# With attachments info\nimsg history --chat-id 1 --limit 20 --attachments --json\n\n# Filter by date\nimsg history --chat-id 1 --start 2026-01-01T00:00:00Z --json\n```\n\n### Watch for New Messages\n\n```bash\nimsg watch --chat-id 1 --attachments\nimsg watch --chat-id 1 --debounce 250ms\n```\n\n### Send Messages\n\n```bash\n# Send to phone number\nimsg send --to \"+14155551212\" --text \"Hello!\"\n\n# Send to existing chat by ID (useful for replies)\nimsg send --chat-id 86 --text \"Hello!\"\n\n# With attachment\nimsg send --to \"+14155551212\" --text \"Check this out\" --file /path/to/image.jpg\n\n# Specify service\nimsg send --to \"+14155551212\" --text \"Hi\" --service imessage\nimsg send --to \"+14155551212\" --text \"Hi\" --service sms\n```\n\n## Service Options\n\n- `--service imessage` — Force iMessage (requires recipient has iMessage)\n- `--service sms` — Force SMS (green bubble)\n- `--service auto` — Let Messages.app decide (default)\n\n## Safety Rules\n\n1. **Always confirm recipient and message content** before sending\n2. **Never send to unknown numbers** without explicit user approval\n3. **Be careful with attachments** — confirm file path exists\n4. **Rate limit yourself** — don't spam\n\n## Example Workflow\n\nUser: \"Text mom that I'll be late\"\n\n```bash\n# 1. Find mom's chat\nimsg chats --limit 20 --json | jq '.[] | select(.displayName | contains(\"Mom\"))'\n\n# 2. Confirm with user\n# \"Found Mom at +1555123456. Send 'I'll be late' via iMessage?\"\n\n# 3. Send after confirmation\nimsg send --to \"+1555123456\" --text \"I'll be late\"\n```\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 1
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": []
+}

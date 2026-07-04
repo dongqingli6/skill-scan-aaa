@@ -1,0 +1,169 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:47.227251+00:00",
+  "skill_name": "remotion",
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\remotion",
+  "skill_contents": {
+    "file_count": 4,
+    "total_bytes": 25328,
+    "files": [
+      {
+        "path": "assets/remotion-small.svg",
+        "size_bytes": 219,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/remotion.png",
+        "size_bytes": 17649,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE.md",
+        "size_bytes": 2872,
+        "kind": "text",
+        "content_preview": "# Remotion License\n\nIn Remotion 5.0, the license will slightly change. [View the changes here](https://github.com/remotion-dev/remotion/pull/3750).\n\n---\n\nDepending on the type of your legal entity, you are granted permission to use Remotion for your project. Individuals and small companies are allowed to use Remotion to create videos for free (even commercial), while a company license is required for for-profit organizations of a certain size. This two-tier system was designed to ensure funding for this project while still allowing the source code to be available and the program to be free for most. Read below for the exact terms of use.\n\n- [Free License](#free-license)\n- [Company License](#company-license)\n\n## Free License\n\nCopyright © 2026 [Remotion](https://www.remotion.dev)\n\n### Eligibility\n\nYou are eligible to use Remotion for free if you are:\n\n- an individual\n- a for-profit organization with up to 3 employees\n- a non-profit or not-for-profit organization\n- evaluating whether Remotion is a good fit, and are not yet using it in a commercial way\n\n### Allowed use cases\n\nPermission is hereby granted, free of charge, to any person eligible for the \"Free License\", to use the software non-commercially or commercially for the purpose of creating videos and images and to modify the software to their own liking, for the purpose of fulfilling their custom use case or to contribute bug fixes or improvements back to Remotion.\n\n### Disallowed use cases\n\nIt is not allowed to copy or modify Remotion code for the purpose of selling, renting, licensing, relicensing, or sublicensing your own derivate of Remotion.\n\n### Warranty notice\n\nThe software is provided \"as is\", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the author or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.\n\n### Support\n\nSupport is provided on a best-we-can-do basis via GitHub Issues and Discord.\n\n## Company License\n\nYou are required to obtain a Company License to use Remotion if you are not within the group of entities eligible for a Free License. This license will enable you to use Remotion for the allowed use cases specified in the Free License, and give you access to prioritized support (read the [Support Policy](https://www.remotion.dev/docs/support)).\n\nVisit [remotion.pro](https://www.remotion.pro/license) for pricing and to buy a license.\n\n### FAQs\n\nAre you not sure whether you need a Company License because of an edge case? Here are some [frequently asked questions](https://www.remotion.pro/faq).\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 4588,
+        "kind": "text",
+        "content_preview": "---\nname: remotion-best-practices\ndescription: Best practices for Remotion - Video creation in React\nmetadata:\n  tags: remotion, video, react, animation, composition\n---\n\n## When to use\n\nUse this skills whenever you are dealing with Remotion code to obtain the domain-specific knowledge.\n\n## Captions\n\nWhen dealing with captions or subtitles, load the [./rules/subtitles.md](./rules/subtitles.md) file for more information.\n\n## Using FFmpeg\n\nFor some video operations, such as trimming videos or detecting silence, FFmpeg should be used. Load the [./rules/ffmpeg.md](./rules/ffmpeg.md) file for more information.\n\n## Silence detection\n\nWhen needing to detect and trim silent segments from video or audio files, load the [./rules/silence-detection.md](./rules/silence-detection.md) file.\n\n## Audio visualization\n\nWhen needing to visualize audio (spectrum bars, waveforms, bass-reactive effects), load the [./rules/audio-visualization.md](./rules/audio-visualization.md) file for more information.\n\n## Sound effects\n\nWhen needing to use sound effects, load the [./rules/sfx.md](./rules/sfx.md) file for more information.\n\n## How to use\n\nRead individual rule files for detailed explanations and code examples:\n\n- [rules/3d.md](rules/3d.md) - 3D content in Remotion using Three.js and React Three Fiber\n- [rules/animations.md](rules/animations.md) - Fundamental animation skills for Remotion\n- [rules/assets.md](rules/assets.md) - Importing images, videos, audio, and fonts into Remotion\n- [rules/audio.md](rules/audio.md) - Using audio and sound in Remotion - importing, trimming, volume, speed, pitch\n- [rules/calculate-metadata.md](rules/calculate-metadata.md) - Dynamically set composition duration, dimensions, and props\n- [rules/can-decode.md](rules/can-decode.md) - Check if a video can be decoded by the browser using Mediabunny\n- [rules/charts.md](rules/charts.md) - Chart and data visualization patterns for Remotion (bar, pie, line, stock charts)\n- [rules/compositions.md](rules/compositions.md) - Defining compositions, stills, folders, default props and dynamic metadata\n- [rules/extract-frames.md](rules/extract-frames.md) - Extract frames from videos at specific timestamps using Mediabunny\n- [rules/fonts.md](rules/fonts.md) - Loading Google Fonts and local fonts in Remotion\n- [rules/get-audio-duration.md](rules/get-audio-duration.md) - Getting the duration of an audio file in seconds with Mediabunny\n- [rules/get-video-dimensions.md](rules/get-video-dimensions.md) - Getting the width and height of a video file with Mediabunny\n- [rules/get-video-duration.md](rules/get-video-duration.md) - Getting the duration of a video file in seconds with Mediabunny\n- [rules/gifs.md](rules/gifs.md) - Displaying GIFs synchronized with Remotion's timeline\n- [rules/images.md](rules/images.md) - Embedding images in Remotion using the Img component\n- [rules/light-leaks.md](rules/light-leaks.md) - Light leak overlay effects using @remotion/light-leaks\n- [rules/lottie.md](rules/lottie.md) - Embedding Lottie animations in Remotion\n- [rules/measuring-dom-nodes.md](rules/measuring-dom-nodes.md) - Measuring DOM element dimensions in Remotion\n- [rules/measuring-text.md](rules/measuring-text.md) - Measuring text dimensions, fitting text to containers, and checking overflow\n- [rules/sequencing.md](rules/sequencing.md) - Sequencing patterns for Remotion - delay, trim, limit duration of items\n- [rules/tailwind.md](rules/tailwind.md) - Using TailwindCSS in Remotion\n- [rules/text-animations.md](rules/text-animations.md) - Typography and text animation patterns for Remotion\n- [rules/timing.md](rules/timing.md) - Interpolation curves in Remotion - linear, easing, spring animations\n- [rules/transitions.md](rules/transitions.md) - Scene transition patterns for Remotion\n- [rules/transparent-videos.md](rules/transparent-videos.md) - Rendering out a video with transparency\n- [rules/trimming.md](rules/trimming.md) - Trimming patterns for Remotion - cut the beginning or end of animations\n- [rules",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: remotion-best-practices\ndescription: Best practices for Remotion - Video creation in React\nmetadata:\n  tags: remotion, video, react, animation, composition\n---\n\n## When to use\n\nUse this skills whenever you are dealing with Remotion code to obtain the domain-specific knowledge.\n\n## Captions\n\nWhen dealing with captions or subtitles, load the [./rules/subtitles.md](./rules/subtitles.md) file for more information.\n\n## Using FFmpeg\n\nFor some video operations, such as trimming videos or detecting silence, FFmpeg should be used. Load the [./rules/ffmpeg.md](./rules/ffmpeg.md) file for more information.\n\n## Silence detection\n\nWhen needing to detect and trim silent segments from video or audio files, load the [./rules/silence-detection.md](./rules/silence-detection.md) file.\n\n## Audio visualization\n\nWhen needing to visualize audio (spectrum bars, waveforms, bass-reactive effects), load the [./rules/audio-visualization.md](./rules/audio-visualization.md) file for more information.\n\n## Sound effects\n\nWhen needing to use sound effects, load the [./rules/sfx.md](./rules/sfx.md) file for more information.\n\n## How to use\n\nRead individual rule files for detailed explanations and code examples:\n\n- [rules/3d.md](rules/3d.md) - 3D content in Remotion using Three.js and React Three Fiber\n- [rules/animations.md](rules/animations.md) - Fundamental animation skills for Remotion\n- [rules/assets.md](rules/assets.md) - Importing images, videos, audio, and fonts into Remotion\n- [rules/audio.md](rules/audio.md) - Using audio and sound in Remotion - importing, trimming, volume, speed, pitch\n- [rules/calculate-metadata.md](rules/calculate-metadata.md) - Dynamically set composition duration, dimensions, and props\n- [rules/can-decode.md](rules/can-decode.md) - Check if a video can be decoded by the browser using Mediabunny\n- [rules/charts.md](rules/charts.md) - Chart and data visualization patterns for Remotion (bar, pie, line, stock charts)\n- [rules/compositions.md](rules/compositions.md) - Defining compositions, stills, folders, default props and dynamic metadata\n- [rules/extract-frames.md](rules/extract-frames.md) - Extract frames from videos at specific timestamps using Mediabunny\n- [rules/fonts.md](rules/fonts.md) - Loading Google Fonts and local fonts in Remotion\n- [rules/get-audio-duration.md](rules/get-audio-duration.md) - Getting the duration of an audio file in seconds with Mediabunny\n- [rules/get-video-dimensions.md](rules/get-video-dimensions.md) - Getting the width and height of a video file with Mediabunny\n- [rules/get-video-duration.md](rules/get-video-duration.md) - Getting the duration of a video file in seconds with Mediabunny\n- [rules/gifs.md](rules/gifs.md) - Displaying GIFs synchronized with Remotion's timeline\n- [rules/images.md](rules/images.md) - Embedding images in Remotion using the Img component\n- [rules/light-leaks.md](rules/light-leaks.md) - Light leak overlay effects using @remotion/light-leaks\n- [rules/lottie.md](rules/lottie.md) - Embedding Lottie animations in Remotion\n- [rules/measuring-dom-nodes.md](rules/measuring-dom-nodes.md) - Measuring DOM element dimensions in Remotion\n- [rules/measuring-text.md](rules/measuring-text.md) - Measuring text dimensions, fitting text to containers, and checking overflow\n- [rules/sequencing.md](rules/sequencing.md) - Sequencing patterns for Remotion - delay, trim, limit duration of items\n- [rules/tailwind.md](rules/tailwind.md) - Using TailwindCSS in Remotion\n- [rules/text-animations.md](rules/text-animations.md) - Typography and text animation patterns for Remotion\n- [rules/timing.md](rules/timing.md) - Interpolation curves in Remotion - linear, easing, spring animations\n- [rules/transitions.md](rules/transitions.md) - Scene transition patterns for Remotion\n- [rules/transparent-videos.md](rules/transparent-videos.md) - Rendering out a video with transparency\n- [rules/trimming.md](rules/trimming.md) - Trimming patterns for Remotion - cut the beginning or end of animations\n- [rules"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 2
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": []
+}

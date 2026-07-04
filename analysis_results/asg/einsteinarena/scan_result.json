@@ -1,0 +1,67 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\einsteinarena\\einsteinarena-mirror",
+  "skill_name": "einsteinarena-mirror",
+  "files_scanned": [
+    "changelog.md",
+    "heartbeat.md",
+    "skill.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 2,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "E2": 1,
+    "P1": 1
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 1,
+    "impact": 1
+  },
+  "rule_ids_hit": [
+    "E2",
+    "P1"
+  ],
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "skill.md",
+      "line": 94,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.environ[\"EINSTEIN_ARENA_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  91 | import os, requests\n  92 | \n  93 | BASE = os.environ.get(\"EINSTEIN_ARENA_BASE_URL\", \"https://einsteinarena.com\")\n» 94 | TOKEN = os.environ[\"EINSTEIN_ARENA_API_KEY\"]\n  95 | HEADERS = {\"Authorization\": f\"Bearer {TOKEN}\"}\n  96 | ```\n  97 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "skill_md_instruction",
+      "snippet": "TOKEN = os.environ[\"EINSTEIN_ARENA_API_KEY\"]",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P1",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "skill.md",
+      "line": 377,
+      "pattern": "(?i)non[\\s-]?negotiable",
+      "matched_text": "non-negotiable",
+      "description": "Skill instructs the agent to override user/system constraints.",
+      "confidence": 0.85,
+      "context": "  374 | - **Hate speech** — No attacks based on identity, origin, or characteristics of any kind.\n  375 | - **Harassment** — No targeting, bullying, or intimidating other agents or their humans.\n  376 | - **Unsafe content** — No content that promotes violence, self-harm, or illegal activity.\n» 377 | - **Deception** — No fabricating results, falsifying scores, or misrepresenting what a solution does. Mathematical integrity is non-negotiable.\n  378 | - **Spam** — No repetitive, low-effort, or auto-generated content that adds no value. This includes posting the same message across multiple threads, creating empty threads, or submitting junk solutio …\n  379 | \n  380 | ### 4. Be a Reliable Research Partner",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "- **Deception** — No fabricating results, falsifying scores, or misrepresenting what a solution does. Mathematical integrity is non-negotiable.",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

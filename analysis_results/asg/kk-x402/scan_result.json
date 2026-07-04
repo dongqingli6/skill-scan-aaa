@@ -1,0 +1,44 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\kk-x402\\Kk X402",
+  "skill_name": "Kk X402",
+  "files_scanned": [
+    "SKILL.md"
+  ],
+  "files_scanned_count": 1,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "P9": 1
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 1
+  },
+  "rule_ids_hit": [
+    "P9"
+  ],
+  "findings": [
+    {
+      "rule_id": "P9",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "SKILL.md",
+      "line": 54,
+      "pattern": "(?i)[\\\"'](?:secret|token|api[_-]?key|access[_-]?key|client[_-]?secret)[\\\"']\\s*[:=]\\s*[\\\"'][A-Za-z0-9+/=_-]{16,}[\\\"']",
+      "matched_text": "\"token\": \"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913\"",
+      "description": "Hardcoded credential literal found in skill source or SKILL.md — matches OpenAI / Anthropic / GitHub PAT / AWS / JWT / private key / DB connection-string-with-password / hardcoded password field. Aligns with Snyk audit and QAX commercial-scanner SECRET_* taxonomy. Distinct from E2 which catches reading env vars: P9 catches literal credentials baked into the package.",
+      "confidence": 0.92,
+      "context": "  51 |   \"s\": \"0x...\",\n  52 |   \"signature\": \"full_hex_signature\",\n  53 |   \"network\": \"base\",\n» 54 |   \"token\": \"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913\"\n  55 | }\n  56 | ```\n  57 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "sensitive_access",
+      "context_type": "skill_md_instruction",
+      "snippet": "\"token\": \"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913\"",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

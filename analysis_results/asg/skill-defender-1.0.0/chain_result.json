@@ -1,0 +1,90 @@
+{
+  "archetype": {
+    "archetype": "Hybrid",
+    "confidence": 0.85,
+    "paper_archetype_share_percent": 5.1,
+    "has_SC2": true,
+    "has_P1": true,
+    "has_PE1": false
+  },
+  "sophistication": {
+    "level": 2,
+    "label": "Intermediate",
+    "criterion_evasion_present": false,
+    "criterion_shadow_features": false,
+    "criterion_pattern_count": 26
+  },
+  "chains_triggered": [
+    {
+      "chain_id": "E2_E1",
+      "name": "Data Exfiltration Chain",
+      "required_rules": [
+        "E2",
+        "E1"
+      ],
+      "phase_sequence": [
+        "cred_access",
+        "exfil"
+      ],
+      "severity_boost": "HIGH",
+      "paper_evidence": "OR=2.31, p=0.020; 36.9% of malicious skills (§4.2)",
+      "description": "Credential harvesting followed by external transmission."
+    },
+    {
+      "chain_id": "E2_SC2_FACTORY",
+      "name": "smp_170 Brand Impersonation Factory Fingerprint",
+      "required_rules": [
+        "E2",
+        "SC2"
+      ],
+      "phase_sequence": [
+        "cred_access",
+        "execution"
+      ],
+      "severity_boost": "CRITICAL",
+      "paper_evidence": "OR=556, 97.6% sensitivity for smp_170 (§4.2)",
+      "description": "E2+SC2 co-occurrence — paper's strongest single fingerprint."
+    },
+    {
+      "chain_id": "E2_E1_P4_ADVANCED",
+      "name": "Advanced Data Thief Triple",
+      "required_rules": [
+        "E2",
+        "E1",
+        "P4"
+      ],
+      "phase_sequence": [
+        "cred_access",
+        "exfil",
+        "impact"
+      ],
+      "severity_boost": "CRITICAL",
+      "paper_evidence": "26.1% of skills, 80% of Level-3 attacks (§4.2)",
+      "description": "Harvest + exfil + user-alert suppression."
+    },
+    {
+      "chain_id": "EXEC_CRED_ACCESS",
+      "name": "Canonical Agent Skill Pattern",
+      "required_rules": [
+        "SC2",
+        "E2"
+      ],
+      "phase_sequence": [
+        "execution",
+        "cred_access"
+      ],
+      "severity_boost": "HIGH",
+      "paper_evidence": "89 skills (strongest phase co-occurrence) (§4.1)",
+      "description": "Execution-Credential Access kill-chain coupling."
+    }
+  ],
+  "chain_count": 4,
+  "kill_chain_phases_covered": [
+    "cred_access",
+    "execution",
+    "exfil",
+    "impact",
+    "recon"
+  ],
+  "kill_chain_phase_coverage_count": 5
+}

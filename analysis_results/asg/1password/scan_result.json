@@ -1,0 +1,85 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\1password",
+  "skill_name": "1password",
+  "files_scanned": [
+    "references\\cli-examples.md",
+    "references\\get-started.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 3
+  },
+  "by_pattern": {
+    "E3": 1,
+    "PE2": 2
+  },
+  "by_kill_chain_phase": {
+    "recon": 1,
+    "impact": 2
+  },
+  "rule_ids_hit": [
+    "E3",
+    "PE2"
+  ],
+  "findings": [
+    {
+      "rule_id": "E3",
+      "severity": "LOW",
+      "kill_chain_phase": "recon",
+      "file": "references\\cli-examples.md",
+      "line": 13,
+      "pattern": "\\.pem(?:\\s|$|[\\\"'])",
+      "matched_text": ".pem ",
+      "description": "Scanning for SSH keys, AWS credentials, or other auth files.",
+      "confidence": 0.85,
+      "context": "  10 | - `op read op://app-prod/db/password`\n  11 | - `op read \"op://app-prod/db/one-time password?attribute=otp\"`\n  12 | - `op read \"op://app-prod/ssh key/private key?ssh-format=openssh\"`\n» 13 | - `op read --out-file ./key.pem op://app-prod/server/ssh/key.pem`\n  14 | \n  15 | ## Run\n  16 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "documentation",
+      "context_type": "reference_doc",
+      "snippet": "- `op read --out-file ./key.pem op://app-prod/server/ssh/key.pem`",
+      "downgraded": true,
+      "downgrade_reason": "Matched in reference_doc context"
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 16,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  13 | \n  14 | - **tmux** is required for reliable `op` commands (the shell tool uses fresh TTYs per command, causing re-auth issues without tmux)\n  15 |   - macOS: `brew install tmux`\n» 16 |   - Linux (Debian/Ubuntu): `sudo apt install tmux`\n  17 |   - Linux (RHEL/Fedora): `sudo dnf install tmux`\n  18 | \n  19 | ## References",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "- Linux (Debian/Ubuntu): `sudo apt install tmux`",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 17,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  14 | - **tmux** is required for reliable `op` commands (the shell tool uses fresh TTYs per command, causing re-auth issues without tmux)\n  15 |   - macOS: `brew install tmux`\n  16 |   - Linux (Debian/Ubuntu): `sudo apt install tmux`\n» 17 |   - Linux (RHEL/Fedora): `sudo dnf install tmux`\n  18 | \n  19 | ## References\n  20 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "- Linux (RHEL/Fedora): `sudo dnf install tmux`",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

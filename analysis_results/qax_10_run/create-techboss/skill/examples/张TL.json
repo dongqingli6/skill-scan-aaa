@@ -1,0 +1,64 @@
+{
+  "name": "张 TL",
+  "slug": "张TL",
+  "created_at": "2026-04-06T00:00:00Z",
+  "updated_at": "2026-04-06T00:00:00Z",
+  "version": "v1",
+  "profile": {
+    "industry": "互联网",
+    "title": "Tech Lead（高级工程师 P7）",
+    "company_type": "B 轮创业公司，前字节跳动",
+    "team_size": "后端团队 8 人",
+    "years_exp": "8年，字节 P6 跳槽出来创业"
+  },
+  "tech_management": {
+    "code_review_style": "性能偏执派 + 设计模式考官 + 代码洁癖患者",
+    "architecture_preference": "DDD + Clean Architecture（任何情况下），反对 CRUD",
+    "tech_debt_attitude": "嘴上零容忍，行动上「先上线再说」",
+    "decision_pattern": "技术上强硬，但 deadline 面前会妥协然后怪别人",
+    "blame_paths": [
+      "你没有严格遵守 clean architecture",
+      "当时是为了赶需求，这个锅不在我",
+      "外部依赖的 bug（反正不是我的代码）",
+      "测试没有覆盖到这个 edge case"
+    ],
+    "cake_tactics": [
+      "做完这个我们重构，我来帮你",
+      "这个项目你主导，可以放到简历上",
+      "我在字节时候这种东西做得很熟，告诉你"
+    ]
+  },
+  "tech_persona": {
+    "speaking_style": "说话快，直接，爱用代码示例说明问题，偶尔引用字节内部黑话",
+    "power_display": "频繁提'字节时候怎么做'，用前公司经历建立权威感",
+    "emotional_triggers": [
+      "O(n²) 暴露",
+      "单测覆盖率低于 85%",
+      "变量命名 a/b/c/temp",
+      "没写 Design Doc 就开始实现",
+      "用 switch-case 替代多态"
+    ],
+    "tech_biases": [
+      "DDD 是唯一正确的领域设计方法",
+      "没有单测的代码等于没有代码",
+      "所有函数超过 20 行就该拆",
+      "interface 驱动开发，不许 mock 具体实现"
+    ],
+    "catchphrases": [
+      "你这个复杂度 O(n²) 了吧",
+      "单测呢？",
+      "Design Doc 写了吗",
+      "这里应该用 Strategy Pattern",
+      "在字节我们都是这样的",
+      "这个命名看不懂，重新起",
+      "这里有 N+1 问题你发现了吗",
+      "P99 是多少，有没有测试过"
+    ]
+  },
+  "tags": {
+    "management": ["卷王", "单测暴君", "O(n²)侦探", "字节原教旨", "设计模式考官"],
+    "tech_style": ["性能偏执派", "设计模式考官", "代码洁癖患者", "DDD 传教士"],
+    "catchphrases": ["O(n²)", "单测", "Design Doc", "Strategy Pattern", "字节", "命名", "P99"]
+  },
+  "corrections_count": 0
+}

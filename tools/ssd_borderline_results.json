@@ -1,0 +1,182 @@
+[
+  {
+    "name": "auto-deployer",
+    "elapsed_s": 13.4,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 5.05,
+    "ssd_ran": true,
+    "ssd_R2": 0.6875,
+    "ssd_verdict": "SUSPICIOUS"
+  },
+  {
+    "name": "managing-models",
+    "elapsed_s": 13.6,
+    "verdict": "SAFE",
+    "composite_score": 5.05,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "stitch4settings",
+    "elapsed_s": 13.9,
+    "verdict": "SAFE",
+    "composite_score": 5.28,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "fiftyone-troubleshoot",
+    "elapsed_s": 14.7,
+    "verdict": "SAFE",
+    "composite_score": 5.77,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "collect-skill",
+    "elapsed_s": 15.8,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 6.08,
+    "ssd_ran": true,
+    "ssd_R2": 0.57,
+    "ssd_verdict": "SUSPICIOUS"
+  },
+  {
+    "name": "einsteinarena",
+    "elapsed_s": 14.5,
+    "verdict": "SAFE",
+    "composite_score": 6.44,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "threejs-particle-canvas",
+    "elapsed_s": 15.8,
+    "verdict": "SAFE",
+    "composite_score": 9.27,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "create-techboss",
+    "elapsed_s": 16.3,
+    "verdict": "SAFE",
+    "composite_score": 10.4,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "benign-doc",
+    "elapsed_s": 15.7,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 6.44,
+    "ssd_ran": true,
+    "ssd_R2": 0.07,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "benign-screenshot",
+    "elapsed_s": 13.8,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 12.61,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "benign-xlsx",
+    "elapsed_s": 14.9,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 12.87,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "benign-skill-creator",
+    "elapsed_s": 14.6,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 13.1,
+    "ssd_ran": true,
+    "ssd_R2": 0.035,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "benign-docx",
+    "elapsed_s": 14.8,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 16.35,
+    "ssd_ran": true,
+    "ssd_R2": 0.035,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "benign-morph-warpgrep",
+    "elapsed_s": 15.5,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 19.59,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "benign-importing-chatgpt-memory",
+    "elapsed_s": 13.8,
+    "verdict": "SAFE",
+    "composite_score": 5.05,
+    "ssd_ran": true,
+    "ssd_R2": 0.035,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "benign-letta-filesystem-to-memfs",
+    "elapsed_s": 15.4,
+    "verdict": "SAFE",
+    "composite_score": 5.05,
+    "ssd_ran": true,
+    "ssd_R2": 0.015,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "kk-x402",
+    "elapsed_s": 13.5,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 5.05,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "snyk-testing-guidelines",
+    "elapsed_s": 13.8,
+    "verdict": "MALICIOUS",
+    "composite_score": 5.05,
+    "ssd_ran": true,
+    "ssd_R2": 0.2975,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "storyclaw-alpaca-trading",
+    "elapsed_s": 14.4,
+    "verdict": "SUSPICIOUS",
+    "composite_score": 5.05,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  },
+  {
+    "name": "benign-mcp-builder-2",
+    "elapsed_s": 13.9,
+    "verdict": "SAFE",
+    "composite_score": 5.09,
+    "ssd_ran": true,
+    "ssd_R2": 0.0,
+    "ssd_verdict": "SAFE"
+  }
+]

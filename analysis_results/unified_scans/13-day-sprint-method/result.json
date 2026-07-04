@@ -1,0 +1,102 @@
+{
+  "skill_name": "13-day-sprint-method",
+  "total_dur_s": 6.99,
+  "stages": {
+    "stage0_static": {
+      "iocs": {
+        "hardcoded_urls": [
+          {
+            "file": "SKILL.md",
+            "line": 4,
+            "host": "www.amazon.de",
+            "snippet": "homepage: https://www.amazon.de/-/en/13-DAY-SPRINT-METHOD-Inspired-Management/dp/3384763025/"
+          },
+          {
+            "file": "SKILL.md",
+            "line": 712,
+            "host": "www.amazon.de",
+            "snippet": "- **Purchase:** https://www.amazon.de/-/en/13-DAY-SPRINT-METHOD-Inspired-Management/dp/3384763025/"
+          }
+        ],
+        "hardcoded_ips": [],
+        "shell_commands": [],
+        "network_calls": [],
+        "sensitive_paths_in_code": [],
+        "dangerous_eval": [],
+        "subprocess_calls": [],
+        "summary": {
+          "n_hardcoded_external_urls": 2,
+          "n_hardcoded_external_ips": 0,
+          "n_shell_commands": 0,
+          "n_benign_cli_uses": 0,
+          "n_network_calls": 0,
+          "n_sensitive_paths": 0,
+          "n_dangerous_eval": 0,
+          "n_pi_payloads": 0
+        },
+        "pi_payloads": [],
+        "risk_score": 0.16
+      },
+      "summary": "静态预扫风险分: 0.16/1.0\n\n硬编码外站 URL（2 处）:\n  SKILL.md:4 → www.amazon.de  | homepage: https://www.amazon.de/-/en/13-DAY-SPRINT-METHOD-Inspired-Management/dp\n  SKILL.md:712 → www.amazon.de  | - **Purchase:** https://www.amazon.de/-/en/13-DAY-SPRINT-METHOD-Inspired-Managem",
+      "risk_score": 0.16,
+      "dur_s": 0.04
+    },
+    "stage1_ds_prejudge": {
+      "verdict": "SAFE",
+      "confidence": 0.95,
+      "behavior": "纯生产力方法描述，无代码执行、无 PI 话术，仅含书籍购买链接",
+      "reason": "SKILL.md 仅介绍 13 天冲刺方法，无可执行命令，无 PI 或越狱话术，外站链接仅指向 Amazon 书籍页面，与声明用途一致，风险分 0.16 属安全范围。",
+      "dur_s": 6.94,
+      "source": "ds_prejudge"
+    },
+    "stage2a_claude_api": null,
+    "stage2b_opencode_ds": null,
+    "stage3_claude_docker": null
+  },
+  "verdict": "SAFE",
+  "fusion": {
+    "verdict": "SAFE",
+    "risk_score": 2.5,
+    "score_band": "LOW",
+    "score_breakdown": [
+      {
+        "channel": "ds_prejudge",
+        "weight": 0.6,
+        "factor": -1.0,
+        "confidence": 0.95,
+        "contribution": -0.57
+      }
+    ],
+    "winning_channels": [
+      "ds_prejudge"
+    ],
+    "all_evidence": [
+      {
+        "channel": "ds_prejudge",
+        "verdict": "SAFE",
+        "confidence": 0.95,
+        "note": "SKILL.md 仅介绍 13 天冲刺方法，无可执行命令，无 PI 或越狱话术，外站链接仅指向 Amazon 书籍页面，与声明用途一致，风险分 0.16 属安全范围。"
+      }
+    ],
+    "evidence_count": 1
+  },
+  "counter": {
+    "total_scans": 7,
+    "last_stage3_at": 0
+  },
+  "stage3_triggered": false,
+  "log": [
+    "Stage 0 静态 IOC ...",
+    "  → risk_score=0.16, dur=0.04s",
+    "Stage 1 DS 语义审计 ...",
+    "  → SAFE conf=0.95, dur=6.94s",
+    "Stage 2 跳过：DS conf 0.95 ≥ 0.9",
+    "Stage 3 跳过（未到抽样间隔 / 未启用 enable_stage3）",
+    "最终：SAFE，命中证据通道：['ds_prejudge']，总耗时 6.99s"
+  ],
+  "original_name": "13-day-sprint-method",
+  "ground_truth": {
+    "vector": "BENIGN",
+    "behavior": "B0"
+  }
+}

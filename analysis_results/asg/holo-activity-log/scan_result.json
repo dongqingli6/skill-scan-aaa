@@ -1,0 +1,20 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\holo-activity-log\\Holo Activity Log",
+  "skill_name": "Holo Activity Log",
+  "files_scanned": [
+    "references\\DATA-MODEL.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

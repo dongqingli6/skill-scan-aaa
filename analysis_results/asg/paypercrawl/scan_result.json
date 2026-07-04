@@ -1,0 +1,100 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\paypercrawl\\paypercrawl-mirror",
+  "skill_name": "paypercrawl-mirror",
+  "files_scanned": [
+    "crawlguard-wp-main\\assets\\js\\admin.js",
+    "crawlguard-wp-main\\backend\\database.js",
+    "crawlguard-wp-main\\backend\\package.json",
+    "crawlguard-wp-main\\backend\\pnpm-lock.yaml",
+    "crawlguard-wp-main\\backend\\production-worker.js",
+    "crawlguard-wp-main\\backend\\stripe-integration.js",
+    "crawlguard-wp-main\\backend\\worker.js",
+    "crawlguard-wp-main\\backend\\wrangler.toml",
+    "crawlguard-wp-main\\docs\\API_REFERENCE.md",
+    "crawlguard-wp-main\\docs\\routes.md",
+    "crawlguard-wp-main\\docs\\SECURITY.md",
+    "package.json",
+    "paypercrawl-web\\data\\keys.json",
+    "paypercrawl-web\\server.js",
+    "pnpm-lock.yaml",
+    "README.md",
+    "references\\prd.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 18,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 1,
+    "LOW": 2
+  },
+  "by_pattern": {
+    "E2": 1,
+    "E1": 2
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 1,
+    "exfil": 2
+  },
+  "rule_ids_hit": [
+    "E1",
+    "E2"
+  ],
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "paypercrawl-web\\server.js",
+      "line": 16,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.ADMIN_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  13 | dotenv.config({ path: path.resolve(root, '..', '.env') });\n  14 | \n  15 | const databaseUrl = process.env.DATABASE_URL || process.env.DATABASE_URL_PRODUCTION;\n» 16 | const adminApiKey = process.env.ADMIN_API_KEY || '';\n  17 | const isDatabaseEnabled = Boolean(databaseUrl);\n  18 | \n  19 | const pool = isDatabaseEnabled",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "main_skill_logic",
+      "snippet": "const adminApiKey = process.env.ADMIN_API_KEY || '';",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "README.md",
+      "line": 498,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  495 | ### Example — Register a Site\n  496 | \n  497 | ```bash\n» 498 | curl -X POST https://crawlguard-api-prod.workers.dev/v1/sites/register \\\n  499 |   -H \"Content-Type: application/json\" \\\n  500 |   -d '{\n  501 |     \"domain\": \"myblog.com\",",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "markdown_code_block",
+      "snippet": "curl -X POST https://crawlguard-api-prod.workers.dev/v1/sites/register \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "LOW",
+      "kill_chain_phase": "exfil",
+      "file": "README.md",
+      "line": 520,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  517 | ### Example — Detect a Bot\n  518 | \n  519 | ```bash\n» 520 | curl -X POST https://crawlguard-api-prod.workers.dev/v1/detect \\\n  521 |   -H \"Content-Type: application/json\" \\\n  522 |   -H \"X-API-Key: cg_live_d4e5f6a7...\" \\\n  523 |   -d '{",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "markdown_code_block",
+      "snippet": "curl -X POST https://crawlguard-api-prod.workers.dev/v1/detect \\",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

@@ -339,10 +339,10 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
   <main>
     <section class="summary-cards">
       <div class="summary-card"><span>已检测 Skill 总数</span><strong>1</strong></div>
-      <div class="summary-card v-mal"><span>危险 MALICIOUS</span><strong>1</strong></div>
-      <div class="summary-card v-susp"><span>留意 SUSPICIOUS</span><strong>0</strong></div>
+      <div class="summary-card v-mal"><span>危险 MALICIOUS</span><strong>0</strong></div>
+      <div class="summary-card v-susp"><span>留意 SUSPICIOUS</span><strong>1</strong></div>
       <div class="summary-card v-safe"><span>安全 SAFE</span><strong>0</strong></div>
-      <div class="summary-card"><span>静态规则命中总数</span><strong>10</strong></div>
+      <div class="summary-card"><span>静态规则命中总数</span><strong>4</strong></div>
       <div class="summary-card"><span>攻击链触发数</span><strong>0</strong></div>
     </section>
 
@@ -360,11 +360,11 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
     <h2 class="section-title">总体分布 <span class="section-sub">verdict / 攻击原型 / 攻击链</span></h2>
     <div class="panel">
       <h2>风险判定分布</h2>
-      <div class="bar-row"><div class="bar-label">危险</div><div class="bar-track"><div class="bar-fill" style="width: 100.0%; background: #ef4444;">1</div></div></div>
+      <div class="bar-row"><div class="bar-label">留意</div><div class="bar-track"><div class="bar-fill" style="width: 100.0%; background: #f59e0b;">1</div></div></div>
     </div>
     <div class="panel">
       <h2>攻击原型分布（论文 §4.2）</h2>
-      <div class="bar-row"><div class="bar-label">数据窃取</div><div class="bar-track"><div class="bar-fill" style="width: 100.0%; background: #ef4444;">1</div></div></div>
+      <div class="bar-row"><div class="bar-label">平台原生</div><div class="bar-track"><div class="bar-fill" style="width: 100.0%; background: #06b6d4;">1</div></div></div>
     </div>
     <div class="panel">
       <h2>攻击链触发统计（论文 Table 11）</h2>
@@ -374,20 +374,20 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
     <h2 class="section-title">Skill 列表 <span class="section-sub">点"查看详情"打开独立报告页</span></h2>
     <div class="skill-rows">
       
-    <div class="skill-row v-malicious">
+    <div class="skill-row v-suspicious">
       <div class="row-main">
-        <div class="row-verdict" style="background:#ef4444;">危险</div>
+        <div class="row-verdict" style="background:#f59e0b;">留意</div>
         <div class="row-info">
-          <div class="row-title">reverse_shell_skill</div>
+          <div class="row-title">qax_8f04f839db_collect-skill</div>
           <div class="row-meta">
-            <span>分类: 数据窃取</span>
-            <span>静态命中: 10</span>
-            <span>处置: <strong style="color:#ef4444;">拒绝安装</strong></span>
+            <span>分类: 平台原生</span>
+            <span>静态命中: 4</span>
+            <span>处置: <strong style="color:#f59e0b;">建议人工审核</strong></span>
           </div>
         </div>
-        <div class="row-score" style="color:#ef4444;">53.3<span>/100</span></div>
-        <div class="row-badges"><span class="status-badge done">静态✓</span><span class="status-badge done">AI✓</span><span class="status-badge done">动态✓</span></div>
-        <a class="row-detail-btn" href="skills/reverse_shell_skill.html">查看详情 →</a>
+        <div class="row-score" style="color:#f59e0b;">20.4<span>/100</span></div>
+        <div class="row-badges"><span class="status-badge done">静态✓</span><span class="status-badge missing">AI未测</span><span class="status-badge missing">动态未测</span></div>
+        <a class="row-detail-btn" href="skills/qax_8f04f839db_collect-skill.html">查看详情 →</a>
       </div>
     </div>
     

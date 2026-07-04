@@ -1,0 +1,388 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-14T09:18:53.728787+00:00",
+  "skill_name": "benign-screenshot",
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-screenshot",
+  "skill_contents": {
+    "file_count": 11,
+    "total_bytes": 53489,
+    "files": [
+      {
+        "path": "agents/openai.yaml",
+        "size_bytes": 279,
+        "kind": "text",
+        "content_preview": "interface:\n  display_name: \"Screenshot Capture\"\n  short_description: \"Capture screenshots\"\n  icon_small: \"./assets/screenshot-small.svg\"\n  icon_large: \"./assets/screenshot.png\"\n  default_prompt: \"Capture the right screenshot for this task (target, area, and output path).\"\n",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/screenshot-small.svg",
+        "size_bytes": 1024,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/screenshot.png",
+        "size_bytes": 860,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE.txt",
+        "size_bytes": 10977,
+        "kind": "text",
+        "content_preview": "Apache License\nVersion 2.0, January 2004\nhttp://www.apache.org/licenses/\n\nTERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n1. Definitions.\n\n   \"License\" shall mean the terms and conditions for use, reproduction,\n   and distribution as defined by Sections 1 through 9 of this document.\n\n   \"Licensor\" shall mean the copyright owner or entity authorized by\n   the copyright owner that is granting the License.\n\n   \"Legal Entity\" shall mean the union of the acting entity and all\n   other entities that control, are controlled by, or are under common\n   control with that entity. For the purposes of this definition,\n   \"control\" means (i) the power, direct or indirect, to cause the\n   direction or management of such entity, whether by contract or\n   otherwise, or (ii) ownership of fifty percent (50%) or more of the\n   outstanding shares, or (iii) beneficial ownership of such entity.\n\n   \"You\" (or \"Your\") shall mean an individual or Legal Entity\n   exercising permissions granted by this License.\n\n   \"Source\" form shall mean the preferred form for making modifications,\n   including but not limited to software source code, documentation\n   source, and configuration files.\n\n   \"Object\" form shall mean any form resulting from mechanical\n   transformation or translation of a Source form, including but\n   not limited to compiled object code, generated documentation,\n   and conversions to other media types.\n\n   \"Work\" shall mean the work of authorship, whether in Source or\n   Object form, made available under the License, as indicated by a\n   copyright notice that is included in or attached to the work\n   (an example is provided in the Appendix below).\n\n   \"Derivative Works\" shall mean any work, whether in Source or Object\n   form, that is based on (or derived from) the Work and for which the\n   editorial revisions, annotations, elaborations, or other modifications\n   represent, as a whole, an original work of authorship. For the purposes\n   of this License, Derivative Works shall not include works that remain\n   separable from, or merely link (or bind by name) to the interfaces of,\n   the Work and Derivative Works thereof.\n\n   \"Contribution\" shall mean any work of authorship, including\n   the original version of the Work and any modifications or additions\n   to that Work or Derivative Works thereof, that is intentionally\n   submitted to Licensor for inclusion in the Work by the copyright owner\n   or by an individual or Legal Entity authorized to submit on behalf of\n   the copyright owner. For the purposes of this definition, \"submitted\"\n   means any form of electronic, verbal, or written communication sent\n   to the Licensor or its representatives, including but not limited to\n   communication on electronic mailing lists, source code control systems,\n   and issue tracking systems that are managed by, or on behalf of, the\n   Licensor for the purpose of discussing and improving the Work, but\n   excluding communication that is conspicuously marked or otherwise\n   designated in writing by the copyright owner as \"Not a Contribution.\"\n\n   \"Contributor\" shall mean Licensor and any individual or Legal Entity\n   on behalf of whom a Contribution has been received by Licensor and\n   subsequently incorporated within the Work.\n\n2. Grant of Copyright License. Subject to the terms and conditions of\n   this License, each Contributor hereby grants to You a perpetual,\n   worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n   copyright license to reproduce, prepare Derivative Works of,\n   publicly display, publicly perform, sublicense, and distribute the\n   Work and such Derivative Works in Source or Object form.\n\n3. Grant of Patent License. Subject to the terms and conditions of\n   this License, each Contributor hereby grants to You a perpetual,\n   worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n   (except as stated in this section) patent license to make, have made,\n   use, offer to sell, sell, import, and otherwise trans",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/ensure_macos_permissions.sh",
+        "size_bytes": 1756,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env bash\nset -euo pipefail\n\nif [[ \"$(uname)\" != \"Darwin\" ]]; then\n  echo \"ensure_macos_permissions.sh only supports macOS\" >&2\n  exit 1\nfi\n\nif ! command -v swift >/dev/null 2>&1; then\n  echo \"swift is required to check macOS screen capture permissions\" >&2\n  exit 1\nfi\n\nSCRIPT_DIR=\"$(cd \"$(dirname \"${BASH_SOURCE[0]}\")\" && pwd)\"\nPERM_SWIFT=\"$SCRIPT_DIR/macos_permissions.swift\"\nMODULE_CACHE=\"${TMPDIR:-/tmp}/codex-swift-module-cache\"\nmkdir -p \"$MODULE_CACHE\"\n\nscreen_capture_status() {\n  local json\n  json=\"$(swift -module-cache-path \"$MODULE_CACHE\" \"$PERM_SWIFT\" \"$@\")\"\n  python3 -c 'import json, sys; data=json.loads(sys.argv[1]); print(\"1\" if data.get(\"screenCapture\") else \"0\")' \"$json\"\n}\n\nif [[ -n \"${CODEX_SANDBOX:-}\" ]]; then\n  echo \"Screen capture checks are blocked in the sandbox; rerun with escalated permissions.\" >&2\n  exit 3\nfi\n\nif [[ \"$(screen_capture_status)\" == \"1\" ]]; then\n  echo \"Screen Recording permission already granted.\"\n  exit 0\nfi\n\ncat <<'MSG'\nThis workflow needs macOS Screen Recording permission to capture screenshots.\nmacOS will show a single system prompt for Screen Recording. Approve it, then\nreturn here. If macOS opens System Settings instead of prompting, enable Screen\nRecording for your terminal and rerun the command.\nMSG\n\n# Request permission once after explaining why it is needed.\nscreen_capture_status --request >/dev/null || true\n\nif [[ \"$(screen_capture_status)\" != \"1\" ]]; then\n  cat <<'MSG'\nScreen Recording is still not granted.\nOpen System Settings > Privacy & Security > Screen Recording and enable it for\nyour terminal (and Codex if needed), then rerun your screenshot command.\nMSG\n  exit 2\nfi\n\necho \"Screen Recording permission granted.\"\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/macos_display_info.swift",
+        "size_bytes": 504,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/macos_permissions.swift",
+        "size_bytes": 969,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/macos_window_info.swift",
+        "size_bytes": 3721,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/take_screenshot.ps1",
+        "size_bytes": 5110,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/take_screenshot.py",
+        "size_bytes": 20244,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"Cross-platform screenshot helper for Codex skills.\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport datetime as dt\nimport json\nimport os\nimport platform\nimport shutil\nimport subprocess\nimport tempfile\nfrom pathlib import Path\n\nSCRIPT_DIR = Path(__file__).resolve().parent\nMAC_PERM_SCRIPT = SCRIPT_DIR / \"macos_permissions.swift\"\nMAC_PERM_HELPER = SCRIPT_DIR / \"ensure_macos_permissions.sh\"\nMAC_WINDOW_SCRIPT = SCRIPT_DIR / \"macos_window_info.swift\"\nMAC_DISPLAY_SCRIPT = SCRIPT_DIR / \"macos_display_info.swift\"\nTEST_MODE_ENV = \"CODEX_SCREENSHOT_TEST_MODE\"\nTEST_PLATFORM_ENV = \"CODEX_SCREENSHOT_TEST_PLATFORM\"\nTEST_WINDOWS_ENV = \"CODEX_SCREENSHOT_TEST_WINDOWS\"\nTEST_DISPLAYS_ENV = \"CODEX_SCREENSHOT_TEST_DISPLAYS\"\nTEST_PNG = (\n    b\"\\x89PNG\\r\\n\\x1a\\n\\x00\\x00\\x00\\rIHDR\\x00\\x00\\x00\\x01\\x00\\x00\\x00\\x01\"\n    b\"\\x08\\x06\\x00\\x00\\x00\\x1f\\x15\\xc4\\x89\\x00\\x00\\x00\\x0cIDAT\\x08\\xd7c\"\n    b\"\\xf8\\xff\\xff?\\x00\\x05\\xfe\\x02\\xfeA\\xad\\x1c\\x1c\\x00\\x00\\x00\\x00IEND\"\n    b\"\\xaeB`\\x82\"\n)\n\n\ndef parse_region(value: str) -> tuple[int, int, int, int]:\n    parts = [p.strip() for p in value.split(\",\")]\n    if len(parts) != 4:\n        raise argparse.ArgumentTypeError(\"region must be x,y,w,h\")\n    try:\n        x, y, w, h = (int(p) for p in parts)\n    except ValueError as exc:\n        raise argparse.ArgumentTypeError(\"region values must be integers\") from exc\n    if w <= 0 or h <= 0:\n        raise argparse.ArgumentTypeError(\"region width and height must be positive\")\n    return x, y, w, h\n\n\ndef test_mode_enabled() -> bool:\n    value = os.environ.get(TEST_MODE_ENV, \"\")\n    return value.lower() in {\"1\", \"true\", \"yes\", \"on\"}\n\n\ndef normalize_platform(value: str) -> str:\n    lowered = value.strip().lower()\n    if lowered in {\"darwin\", \"mac\", \"macos\", \"osx\"}:\n        return \"Darwin\"\n    if lowered in {\"linux\", \"ubuntu\"}:\n        return \"Linux\"\n    if lowered in {\"windows\", \"win\"}:\n        return \"Windows\"\n    return value\n\n\ndef test_platform_override() -> str | None:\n    value = os.environ.get(TEST_PLATFORM_ENV)\n    if value:\n        return normalize_platform(value)\n    return None\n\n\ndef parse_int_list(value: str) -> list[int]:\n    results: list[int] = []\n    for part in value.split(\",\"):\n        part = part.strip()\n        if not part:\n            continue\n        try:\n            results.append(int(part))\n        except ValueError:\n            continue\n    return results\n\n\ndef test_window_ids() -> list[int]:\n    value = os.environ.get(TEST_WINDOWS_ENV, \"101,102\")\n    ids = parse_int_list(value)\n    return ids or [101]\n\n\ndef test_display_ids() -> list[int]:\n    value = os.environ.get(TEST_DISPLAYS_ENV, \"1,2\")\n    ids = parse_int_list(value)\n    return ids or [1]\n\n\ndef write_test_png(path: Path) -> None:\n    ensure_parent(path)\n    path.write_bytes(TEST_PNG)\n\n\ndef timestamp() -> str:\n    return dt.datetime.now().strftime(\"%Y-%m-%d_%H-%M-%S\")\n\n\ndef default_filename(fmt: str, prefix: str = \"screenshot\") -> str:\n    return f\"{prefix}-{timestamp()}.{fmt}\"\n\n\ndef mac_default_dir() -> Path:\n    desktop = Path.home() / \"Desktop\"\n    try:\n        proc = subprocess.run(\n            [\"defaults\", \"read\", \"com.apple.screencapture\", \"location\"],\n            check=False,\n            capture_output=True,\n            text=True,\n        )\n        location = proc.stdout.strip()\n        if location:\n            return Path(location).expanduser()\n    except OSError:\n        pass\n    return desktop\n\n\ndef default_dir(system: str) -> Path:\n    home = Path.home()\n    if system == \"Darwin\":\n        return mac_default_dir()\n    if system == \"Windows\":\n        pictures = home / \"Pictures\"\n        screenshots = pictures / \"Screenshots\"\n        if screenshots.exists():\n            return screenshots\n        if pictures.exists():\n            return pictures\n        return home\n    pictures = home / \"Pictures\"\n    screenshots = pictures / \"Screenshots\"\n    if screenshots.exists():\n        return screenshots\n    if pictures.exists():\n        return pictures\n    return h",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 8045,
+        "kind": "text",
+        "content_preview": "---\nname: \"screenshot\"\ndescription: \"Use when the user explicitly asks for a desktop or system screenshot (full screen, specific app or window, or a pixel region), or when tool-specific capture capabilities are unavailable and an OS-level capture is needed.\"\n---\n\n\n# Screenshot Capture\n\nFollow these save-location rules every time:\n\n1) If the user specifies a path, save there.\n2) If the user asks for a screenshot without a path, save to the OS default screenshot location.\n3) If the agent needs a screenshot for its own inspection, save to the temp directory.\n\n## Tool priority\n\n- Prefer tool-specific screenshot capabilities when available (for example: a Figma MCP/skill for Figma files, or Playwright/agent-browser tools for browsers and Electron apps).\n- Use this skill when explicitly asked, for whole-system desktop captures, or when a tool-specific capture cannot get what you need.\n- Otherwise, treat this skill as the default for desktop apps without a better-integrated capture tool.\n\n## macOS permission preflight (reduce repeated prompts)\n\nOn macOS, run the preflight helper once before window/app capture. It checks\nScreen Recording permission, explains why it is needed, and requests it in one\nplace.\n\nThe helpers route Swift's module cache to `$TMPDIR/letta-swift-module-cache`\nto avoid extra sandbox module-cache prompts.\n\n```bash\nbash <path-to-skill>/scripts/ensure_macos_permissions.sh\n```\n\nTo avoid multiple sandbox approval prompts, combine preflight + capture in one\ncommand when possible:\n\n```bash\nbash <path-to-skill>/scripts/ensure_macos_permissions.sh && \\\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"Letta Code\"\n```\n\nFor agent inspection runs, keep the output in temp:\n\n```bash\nbash <path-to-skill>/scripts/ensure_macos_permissions.sh && \\\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"<App>\" --mode temp\n```\n\nUse the bundled scripts to avoid re-deriving OS-specific commands.\n\n## macOS and Linux (Python helper)\n\nRun the helper from the repo root:\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py\n```\n\nCommon patterns:\n\n- Default location (user asked for \"a screenshot\"):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py\n```\n\n- Temp location (agent visual check):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --mode temp\n```\n\n- Explicit location (user provided a path or filename):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --path output/screen.png\n```\n\n- App/window capture by app name (macOS only; substring match is OK; captures all matching windows):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"Letta Code\"\n```\n\n- Specific window title within an app (macOS only):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"Letta Code\" --window-name \"Settings\"\n```\n\n- List matching window ids before capturing (macOS only):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --list-windows --app \"Letta Code\"\n```\n\n- Pixel region (x,y,w,h):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --mode temp --region 100,200,800,600\n```\n\n- Focused/active window (captures only the frontmost window; use `--app` to capture all windows):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --mode temp --active-window\n```\n\n- Specific window id (use --list-windows on macOS to discover ids):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --window-id 12345\n```\n\nThe script prints one path per capture. When multiple windows or displays match, it prints multiple paths (one per line) and adds suffixes like `-w<windowId>` or `-d<display>`. View each path sequentially with the image viewer tool, and only manipulate images if needed or requested.\n\n### Workflow examples\n\n- \"Take a look at <App> and tell me what you see\": capture to temp, then view each printed path in order.\n\n```bash\nbash <path-to-skill>/scripts/ensure_macos_permissions.sh && \\\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"<App>\" --mode temp\n`",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: \"screenshot\"\ndescription: \"Use when the user explicitly asks for a desktop or system screenshot (full screen, specific app or window, or a pixel region), or when tool-specific capture capabilities are unavailable and an OS-level capture is needed.\"\n---\n\n\n# Screenshot Capture\n\nFollow these save-location rules every time:\n\n1) If the user specifies a path, save there.\n2) If the user asks for a screenshot without a path, save to the OS default screenshot location.\n3) If the agent needs a screenshot for its own inspection, save to the temp directory.\n\n## Tool priority\n\n- Prefer tool-specific screenshot capabilities when available (for example: a Figma MCP/skill for Figma files, or Playwright/agent-browser tools for browsers and Electron apps).\n- Use this skill when explicitly asked, for whole-system desktop captures, or when a tool-specific capture cannot get what you need.\n- Otherwise, treat this skill as the default for desktop apps without a better-integrated capture tool.\n\n## macOS permission preflight (reduce repeated prompts)\n\nOn macOS, run the preflight helper once before window/app capture. It checks\nScreen Recording permission, explains why it is needed, and requests it in one\nplace.\n\nThe helpers route Swift's module cache to `$TMPDIR/letta-swift-module-cache`\nto avoid extra sandbox module-cache prompts.\n\n```bash\nbash <path-to-skill>/scripts/ensure_macos_permissions.sh\n```\n\nTo avoid multiple sandbox approval prompts, combine preflight + capture in one\ncommand when possible:\n\n```bash\nbash <path-to-skill>/scripts/ensure_macos_permissions.sh && \\\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"Letta Code\"\n```\n\nFor agent inspection runs, keep the output in temp:\n\n```bash\nbash <path-to-skill>/scripts/ensure_macos_permissions.sh && \\\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"<App>\" --mode temp\n```\n\nUse the bundled scripts to avoid re-deriving OS-specific commands.\n\n## macOS and Linux (Python helper)\n\nRun the helper from the repo root:\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py\n```\n\nCommon patterns:\n\n- Default location (user asked for \"a screenshot\"):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py\n```\n\n- Temp location (agent visual check):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --mode temp\n```\n\n- Explicit location (user provided a path or filename):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --path output/screen.png\n```\n\n- App/window capture by app name (macOS only; substring match is OK; captures all matching windows):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"Letta Code\"\n```\n\n- Specific window title within an app (macOS only):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"Letta Code\" --window-name \"Settings\"\n```\n\n- List matching window ids before capturing (macOS only):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --list-windows --app \"Letta Code\"\n```\n\n- Pixel region (x,y,w,h):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --mode temp --region 100,200,800,600\n```\n\n- Focused/active window (captures only the frontmost window; use `--app` to capture all windows):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --mode temp --active-window\n```\n\n- Specific window id (use --list-windows on macOS to discover ids):\n\n```bash\npython3 <path-to-skill>/scripts/take_screenshot.py --window-id 12345\n```\n\nThe script prints one path per capture. When multiple windows or displays match, it prints multiple paths (one per line) and adds suffixes like `-w<windowId>` or `-d<display>`. View each path sequentially with the image viewer tool, and only manipulate images if needed or requested.\n\n### Workflow examples\n\n- \"Take a look at <App> and tell me what you see\": capture to temp, then view each printed path in order.\n\n```bash\nbash <path-to-skill>/scripts/ensure_macos_permissions.sh && \\\npython3 <path-to-skill>/scripts/take_screenshot.py --app \"<App>\" --mode temp\n`"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 6,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 4,
+      "MEDIUM": 0,
+      "LOW": 2
+    },
+    "by_pattern": {
+      "SC1": 6
+    },
+    "by_kill_chain_phase": {
+      "execution": 6
+    },
+    "rule_ids_hit": [
+      "SC1"
+    ],
+    "files_scanned_count": 5
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 2,
+      "label": "Intermediate",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 6
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "execution"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 3.78,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.375,
+      "S_static_raw": 0.375,
+      "S_chain": 0.0,
+      "S_soph": 0.67,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "verdict floor: 静态命中 CRITICAL×0 / HIGH×4, 且 LLM 未审计或未判 SAFE，最低判为 SUSPICIOUS",
+      "SSD downgrade: R2=0.0 → SAFE",
+      "SSD score×0.3: 12.61→3.78"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    },
+    "composite_score_pre_ssd": 12.61
+  },
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 110,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  107 | def mac_default_dir() -> Path:\n  108 |     desktop = Path.home() / \"Desktop\"\n  109 |     try:\n» 110 |         proc = subprocess.run(\n  111 |             [\"defaults\", \"read\", \"com.apple.screencapture\", \"location\"],\n  112 |             check=False,\n  113 |             capture_output=True,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "proc = subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 193,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  190 | \n  191 | def run(cmd: list[str]) -> None:\n  192 |     try:\n» 193 |         subprocess.run(cmd, check=True)\n  194 |     except FileNotFoundError as exc:\n  195 |         raise SystemExit(f\"required command not found: {cmd[0]}\") from exc\n  196 |     except subprocess.CalledProcessError as exc:",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run(cmd, check=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 207,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  204 |     if extra_args:\n  205 |         cmd.extend(extra_args)\n  206 |     try:\n» 207 |         proc = subprocess.run(cmd, check=True, capture_output=True, text=True)\n  208 |     except FileNotFoundError as exc:\n  209 |         raise SystemExit(\"swift not found; install Xcode command line tools\") from exc\n  210 |     except subprocess.CalledProcessError as exc:",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "proc = subprocess.run(cmd, check=True, capture_output=True, text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 237,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  234 |         )\n  235 |     if macos_screen_capture_granted():\n  236 |         return\n» 237 |     subprocess.run([\"bash\", str(MAC_PERM_HELPER)], check=False)\n  238 |     if not macos_screen_capture_granted():\n  239 |         raise SystemExit(\n  240 |             \"Screen Recording permission is required; enable it in System Settings and retry\"",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run([\"bash\", str(MAC_PERM_HELPER)], check=False)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "LOW",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 247,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run(['osascript', ...])",
+      "description": "AST: 调用 subprocess.run 执行已知工具 'osascript'（合法用法）",
+      "confidence": 0.92,
+      "context": "  244 | def activate_app(app: str) -> None:\n  245 |     safe_app = app.replace('\"', '\\\\\"')\n  246 |     script = f'tell application \"{safe_app}\" to activate'\n» 247 |     subprocess.run([\"osascript\", \"-e\", script], check=False, capture_output=True, text=True)\n  248 | \n  249 | \n  250 | def macos_window_payload(args: argparse.Namespace, frontmost: bool, include_list: bool) -> dict:",
+      "original_severity": "LOW",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run([\"osascript\", \"-e\", script], check=False, capture_output=True, text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "LOW",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 401,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.check_output(['xdotool', ...])",
+      "description": "AST: 调用 subprocess.check_output 执行已知工具 'xdotool'（合法用法）",
+      "confidence": 0.92,
+      "context": "  398 |             return\n  399 |         if imagemagick and xdotool:\n  400 |             win_id = (\n» 401 |                 subprocess.check_output([\"xdotool\", \"getactivewindow\"], text=True)\n  402 |                 .strip()\n  403 |             )\n  404 |             run([\"import\", \"-window\", win_id, str(output)])",
+      "original_severity": "LOW",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.check_output([\"xdotool\", \"getactivewindow\"], text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "R2": 0.0,
+    "verdict": "SAFE",
+    "subtasks": {
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [
+          "Use when the user explicitly asks for a desktop or system screenshot",
+          "python3 <path-to-skill>/scripts/take_screenshot.py --app \"Letta Code\"",
+          "Prefer tool-specific screenshot capabilities when available"
+        ],
+        "reasoning": "The skill instructs the agent to capture screenshots exactly as advertised; all commands and scripts serve that single purpose with no hidden functionality or scope creep.",
+        "task_name": "intent_alignment"
+      },
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [],
+        "reasoning": "No covert behavior detected; all instructions are transparent about actions, permission requests are explicit, errors are reported, and no obfuscation or hidden payloads are present.",
+        "task_name": "covert_behavior"
+      },
+      "B": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [],
+        "reasoning": "(empty response)",
+        "task_name": "permission_justification"
+      },
+      "D": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [],
+        "reasoning": "(parse fallback: no JSON found)",
+        "task_name": "cross_file_consistency"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4
+  }
+}

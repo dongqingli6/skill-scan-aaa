@@ -1,0 +1,22 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-web-artifacts-builder",
+  "skill_name": "benign-web-artifacts-builder",
+  "files_scanned": [
+    "LICENSE.txt",
+    "scripts\\bundle-artifact.sh",
+    "scripts\\init-artifact.sh",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 4,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

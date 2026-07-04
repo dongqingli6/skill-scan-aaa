@@ -1,0 +1,216 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-18T11:53:18.797942+00:00",
+  "skill_name": "Product Storer",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\product-storer\\Product Storer",
+  "skill_contents": {
+    "file_count": 3,
+    "total_bytes": 48246,
+    "files": [
+      {
+        "path": "references/schema.md",
+        "size_bytes": 1052,
+        "kind": "text",
+        "content_preview": "# products 表结构\n\n```sql\nCREATE TABLE IF NOT EXISTS products (\n    id SERIAL PRIMARY KEY,\n    alibaba_product_id VARCHAR(50) UNIQUE,\n    main_product_no VARCHAR(20) UNIQUE,\n    title TEXT,\n    category VARCHAR(255),\n    brand VARCHAR(100),\n    sku_count INTEGER,\n    main_image_count INTEGER,\n    main_images JSONB,\n    description TEXT,\n    weight_g DECIMAL(10, 2),\n    length_cm DECIMAL(10, 2),\n    width_cm DECIMAL(10, 2),\n    height_cm DECIMAL(10, 2),\n    status VARCHAR(20) DEFAULT 'pending',\n    optimized_title TEXT,\n    optimized_description TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE INDEX idx_products_alibaba_id ON products(alibaba_product_id);\nCREATE INDEX idx_products_status ON products(status);\n```\n\n## 状态流转\n\n```\npending → optimized → published\n```\n\n| 状态 | 说明 | 触发模块 |\n|------|------|----------|\n| pending | 刚落库 | product-storer |\n| optimized | 已优化 | listing-optimizer |\n| published | 已回写 | miaoshou-updater |\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 3619,
+        "kind": "text",
+        "content_preview": "---\nname: product-storer\ndescription: 商品数据落库模块。将collector-scraper提取的商品数据与local-1688-weight的物流数据合并，落库到PostgreSQL数据库。触发条件：(1)需要将商品数据持久化 (2)执行TC-PS-001测试 (3)listing-optimizer前需要已落库的商品\n---\n\n# product-storer\n\n商品数据落库模块。将商品主数据与物流数据合并，生成主货号，落库到 PostgreSQL，并上传图片到腾讯云COS。\n\n## 核心文件\n\n- **模块路径**: `/home/ubuntu/.openclaw/skills/product-storer/storer.py`\n- **测试文件**: `/home/ubuntu/.openclaw/skills/product-storer/test_pipeline.py`\n- **数据库配置**: shared/db.py\n- **COS存储**: shared/cos_storage.py\n\n## 数据库配置\n\n```python\n# shared/db.py\nDB_CONFIG = {\n    'host': '43.139.213.66',\n    'port': 5432,\n    'database': 'ecommerce_data',\n    'user': 'postgres',\n    'password': '...'\n}\n```\n\n## 主货号生成规则\n\n格式：`{星期代号}{6位序号}`\n- 星期代号：0=日, 1=一, 2=二, 3=三, 4=四, 5=五, 6=六\n- 示例：日000001, 六000002, 三000015\n\n## 落库数据合并\n\n```python\n# 合并 collector-scraper 数据 + local-1688-weight 数据\nfinal_data = {\n    **scraper_data,      # 货源ID、标题、类目、SKU、主图\n    **weight_data,       # weight_g, length_cm, width_cm, height_cm\n    'main_product_no': generate_product_id(),\n    'status': 'pending'\n}\n```\n\n## COS图片上传\n\n落库时自动调用 `_upload_images_to_cos()` 上传图片到腾讯云COS。\n\n**目录结构：**\n```\n/{product_id_new}_{title(截取50字节)}/\n├── main_images/      # 主图（最多29张）\n├── sku_images/       # SKU图（暂无数据）\n└── detail_images/   # 详情图（暂无数据）\n```\n\n**示例：**\n```\nAL0001001260000001_发饰收纳盒桌面分格发圈发夹置物儿/main_images/main_00.jpg\n```\n\n**COS桶：** `tian-cloud-file-1309014213`\n\n## 使用方法\n\n```python\nfrom product_storer import ProductStorer\nfrom collector_scraper import CollectorScraper\nfrom remote_weight_caller import get_weight\n\n# 1. 提取商品数据\nscraper = CollectorScraper()\nscraper.launch()\nscraper_data = scraper.scrape(index=0)\nscraper.close()\n\n# 2. 获取物流数据\nweight_data = get_weight(product_id)\n\n# 3. 落库\nstorer = ProductStorer()\nresult = storer.save_product(scraper_data, weight_data)\nprint(result)\n```\n\n## 数据库表结构\n\n**products 表主要字段：**\n\n| 字段 | 类型 | 说明 |\n|------|------|------|\n| id | SERIAL | 主键 |\n| alibaba_product_id | VARCHAR(50) | 1688货源ID |\n| main_product_no | VARCHAR(20) | 主货号 |\n| title | TEXT | 商品标题 |\n| category | VARCHAR(255) | 类目 |\n| sku_count | INT | SKU数量 |\n| main_image_count | INT | 主图数量 |\n| weight_g | DECIMAL | 重量(克) |\n| length_cm | DECIMAL | 长度(cm) |\n| width_cm | DECIMAL | 宽度(cm) |\n| height_cm | DECIMAL | 高度(cm) |\n| status | VARCHAR(20) | 状态: pending/optimized/published |\n| created_at | TIMESTAMP | 创建时间 |\n\n## 数据依赖\n\n- **输入**: collector-scraper数据 + local-1688-weight数据\n- **输出**: products表记录\n- **后续模块**: listing-optimizer 优化\n\n## 故障排查\n\n| 问题 | 解决方案 |\n|------|----------|\n| 数据库连接失败 | 检查VPN/SSH隧道，验证DB配置 |\n| 主货号重复 | 序号自增，理论上不会重复 |\n| 字段不匹配 | 检查 scaper_data 和 weight_data 结构 |\n| 商品已存在但SKU重量为0 | 已修复：商品已存在时仍会更新SKU重量数据 |\n| SKU重量未更新 | 检查 weight_data 是否正确传递，确认 remote_weight_caller 返回 per-SKU 权重 |\n",
+        "content_truncated": false
+      },
+      {
+        "path": "storer.py",
+        "size_bytes": 43575,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"\nproduct-storer: 将商品数据落库到 PostgreSQL\n\n流程：\n1. 从 collector-scraper 获取商品数据（或直接接收数据）\n2. 生成主货号（18位新格式）\n3. 落库到 ecommerce_data.products 表和 product_skus 表\n4. 返回落库结果\n\n新主货号格式（18位）：\n- 渠道码(2位): AL(1688), TM(天猫), JD(京东)\n- 供应商码(4位): 供应商唯一标识（可配置或从数据推导）\n- 系列码(3位): 产品系列分类\n- 年份(2位): 如26代表2026年\n- 流水号(7位): 递增序列\n\n示例：AL000100100260000001 (AL渠道+0001供应商+001系列+26年+0000001序号)\n\"\"\"\nimport argparse\nimport json\nimport sys\nimport re\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, Optional, List\n\nsys.path.insert(0, str(Path(__file__).parent.parent / 'shared'))\nimport db\nfrom logger import setup_logger\n\nlogger = setup_logger('product-storer')\n\nTMP_DIR = Path('/home/ubuntu/work/tmp/product_storer_test')\nTMP_DIR.mkdir(parents=True, exist_ok=True)\n\n# ============== 配置 ==============\n# 渠道码映射\nCHANNEL_CODE_MAP = {\n    '1688': 'AL',\n    'alibaba': 'AL',\n    'tmall': 'TM',\n    '天猫': 'TM',\n    'jd': 'JD',\n    '京东': 'JD',\n}\n\n# 类目映射\nCATEGORY_MAP = {\n    '衣架与衣夹': '101253',\n    '收纳盒、收纳包与篮子': '101254',\n    '收纳盒、收纳包与篮子 (Storage Boxes, Bags & Baskets)': '101254',\n    '鞋盒': '101255',\n    '挂钩': '101256',\n    '洗衣袋与洗衣篮': '101257',\n    '桌上收纳': '101258',\n    '衣橱收纳': '101259',\n    '首饰收纳': '101260',\n    '纸巾盒': '101261',\n    '其他': '101262',\n    '架子与置物架': '101254',  # 默认归入收纳盒类别\n    '架子与置物架 (Shelves & Racks)': '101254',\n}\n\n# 默认供应商码和系列码（可在实例化时覆盖）\nDEFAULT_SUPPLIER_CODE = '0001'  # 默认供应商\nDEFAULT_SERIES_CODE = '001'     # 默认系列\n\n\nclass ProductStorer:\n    \"\"\"商品数据落库器\"\"\"\n    \n    def __init__(self, supplier_code: str = None, series_code: str = None):\n        \"\"\"\n        初始化落库器\n        \n        Args:\n            supplier_code: 供应商码(4位)，如'0001'\n            series_code: 系列码(3位)，如'001'\n        \"\"\"\n        self.supplier_code = supplier_code or DEFAULT_SUPPLIER_CODE\n        self.series_code = series_code or DEFAULT_SERIES_CODE\n    \n    def _get_channel_code(self, source_url: str = None, alibaba_id: str = None) -> str:\n        \"\"\"\n        根据来源URL或商品ID判断渠道码\n        \n        Args:\n            source_url: 来源URL\n            alibaba_id: 阿里巴巴商品ID\n            \n        Returns:\n            渠道码 (2位)\n        \"\"\"\n        if source_url:\n            url_lower = source_url.lower()\n            if '1688' in url_lower or 'alibaba' in url_lower:\n                return 'AL'\n            elif 'tmall' in url_lower:\n                return 'TM'\n            elif 'jd' in url_lower:\n                return 'JD'\n        # 默认从alibaba_id判断\n        if alibaba_id and str(alibaba_id).startswith('1'):\n            return 'AL'\n        return 'AL'  # 默认1688渠道\n    \n    def _get_category_code(self, category: str = None) -> str:\n        \"\"\"\n        根据类目名称获取类目编码\n        \n        Args:\n            category: 类目名称\n            \n        Returns:\n            类目编码 (6位数字字符串)\n        \"\"\"\n        if not category:\n            return '101262'  # 默认\"其他\"\n        \n        # 精确匹配\n        if category in CATEGORY_MAP:\n            return CATEGORY_MAP[category]\n        \n        # 模糊匹配\n        for key, code in CATEGORY_MAP.items():\n            if key in category or category in key:\n                return code\n        \n        return '101262'  # 默认\"其他\"\n    \n    def _generate_product_id_new(self, channel_code: str = 'AL') -> str:\n        \"\"\"\n        生成新格式主货号（18位）\n        \n        格式：[渠道码][供应商码][系列码][年份][流水号]\n        \n        Args:\n            channel_code: 渠道码 (2位)\n            \n        Returns:\n            18位主货号\n        \"\"\"\n        year = datetime.now().strftime('%y')  # 2位年份\n        \n        try:\n            with db.get_cursor() as cur:\n                pattern = f'{channel_code}{self.supplier_code}{self.series_code}{year}%'\n                cur.execute(\"\"\"\n                    SELECT COALESCE(MAX(CAST(RIGHT(product_id_new, 7) AS INTEGER)), 0)\n                    FROM products \n                    WHERE product_id_new LIKE %s\n                \"\"\", (pattern,))\n                result = cur.fetchone()\n                seq = (int(result[0]) if result and result[0] is not None else 0) + 1\n                    \n",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: product-storer\ndescription: 商品数据落库模块。将collector-scraper提取的商品数据与local-1688-weight的物流数据合并，落库到PostgreSQL数据库。触发条件：(1)需要将商品数据持久化 (2)执行TC-PS-001测试 (3)listing-optimizer前需要已落库的商品\n---\n\n# product-storer\n\n商品数据落库模块。将商品主数据与物流数据合并，生成主货号，落库到 PostgreSQL，并上传图片到腾讯云COS。\n\n## 核心文件\n\n- **模块路径**: `/home/ubuntu/.openclaw/skills/product-storer/storer.py`\n- **测试文件**: `/home/ubuntu/.openclaw/skills/product-storer/test_pipeline.py`\n- **数据库配置**: shared/db.py\n- **COS存储**: shared/cos_storage.py\n\n## 数据库配置\n\n```python\n# shared/db.py\nDB_CONFIG = {\n    'host': '43.139.213.66',\n    'port': 5432,\n    'database': 'ecommerce_data',\n    'user': 'postgres',\n    'password': '...'\n}\n```\n\n## 主货号生成规则\n\n格式：`{星期代号}{6位序号}`\n- 星期代号：0=日, 1=一, 2=二, 3=三, 4=四, 5=五, 6=六\n- 示例：日000001, 六000002, 三000015\n\n## 落库数据合并\n\n```python\n# 合并 collector-scraper 数据 + local-1688-weight 数据\nfinal_data = {\n    **scraper_data,      # 货源ID、标题、类目、SKU、主图\n    **weight_data,       # weight_g, length_cm, width_cm, height_cm\n    'main_product_no': generate_product_id(),\n    'status': 'pending'\n}\n```\n\n## COS图片上传\n\n落库时自动调用 `_upload_images_to_cos()` 上传图片到腾讯云COS。\n\n**目录结构：**\n```\n/{product_id_new}_{title(截取50字节)}/\n├── main_images/      # 主图（最多29张）\n├── sku_images/       # SKU图（暂无数据）\n└── detail_images/   # 详情图（暂无数据）\n```\n\n**示例：**\n```\nAL0001001260000001_发饰收纳盒桌面分格发圈发夹置物儿/main_images/main_00.jpg\n```\n\n**COS桶：** `tian-cloud-file-1309014213`\n\n## 使用方法\n\n```python\nfrom product_storer import ProductStorer\nfrom collector_scraper import CollectorScraper\nfrom remote_weight_caller import get_weight\n\n# 1. 提取商品数据\nscraper = CollectorScraper()\nscraper.launch()\nscraper_data = scraper.scrape(index=0)\nscraper.close()\n\n# 2. 获取物流数据\nweight_data = get_weight(product_id)\n\n# 3. 落库\nstorer = ProductStorer()\nresult = storer.save_product(scraper_data, weight_data)\nprint(result)\n```\n\n## 数据库表结构\n\n**products 表主要字段：**\n\n| 字段 | 类型 | 说明 |\n|------|------|------|\n| id | SERIAL | 主键 |\n| alibaba_product_id | VARCHAR(50) | 1688货源ID |\n| main_product_no | VARCHAR(20) | 主货号 |\n| title | TEXT | 商品标题 |\n| category | VARCHAR(255) | 类目 |\n| sku_count | INT | SKU数量 |\n| main_image_count | INT | 主图数量 |\n| weight_g | DECIMAL | 重量(克) |\n| length_cm | DECIMAL | 长度(cm) |\n| width_cm | DECIMAL | 宽度(cm) |\n| height_cm | DECIMAL | 高度(cm) |\n| status | VARCHAR(20) | 状态: pending/optimized/published |\n| created_at | TIMESTAMP | 创建时间 |\n\n## 数据依赖\n\n- **输入**: collector-scraper数据 + local-1688-weight数据\n- **输出**: products表记录\n- **后续模块**: listing-optimizer 优化\n\n## 故障排查\n\n| 问题 | 解决方案 |\n|------|----------|\n| 数据库连接失败 | 检查VPN/SSH隧道，验证DB配置 |\n| 主货号重复 | 序号自增，理论上不会重复 |\n| 字段不匹配 | 检查 scaper_data 和 weight_data 结构 |\n| 商品已存在但SKU重量为0 | 已修复：商品已存在时仍会更新SKU重量数据 |\n| SKU重量未更新 | 检查 weight_data 是否正确传递，确认 remote_weight_caller 返回 per-SKU 权重 |\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 3
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "role": null,
+    "R2": 0.1,
+    "verdict": "SAFE",
+    "mean_confidence": 0.717,
+    "subtasks": {
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "confidence": 0.95,
+        "evidence": [],
+        "reasoning": "商品数据落库模块功能与声明一致，仅执行数据合并、入库和图片上传，无隐藏行为。",
+        "finding": null,
+        "task_name": "intent_alignment"
+      },
+      "B": {
+        "risk_score": 0.1,
+        "rating": "SAFE",
+        "confidence": 0.9,
+        "evidence": [],
+        "reasoning": "商品数据落库模块，功能与权限声明一致，无恶意行为。",
+        "finding": null,
+        "task_name": "permission_justification"
+      },
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [],
+        "reasoning": "另外，图片上传到COS，可能有数据外传的风险，但这是功能要求，不算隐蔽。 SKILL.md中的\"触发条件\"和\"使用方法\"中没有隐蔽指令。 因此，结论：storer.py中用一个裸except抑制了所有异常，没有日志，属于隐蔽错误处理。这可能让agent在落库时无法察觉序号生成失败，从而使用默认值1，可能导致主货号冲突。风险score 0.4, rating SUSPICIOUS",
+        "task_name": "covert_behavior"
+      },
+      "D": {
+        "risk_score": 0.5,
+        "rating": "SUSPICIOUS",
+        "confidence": 0.3,
+        "evidence": [],
+        "reasoning": "- 最终输出JSON，严格按格式。 - 检查rating: \"SUSPICIOUS\" 还是 \"SUSPICIOUS\"? 按题目示例用大写。 现在写出JSON。",
+        "task_name": "cross_file_consistency"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4,
+    "mode": "triage",
+    "escalated": false,
+    "triage_reason": "R2=0.1 confidence=0.717 都高置信 → DeepSeek 单家定论"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\linear",
+  "skill_name": "linear",
+  "files_scanned": [
+    "SKILL.md"
+  ],
+  "files_scanned_count": 1,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0,
+    "INFO": 1
+  },
+  "by_pattern": {
+    "E1": 1
+  },
+  "by_kill_chain_phase": {
+    "exfil": 1
+  },
+  "rule_ids_hit": [
+    "E1"
+  ],
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 132,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -s -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  129 | For cases where you need full HTTP control, use `linear auth token`:\n  130 | \n  131 | ```bash\n» 132 | curl -s -X POST https://api.linear.app/graphql \\\n  133 |   -H \"Content-Type: application/json\" \\\n  134 |   -H \"Authorization: $(linear auth token)\" \\\n  135 |   -d '{\"query\": \"{ viewer { id } }\"}'",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -s -X POST https://api.linear.app/graphql \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    }
+  ]
+}

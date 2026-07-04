@@ -1,0 +1,58 @@
+{
+  "archetype": {
+    "archetype": "Agent Hijacker",
+    "confidence": 0.9,
+    "paper_archetype_share_percent": 10.2,
+    "has_SC2": false,
+    "has_P1": true,
+    "has_PE1": false
+  },
+  "sophistication": {
+    "level": 2,
+    "label": "Intermediate",
+    "criterion_evasion_present": false,
+    "criterion_shadow_features": false,
+    "criterion_pattern_count": 47
+  },
+  "chains_triggered": [
+    {
+      "chain_id": "E2_E1",
+      "name": "Data Exfiltration Chain",
+      "required_rules": [
+        "E2",
+        "E1"
+      ],
+      "phase_sequence": [
+        "cred_access",
+        "exfil"
+      ],
+      "severity_boost": "HIGH",
+      "paper_evidence": "OR=2.31, p=0.020; 36.9% of malicious skills (§4.2)",
+      "description": "Credential harvesting followed by external transmission."
+    },
+    {
+      "chain_id": "E2_E1_P4_ADVANCED",
+      "name": "Advanced Data Thief Triple",
+      "required_rules": [
+        "E2",
+        "E1",
+        "P4"
+      ],
+      "phase_sequence": [
+        "cred_access",
+        "exfil",
+        "impact"
+      ],
+      "severity_boost": "CRITICAL",
+      "paper_evidence": "26.1% of skills, 80% of Level-3 attacks (§4.2)",
+      "description": "Harvest + exfil + user-alert suppression."
+    }
+  ],
+  "chain_count": 2,
+  "kill_chain_phases_covered": [
+    "cred_access",
+    "exfil",
+    "impact"
+  ],
+  "kill_chain_phase_coverage_count": 3
+}

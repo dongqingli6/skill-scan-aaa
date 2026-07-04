@@ -1,0 +1,86 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\mode3_safe_staging\\wechat-publisher-yashu",
+  "skill_name": "wechat-publisher-yashu",
+  "files_scanned": [
+    "config.default.json",
+    "index.js",
+    "license-key.txt",
+    "package-lock.json",
+    "package.json",
+    "SKILL.md",
+    "themes\\amber.json",
+    "themes\\blue.json",
+    "themes\\cyan.json",
+    "themes\\green.json",
+    "themes\\indigo.json",
+    "themes\\lavender.json",
+    "themes\\minimal.json",
+    "themes\\mint.json",
+    "themes\\orange.json",
+    "themes\\pink.json",
+    "themes\\purple.json",
+    "themes\\red.json",
+    "themes\\rose.json",
+    "themes\\sakura.json",
+    "themes\\sky.json",
+    "themes\\teal.json",
+    "themes\\vintage.json"
+  ],
+  "files_scanned_count": 23,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 1,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "P2": 1,
+    "P10": 1
+  },
+  "by_kill_chain_phase": {
+    "evasion": 2
+  },
+  "rule_ids_hit": [
+    "P10",
+    "P2"
+  ],
+  "findings": [
+    {
+      "rule_id": "P2",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "evasion",
+      "file": "index.js",
+      "line": 1,
+      "pattern": "[​‌‍⁠﻿]",
+      "matched_text": "​",
+      "description": "Directives hidden in HTML comments or invisible Unicode.",
+      "confidence": 0.85,
+      "context": "» 1 | const _0x4254da=_0x70ce;var __defProp=Object[_0x4254da(0x0)],__name=(_0x126b61,_0x4055a5)=>__defProp(_0x126b61,_0x4254da(0x1),{'value':_0x4055a5,'configurable':!![]});import{readFile as _0x4087f0}from …",
+      "original_severity": "HIGH",
+      "evidence_type": "prompt_injection",
+      "context_type": "entrypoint_script",
+      "snippet": "const _0x4254da=_0x70ce;var __defProp=Object[_0x4254da(0x0)],__name=(_0x126b61,_0x4055a5)=>__defProp(_0x126b61,_0x4254da(0x1),{'value':_0x4055a5,'configurable':!![]});import{readFile as _0x4087f0}from'fs/promises';import",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P10",
+      "severity": "HIGH",
+      "kill_chain_phase": "evasion",
+      "file": "index.js",
+      "line": 1,
+      "pattern": "​",
+      "matched_text": "​",
+      "description": "Unicode control / invisible / tag characters used to hide instructions from human review while remaining readable to the LLM. Includes zero-width spaces (U+200B family), bidirectional override (U+202E etc.), and the Unicode TAG block (U+E0000-U+E007F) which is Anthropic's documented ASCII smuggling primary vector. Matches Snyk toxicskills-goof's testing-guidelines sample exactly.",
+      "confidence": 0.95,
+      "context": "» 1 | const _0x4254da=_0x70ce;var __defProp=Object[_0x4254da(0x0)],__name=(_0x126b61,_0x4055a5)=>__defProp(_0x126b61,_0x4254da(0x1),{'value':_0x4055a5,'configurable':!![]});import{readFile as _0x4087f0}from …",
+      "original_severity": "HIGH",
+      "evidence_type": "evasion",
+      "context_type": "entrypoint_script",
+      "snippet": "const _0x4254da=_0x70ce;var __defProp=Object[_0x4254da(0x0)],__name=(_0x126b61,_0x4055a5)=>__defProp(_0x126b61,_0x4254da(0x1),{'value':_0x4055a5,'configurable':!![]});import{readFile as _0x4087f0}from'fs/promises';import",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

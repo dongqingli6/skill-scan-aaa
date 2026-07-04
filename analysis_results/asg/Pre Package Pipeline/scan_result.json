@@ -1,0 +1,21 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\pre-package-pipeline\\Pre Package Pipeline",
+  "skill_name": "Pre Package Pipeline",
+  "files_scanned": [
+    "ARENA.md",
+    "scripts\\package_pipeline.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

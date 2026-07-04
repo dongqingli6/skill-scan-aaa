@@ -1,0 +1,236 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:43.036342+00:00",
+  "skill_name": "doc",
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\doc",
+  "skill_contents": {
+    "file_count": 6,
+    "total_bytes": 27210,
+    "files": [
+      {
+        "path": "agents/openai.yaml",
+        "size_bytes": 277,
+        "kind": "text",
+        "content_preview": "interface:\n  display_name: \"Word Docs\"\n  short_description: \"Edit and review docx files\"\n  icon_small: \"./assets/doc-small.svg\"\n  icon_large: \"./assets/doc.png\"\n  default_prompt: \"Edit or review this .docx file and return the updated file plus a concise change summary.\"\n",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/doc-small.svg",
+        "size_bytes": 1681,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/doc.png",
+        "size_bytes": 1211,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE.txt",
+        "size_bytes": 10977,
+        "kind": "text",
+        "content_preview": "Apache License\nVersion 2.0, January 2004\nhttp://www.apache.org/licenses/\n\nTERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n1. Definitions.\n\n   \"License\" shall mean the terms and conditions for use, reproduction,\n   and distribution as defined by Sections 1 through 9 of this document.\n\n   \"Licensor\" shall mean the copyright owner or entity authorized by\n   the copyright owner that is granting the License.\n\n   \"Legal Entity\" shall mean the union of the acting entity and all\n   other entities that control, are controlled by, or are under common\n   control with that entity. For the purposes of this definition,\n   \"control\" means (i) the power, direct or indirect, to cause the\n   direction or management of such entity, whether by contract or\n   otherwise, or (ii) ownership of fifty percent (50%) or more of the\n   outstanding shares, or (iii) beneficial ownership of such entity.\n\n   \"You\" (or \"Your\") shall mean an individual or Legal Entity\n   exercising permissions granted by this License.\n\n   \"Source\" form shall mean the preferred form for making modifications,\n   including but not limited to software source code, documentation\n   source, and configuration files.\n\n   \"Object\" form shall mean any form resulting from mechanical\n   transformation or translation of a Source form, including but\n   not limited to compiled object code, generated documentation,\n   and conversions to other media types.\n\n   \"Work\" shall mean the work of authorship, whether in Source or\n   Object form, made available under the License, as indicated by a\n   copyright notice that is included in or attached to the work\n   (an example is provided in the Appendix below).\n\n   \"Derivative Works\" shall mean any work, whether in Source or Object\n   form, that is based on (or derived from) the Work and for which the\n   editorial revisions, annotations, elaborations, or other modifications\n   represent, as a whole, an original work of authorship. For the purposes\n   of this License, Derivative Works shall not include works that remain\n   separable from, or merely link (or bind by name) to the interfaces of,\n   the Work and Derivative Works thereof.\n\n   \"Contribution\" shall mean any work of authorship, including\n   the original version of the Work and any modifications or additions\n   to that Work or Derivative Works thereof, that is intentionally\n   submitted to Licensor for inclusion in the Work by the copyright owner\n   or by an individual or Legal Entity authorized to submit on behalf of\n   the copyright owner. For the purposes of this definition, \"submitted\"\n   means any form of electronic, verbal, or written communication sent\n   to the Licensor or its representatives, including but not limited to\n   communication on electronic mailing lists, source code control systems,\n   and issue tracking systems that are managed by, or on behalf of, the\n   Licensor for the purpose of discussing and improving the Work, but\n   excluding communication that is conspicuously marked or otherwise\n   designated in writing by the copyright owner as \"Not a Contribution.\"\n\n   \"Contributor\" shall mean Licensor and any individual or Legal Entity\n   on behalf of whom a Contribution has been received by Licensor and\n   subsequently incorporated within the Work.\n\n2. Grant of Copyright License. Subject to the terms and conditions of\n   this License, each Contributor hereby grants to You a perpetual,\n   worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n   copyright license to reproduce, prepare Derivative Works of,\n   publicly display, publicly perform, sublicense, and distribute the\n   Work and such Derivative Works in Source or Object form.\n\n3. Grant of Patent License. Subject to the terms and conditions of\n   this License, each Contributor hereby grants to You a perpetual,\n   worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n   (except as stated in this section) patent license to make, have made,\n   use, offer to sell, sell, import, and otherwise trans",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/render_docx.py",
+        "size_bytes": 9996,
+        "kind": "text",
+        "content_preview": "import argparse\nimport os\nimport re\nimport subprocess\nimport tempfile\nimport xml.etree.ElementTree as ET\nfrom os import makedirs, replace\nfrom os.path import abspath, basename, exists, expanduser, join, splitext\nfrom shutil import which\nimport sys\nfrom typing import Sequence, cast\nfrom zipfile import ZipFile\n\nfrom pdf2image import convert_from_path, pdfinfo_from_path\n\nTWIPS_PER_INCH: int = 1440\n\n\ndef ensure_system_tools() -> None:\n    missing: list[str] = []\n    for tool in (\"soffice\", \"pdftoppm\"):\n        if which(tool) is None:\n            missing.append(tool)\n    if missing:\n        tools = \", \".join(missing)\n        raise RuntimeError(\n            f\"Missing required system tool(s): {tools}. Install LibreOffice and Poppler, then retry.\"\n        )\n\n\ndef calc_dpi_via_ooxml_docx(input_path: str, max_w_px: int, max_h_px: int) -> int:\n    \"\"\"Calculate DPI from OOXML `word/document.xml` page size (w:pgSz in twips).\n\n    DOCX stores page dimensions in section properties as twips (1/1440 inch).\n    We read the first encountered section's page size and compute an isotropic DPI\n    that fits within the target max pixel dimensions.\n    \"\"\"\n    with ZipFile(input_path, \"r\") as zf:\n        xml = zf.read(\"word/document.xml\")\n    root = ET.fromstring(xml)\n    ns = {\"w\": \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"}\n\n    # Common placements: w:body/w:sectPr or w:body/w:p/w:pPr/w:sectPr\n    sect_pr = root.find(\".//w:sectPr\", ns)\n    if sect_pr is None:\n        raise RuntimeError(\"Section properties not found in document.xml\")\n    pg_sz = sect_pr.find(\"w:pgSz\", ns)\n    if pg_sz is None:\n        raise RuntimeError(\"Page size not found in section properties\")\n\n    # Values are in twips\n    w_twips_str = pg_sz.get(\n        \"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}w\"\n    ) or pg_sz.get(\"w\")\n    h_twips_str = pg_sz.get(\n        \"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}h\"\n    ) or pg_sz.get(\"h\")\n\n    if not w_twips_str or not h_twips_str:\n        raise RuntimeError(\"Page size attributes missing in pgSz\")\n\n    width_in = int(w_twips_str) / TWIPS_PER_INCH\n    height_in = int(h_twips_str) / TWIPS_PER_INCH\n    if width_in <= 0 or height_in <= 0:\n        raise RuntimeError(\"Invalid page size values in document.xml\")\n    return round(min(max_w_px / width_in, max_h_px / height_in))\n\n\ndef calc_dpi_via_pdf(input_path: str, max_w_px: int, max_h_px: int) -> int:\n    \"\"\"Convert input to PDF and compute DPI from its page size.\"\"\"\n    with tempfile.TemporaryDirectory(prefix=\"soffice_profile_\") as user_profile:\n        with tempfile.TemporaryDirectory(prefix=\"soffice_convert_\") as convert_tmp_dir:\n            stem = splitext(basename(input_path))[0]\n            pdf_path = convert_to_pdf(input_path, user_profile, convert_tmp_dir, stem)\n            if not (pdf_path and exists(pdf_path)):\n                raise RuntimeError(\"Failed to convert input to PDF for DPI computation.\")\n\n            info = pdfinfo_from_path(pdf_path)\n            size_val = info.get(\"Page size\")\n            if not size_val:\n                for k, v in info.items():\n                    if isinstance(v, str) and \"size\" in k.lower() and \"pts\" in v:\n                        size_val = v\n                        break\n            if not isinstance(size_val, str):\n                raise RuntimeError(\"Failed to read PDF page size for DPI computation.\")\n\n            m = re.search(r\"(\\d+)\\s*x\\s*(\\d+)\\s*pts\", size_val)\n            if not m:\n                raise RuntimeError(\"Unrecognized PDF page size format.\")\n            width_pts = int(m.group(1))\n            height_pts = int(m.group(2))\n            width_in = width_pts / 72.0\n            height_in = height_pts / 72.0\n            if width_in <= 0 or height_in <= 0:\n                raise RuntimeError(\"Invalid PDF page size values.\")\n            return round(min(max_w_px / width_in, max_h_px / height_in))\n\n\ndef run_cmd_no_check(cmd: list[str]) -> None:\n    subprocess.run(\n        cmd,\n       ",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 3068,
+        "kind": "text",
+        "content_preview": "---\nname: \"doc\"\ndescription: \"Use when the task involves reading, creating, or editing `.docx` documents, especially when formatting or layout fidelity matters; prefer `python-docx` plus the bundled `scripts/render_docx.py` for visual checks.\"\n---\n\n\n# DOCX Skill\n\n## When to use\n- Read or review DOCX content where layout matters (tables, diagrams, pagination).\n- Create or edit DOCX files with professional formatting.\n- Validate visual layout before delivery.\n\n## Workflow\n1. Prefer visual review (layout, tables, diagrams).\n   - If `soffice` and `pdftoppm` are available, convert DOCX -> PDF -> PNGs.\n   - Or use `scripts/render_docx.py` (requires `pdf2image` and Poppler).\n   - If these tools are missing, install them or ask the user to review rendered pages locally.\n2. Use `python-docx` for edits and structured creation (headings, styles, tables, lists).\n3. After each meaningful change, re-render and inspect the pages.\n4. If visual review is not possible, extract text with `python-docx` as a fallback and call out layout risk.\n5. Keep intermediate outputs organized and clean up after final approval.\n\n## Temp and output conventions\n- Use `tmp/docs/` for intermediate files; delete when done.\n- Write final artifacts under `output/doc/` when working in this repo.\n- Keep filenames stable and descriptive.\n\n## Dependencies (install if missing)\nPrefer `uv` for dependency management.\n\nPython packages:\n```\nuv pip install python-docx pdf2image\n```\nIf `uv` is unavailable:\n```\npython3 -m pip install python-docx pdf2image\n```\nSystem tools (for rendering):\n```\n# macOS (Homebrew)\nbrew install libreoffice poppler\n\n# Ubuntu/Debian\nsudo apt-get install -y libreoffice poppler-utils\n```\n\nIf installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.\n\n## Environment\nNo required environment variables.\n\n## Rendering commands\nDOCX -> PDF:\n```\nsoffice -env:UserInstallation=file:///tmp/lo_profile_$$ --headless --convert-to pdf --outdir $OUTDIR $INPUT_DOCX\n```\n\nPDF -> PNGs:\n```\npdftoppm -png $OUTDIR/$BASENAME.pdf $OUTDIR/$BASENAME\n```\n\nBundled helper:\n```\npython3 scripts/render_docx.py /path/to/file.docx --output_dir /tmp/docx_pages\n```\n\n## Quality expectations\n- Deliver a client-ready document: consistent typography, spacing, margins, and clear hierarchy.\n- Avoid formatting defects: clipped/overlapping text, broken tables, unreadable characters, or default-template styling.\n- Charts, tables, and visuals must be legible in rendered pages with correct alignment.\n- Use ASCII hyphens only. Avoid U+2011 (non-breaking hyphen) and other Unicode dashes.\n- Citations and references must be human-readable; never leave tool tokens or placeholder strings.\n\n## Final checks\n- Re-render and inspect every page at 100% zoom before final delivery.\n- Fix any spacing, alignment, or pagination issues and repeat the render loop.\n- Confirm there are no leftovers (temp files, duplicate renders) unless the user asks to keep them.\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: \"doc\"\ndescription: \"Use when the task involves reading, creating, or editing `.docx` documents, especially when formatting or layout fidelity matters; prefer `python-docx` plus the bundled `scripts/render_docx.py` for visual checks.\"\n---\n\n\n# DOCX Skill\n\n## When to use\n- Read or review DOCX content where layout matters (tables, diagrams, pagination).\n- Create or edit DOCX files with professional formatting.\n- Validate visual layout before delivery.\n\n## Workflow\n1. Prefer visual review (layout, tables, diagrams).\n   - If `soffice` and `pdftoppm` are available, convert DOCX -> PDF -> PNGs.\n   - Or use `scripts/render_docx.py` (requires `pdf2image` and Poppler).\n   - If these tools are missing, install them or ask the user to review rendered pages locally.\n2. Use `python-docx` for edits and structured creation (headings, styles, tables, lists).\n3. After each meaningful change, re-render and inspect the pages.\n4. If visual review is not possible, extract text with `python-docx` as a fallback and call out layout risk.\n5. Keep intermediate outputs organized and clean up after final approval.\n\n## Temp and output conventions\n- Use `tmp/docs/` for intermediate files; delete when done.\n- Write final artifacts under `output/doc/` when working in this repo.\n- Keep filenames stable and descriptive.\n\n## Dependencies (install if missing)\nPrefer `uv` for dependency management.\n\nPython packages:\n```\nuv pip install python-docx pdf2image\n```\nIf `uv` is unavailable:\n```\npython3 -m pip install python-docx pdf2image\n```\nSystem tools (for rendering):\n```\n# macOS (Homebrew)\nbrew install libreoffice poppler\n\n# Ubuntu/Debian\nsudo apt-get install -y libreoffice poppler-utils\n```\n\nIf installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.\n\n## Environment\nNo required environment variables.\n\n## Rendering commands\nDOCX -> PDF:\n```\nsoffice -env:UserInstallation=file:///tmp/lo_profile_$$ --headless --convert-to pdf --outdir $OUTDIR $INPUT_DOCX\n```\n\nPDF -> PNGs:\n```\npdftoppm -png $OUTDIR/$BASENAME.pdf $OUTDIR/$BASENAME\n```\n\nBundled helper:\n```\npython3 scripts/render_docx.py /path/to/file.docx --output_dir /tmp/docx_pages\n```\n\n## Quality expectations\n- Deliver a client-ready document: consistent typography, spacing, margins, and clear hierarchy.\n- Avoid formatting defects: clipped/overlapping text, broken tables, unreadable characters, or default-template styling.\n- Charts, tables, and visuals must be legible in rendered pages with correct alignment.\n- Use ASCII hyphens only. Avoid U+2011 (non-breaking hyphen) and other Unicode dashes.\n- Citations and references must be human-readable; never leave tool tokens or placeholder strings.\n\n## Final checks\n- Re-render and inspect every page at 100% zoom before final delivery.\n- Fix any spacing, alignment, or pagination issues and repeat the render loop.\n- Confirm there are no leftovers (temp files, duplicate renders) unless the user asks to keep them.\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 2,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "MEDIUM": 0,
+      "LOW": 1
+    },
+    "by_pattern": {
+      "SC1": 1,
+      "PE2": 1
+    },
+    "by_kill_chain_phase": {
+      "execution": 1,
+      "impact": 1
+    },
+    "rule_ids_hit": [
+      "PE2",
+      "SC1"
+    ],
+    "files_scanned_count": 4
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 2
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "execution",
+      "impact"
+    ],
+    "kill_chain_phase_coverage_count": 2
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 16,
+    "verdict": "SUSPICIOUS",
+    "sub_scores": {
+      "S_static": 0.1,
+      "S_static_raw": 0.1,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.3333,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "verdict floor #2: PE2 持久化 + 执行类未降级 — 持久化通道已实化",
+      "分数与判定对齐: SUSPICIOUS 区间下限 15, composite_score 6.44 -> 16"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    },
+    "composite_score_pre_align": 6.44
+  },
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\render_docx.py",
+      "line": 101,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "   98 | \n   99 | \n  100 | def run_cmd_no_check(cmd: list[str]) -> None:\n» 101 |     subprocess.run(\n  102 |         cmd,\n  103 |         check=False,\n  104 |         stdout=subprocess.DEVNULL,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 46,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  43 | brew install libreoffice poppler\n  44 | \n  45 | # Ubuntu/Debian\n» 46 | sudo apt-get install -y libreoffice poppler-utils\n  47 | ```\n  48 | \n  49 | If installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "sudo apt-get install -y libreoffice poppler-utils",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

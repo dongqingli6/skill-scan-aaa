@@ -1,0 +1,138 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-screenshot",
+  "skill_name": "benign-screenshot",
+  "files_scanned": [
+    "agents\\openai.yaml",
+    "LICENSE.txt",
+    "scripts\\ensure_macos_permissions.sh",
+    "scripts\\take_screenshot.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 5,
+  "total_findings": 6,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 4,
+    "MEDIUM": 0,
+    "LOW": 2
+  },
+  "by_pattern": {
+    "SC1": 6
+  },
+  "by_kill_chain_phase": {
+    "execution": 6
+  },
+  "rule_ids_hit": [
+    "SC1"
+  ],
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 110,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  107 | def mac_default_dir() -> Path:\n  108 |     desktop = Path.home() / \"Desktop\"\n  109 |     try:\n» 110 |         proc = subprocess.run(\n  111 |             [\"defaults\", \"read\", \"com.apple.screencapture\", \"location\"],\n  112 |             check=False,\n  113 |             capture_output=True,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "proc = subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 193,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  190 | \n  191 | def run(cmd: list[str]) -> None:\n  192 |     try:\n» 193 |         subprocess.run(cmd, check=True)\n  194 |     except FileNotFoundError as exc:\n  195 |         raise SystemExit(f\"required command not found: {cmd[0]}\") from exc\n  196 |     except subprocess.CalledProcessError as exc:",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run(cmd, check=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 207,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  204 |     if extra_args:\n  205 |         cmd.extend(extra_args)\n  206 |     try:\n» 207 |         proc = subprocess.run(cmd, check=True, capture_output=True, text=True)\n  208 |     except FileNotFoundError as exc:\n  209 |         raise SystemExit(\"swift not found; install Xcode command line tools\") from exc\n  210 |     except subprocess.CalledProcessError as exc:",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "proc = subprocess.run(cmd, check=True, capture_output=True, text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 237,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  234 |         )\n  235 |     if macos_screen_capture_granted():\n  236 |         return\n» 237 |     subprocess.run([\"bash\", str(MAC_PERM_HELPER)], check=False)\n  238 |     if not macos_screen_capture_granted():\n  239 |         raise SystemExit(\n  240 |             \"Screen Recording permission is required; enable it in System Settings and retry\"",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run([\"bash\", str(MAC_PERM_HELPER)], check=False)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "LOW",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 247,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run(['osascript', ...])",
+      "description": "AST: 调用 subprocess.run 执行已知工具 'osascript'（合法用法）",
+      "confidence": 0.92,
+      "context": "  244 | def activate_app(app: str) -> None:\n  245 |     safe_app = app.replace('\"', '\\\\\"')\n  246 |     script = f'tell application \"{safe_app}\" to activate'\n» 247 |     subprocess.run([\"osascript\", \"-e\", script], check=False, capture_output=True, text=True)\n  248 | \n  249 | \n  250 | def macos_window_payload(args: argparse.Namespace, frontmost: bool, include_list: bool) -> dict:",
+      "original_severity": "LOW",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run([\"osascript\", \"-e\", script], check=False, capture_output=True, text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "LOW",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\take_screenshot.py",
+      "line": 401,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.check_output(['xdotool', ...])",
+      "description": "AST: 调用 subprocess.check_output 执行已知工具 'xdotool'（合法用法）",
+      "confidence": 0.92,
+      "context": "  398 |             return\n  399 |         if imagemagick and xdotool:\n  400 |             win_id = (\n» 401 |                 subprocess.check_output([\"xdotool\", \"getactivewindow\"], text=True)\n  402 |                 .strip()\n  403 |             )\n  404 |             run([\"import\", \"-window\", win_id, str(output)])",
+      "original_severity": "LOW",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.check_output([\"xdotool\", \"getactivewindow\"], text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

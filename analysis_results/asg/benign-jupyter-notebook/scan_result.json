@@ -1,0 +1,26 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-jupyter-notebook",
+  "skill_name": "benign-jupyter-notebook",
+  "files_scanned": [
+    "agents\\openai.yaml",
+    "LICENSE.txt",
+    "references\\experiment-patterns.md",
+    "references\\notebook-structure.md",
+    "references\\quality-checklist.md",
+    "references\\tutorial-patterns.md",
+    "scripts\\new_notebook.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 8,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

@@ -341,7 +341,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
       <header class="card-hero">
         <div class="hero-left">
           <h2 class="skill-title">slack-gif-creator</h2>
-          <div class="meta-chips">  <span class="chip chip-archetype" style="background:#22c55e;">分类: 良性</span>  <span class="chip">复杂度: L0 · None</span>  <span class="chip">文件: 7 · 43.9 KB</span>  <span class="chip">扫描: 2026-05-23 14:36:33</span></div>
+          <div class="meta-chips">  <span class="chip chip-archetype" style="background:#22c55e;">分类: 良性</span>  <span class="chip">复杂度: L0 · None</span>  <span class="chip">文件: 7 · 43.9 KB</span>  <span class="chip">扫描: 2026-06-12 07:30:36</span></div>
         </div>
         <div class="hero-right">
           <div class="verdict-big" style="border-color:#22c55e;color:#22c55e;">
@@ -353,8 +353,8 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
       </header>
 
       <div class="score-strip">
-        <div class="score-num" style="color:#22c55e;">8.5<span class="score-max">/100</span></div>
-        <div class="score-bar"><div class="score-fill" style="width:8.5%;background:#22c55e;"></div></div>
+        <div class="score-num" style="color:#22c55e;">0.0<span class="score-max">/100</span></div>
+        <div class="score-bar"><div class="score-fill" style="width:0%;background:#22c55e;"></div></div>
         <div class="score-cap">综合风险评分</div>
       </div>
 
@@ -382,30 +382,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
 
       <section class="card-section">
         <h3 class="cn-title">蜜罐检测</h3>
-        
-    <div class="honeypot-status">部署: <span class="hp-clean">未部署</span> · 触碰: <span class="hp-clean">未触碰</span> · 泄露: <span class="hp-clean">未泄露</span></div>
-    <table class="findings">
-      <tbody>
-        <tr><td>部署方式</td><td><code>None</code></td></tr>
-        <tr><td>蜜罐 bundle ID</td><td><code>slack-gif-creator_U0CY5BK7W7_0FQOCIKT</code></td></tr>
-        <tr><td>生成假凭证文件数</td><td>6</td></tr>
-        <tr><td>canary marker 数</td><td>7</td></tr>
-      </tbody>
-    </table>
-    <details>
-      <summary>展开假凭证 marker（已脱敏）</summary>
-      <table class="findings"><tbody><tr><td>ANTHROPIC</td><td><code>ANTHROPIC:&lt;redacted:2c82a27621&gt;</code></td></tr><tr><td>AWS</td><td><code>AWS:&lt;redacted:acbc7051d3&gt;</code></td></tr><tr><td>AWS_SECRET</td><td><code>AWS_SECRET:&lt;redacted:6858d582bb&gt;</code></td></tr><tr><td>CODEX</td><td><code>CODEX:&lt;redacted:d834e4a588&gt;</code></td></tr><tr><td>GITHUB</td><td><code>GITHUB:&lt;redacted:c47d06b7c3&gt;</code></td></tr><tr><td>OPENAI</td><td><code>OPENAI:&lt;redacted:55480f58ad&gt;</code></td></tr><tr><td>SSH</td><td><code>SSH:&lt;redacted:f42d271a07&gt;</code></td></tr></tbody></table>
-    </details>
-    <details>
-      <summary>展开被触碰的蜜罐文件</summary>
-      <div class="empty">No touched honeypot files.</div>
-    </details>
-    <details>
-      <summary>展开泄露源头</summary>
-      <div class="empty">No leak sources.</div>
-    </details>
-    
-    
+        <div class="empty">蜜罐未启用。</div>
       </section>
 
       <section class="card-section">
@@ -1206,7 +1183,7 @@ passes, info = validate_gif(&#x27;my.gif&#x27;, is_emoji=True, verbose=True)
         
     <table class="formula">
       <thead><tr><th>组件</th><th>符号</th><th>子分值</th><th>权重</th><th>贡献</th></tr></thead>
-      <tbody><tr><td>Static rule severity</td><td><code>S_static</code></td><td>0.000</td><td>0.22</td><td><strong>0.00</strong></td></tr><tr><td>Attack chain hit</td><td><code>S_chain</code></td><td>0.000</td><td>0.18</td><td><strong>0.00</strong></td></tr><tr><td>Sophistication level</td><td><code>S_soph</code></td><td>0.000</td><td>0.10</td><td><strong>0.00</strong></td></tr><tr><td>Kill-chain phase coverage</td><td><code>S_phases</code></td><td>0.000</td><td>0.08</td><td><strong>0.00</strong></td></tr><tr><td>Agent resilience (1 - this = risk)</td><td><code>S_resilience</code></td><td>0.500</td><td>0.17</td><td><strong>8.50</strong></td></tr><tr><td>Honeypot exfiltrated</td><td><code>S_honeypot</code></td><td>0.000</td><td>0.10</td><td><strong>0.00</strong></td></tr><tr><td>Runtime evidence</td><td><code>S_runtime</code></td><td>0.000</td><td>0.15</td><td><strong>0.00</strong></td></tr></tbody>
+      <tbody><tr><td>Static rule severity</td><td><code>S_static</code></td><td>0.000</td><td>0.18</td><td><strong>0.00</strong></td></tr><tr><td>Attack chain hit</td><td><code>S_chain</code></td><td>0.000</td><td>0.15</td><td><strong>0.00</strong></td></tr><tr><td>Sophistication level</td><td><code>S_soph</code></td><td>0.000</td><td>0.07</td><td><strong>0.00</strong></td></tr><tr><td>Kill-chain phase coverage</td><td><code>S_phases</code></td><td>0.000</td><td>0.07</td><td><strong>0.00</strong></td></tr><tr><td>Agent resilience (1 - this = risk)</td><td><code>S_resilience</code></td><td>1.000</td><td>0.10</td><td><strong>0.00</strong></td></tr><tr><td>Honeypot exfiltrated</td><td><code>S_honeypot</code></td><td>0.000</td><td>0.08</td><td><strong>0.00</strong></td></tr><tr><td>Runtime evidence</td><td><code>S_runtime</code></td><td>0.000</td><td>0.10</td><td><strong>0.00</strong></td></tr></tbody>
     </table>
     
       </details>

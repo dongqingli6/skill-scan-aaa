@@ -1,0 +1,38 @@
+{
+  "archetype": {
+    "archetype": "Agent Hijacker",
+    "confidence": 0.7,
+    "paper_archetype_share_percent": 10.2,
+    "has_SC2": false,
+    "has_P1": false,
+    "has_PE1": false
+  },
+  "sophistication": {
+    "level": 2,
+    "label": "Intermediate",
+    "criterion_evasion_present": true,
+    "criterion_shadow_features": true,
+    "criterion_pattern_count": 3
+  },
+  "chains_triggered": [
+    {
+      "chain_id": "ASG_PERSIST_CHAIN",
+      "name": "Persistence-Enabled Attack (ASG extension)",
+      "required_rules": [
+        "P6"
+      ],
+      "phase_sequence": [
+        "impact"
+      ],
+      "severity_boost": "CRITICAL",
+      "paper_evidence": "ASG extension — persistence not in paper's 14 patterns",
+      "description": "Skill plants persistence hook (~/.bashrc, cron, etc.)."
+    }
+  ],
+  "chain_count": 1,
+  "kill_chain_phases_covered": [
+    "evasion",
+    "impact"
+  ],
+  "kill_chain_phase_coverage_count": 2
+}

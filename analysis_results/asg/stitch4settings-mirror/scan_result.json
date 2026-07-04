@@ -1,0 +1,62 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\stitch4settings\\stitch4settings-mirror",
+  "skill_name": "stitch4settings-mirror",
+  "files_scanned": [
+    "SKILL.md"
+  ],
+  "files_scanned_count": 1,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 2,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "P8": 2
+  },
+  "by_kill_chain_phase": {
+    "impact": 2
+  },
+  "rule_ids_hit": [
+    "P8"
+  ],
+  "findings": [
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 20,
+      "pattern": "(?i)\\bowns?\\s+the\\s+(?:shell|design|workflow|definition)\\b",
+      "matched_text": "owns the shell",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  17 | \n  18 | ## Core rule\n  19 | \n» 20 | Stitch owns the shell design.\n  21 | \n  22 | Treat the imported Stitch screen as the visual source material for the selected\n  23 | settings route. Preserve its layout, spacing, hierarchy, and general tone as",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "Stitch owns the shell design.",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P8",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 28,
+      "pattern": "(?i)\\bdo\\s+not\\s+fork\\s+",
+      "matched_text": "do not fork ",
+      "description": "SKILL.md uses description-only framing patterns documented in Saha et al. (arXiv:2605.11418) §6 — claims of being 'best', 'always use', 'trusted by', 'source of truth' etc. — that bias an agent's selection in 77.6% of pairwise trials even when the underlying capability is unchanged. Strong manipulation surface for supply-chain attackers.",
+      "confidence": 0.78,
+      "context": "  25 | \n  26 | Required posture:\n  27 | - preserve Stitch structure unless a runtime hook requires a small change\n» 28 | - keep shared app behavior in root `app.js`; do not fork manager/admin logic into route-local scripts\n  29 | - keep settings-route auth, role gating, save-vs-send, notifications, featured management, and menu switching intact\n  30 | - only add controls Stitch omitted when the app truly requires them\n  31 | ",
+      "original_severity": "MEDIUM",
+      "evidence_type": "prompt_injection",
+      "context_type": "skill_md_instruction",
+      "snippet": "- keep shared app behavior in root `app.js`; do not fork manager/admin logic into route-local scripts",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

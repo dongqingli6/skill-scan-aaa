@@ -1,0 +1,45 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\86298915f1fa8778eae789d01a3a4b27c5a7b7fa_20260626_193901",
+  "skill_name": "86298915f1fa8778eae789d01a3a4b27c5a7b7fa_20260626_193901",
+  "files_scanned": [
+    "scripts\\download.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "E1": 1
+  },
+  "by_kill_chain_phase": {
+    "exfil": 1
+  },
+  "rule_ids_hit": [
+    "E1"
+  ],
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "HIGH",
+      "kill_chain_phase": "exfil",
+      "file": "scripts\\download.py",
+      "line": 9,
+      "pattern": "urllib\\.request.*http",
+      "matched_text": "urllib.request` for HTTP",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "   6 | \n   7 | DEFERRED-ACTIVATION: refuses to run unless the host settings have\n   8 | `allow_model_download = true`. The download itself uses\n»  9 | `urllib.request` for HTTPS direct URLs; HuggingFace repos need the\n  10 | `huggingface_hub` package. Either path verifies sha256 before\n  11 | returning a handle.\n  12 | \"\"\"",
+      "original_severity": "HIGH",
+      "evidence_type": "exfiltration",
+      "context_type": "called_runtime_code",
+      "snippet": "`urllib.request` for HTTPS direct URLs; HuggingFace repos need the",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

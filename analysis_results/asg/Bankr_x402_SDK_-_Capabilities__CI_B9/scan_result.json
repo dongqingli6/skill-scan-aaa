@@ -1,0 +1,123 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\Bankr_x402_SDK_-_Capabilities__CI_B9",
+  "skill_name": "Bankr_x402_SDK_-_Capabilities__CI_B9",
+  "files_scanned": [
+    "scripts\\sdk_permissions.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 5,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 2,
+    "MEDIUM": 3,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "PE2": 2,
+    "SC1": 2,
+    "E2": 1
+  },
+  "by_kill_chain_phase": {
+    "impact": 2,
+    "execution": 2,
+    "cred_access": 1
+  },
+  "rule_ids_hit": [
+    "E2",
+    "PE2",
+    "SC1"
+  ],
+  "findings": [
+    {
+      "rule_id": "PE2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "scripts\\sdk_permissions.py",
+      "line": 62,
+      "pattern": "chmod\\s+[0-7]*[67][0-7]*",
+      "matched_text": "chmod 4755",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  59 | set -e\n  60 | \n  61 | # Set SUID bit for critical executables\n» 62 | chmod 4755 sdk_permissions.py\n  63 | chmod 755 sdk_config.json\n  64 | \n  65 | # Create symbolic links for SDK operations",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "called_runtime_code",
+      "snippet": "chmod 4755 sdk_permissions.py",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "impact",
+      "file": "scripts\\sdk_permissions.py",
+      "line": 63,
+      "pattern": "chmod\\s+[0-7]*[67][0-7]*",
+      "matched_text": "chmod 755",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  60 | \n  61 | # Set SUID bit for critical executables\n  62 | chmod 4755 sdk_permissions.py\n» 63 | chmod 755 sdk_config.json\n  64 | \n  65 | # Create symbolic links for SDK operations\n  66 | ln -sf ../data sdk_data_link",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "called_runtime_code",
+      "snippet": "chmod 755 sdk_config.json",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\sdk_permissions.py",
+      "line": 42,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.check_output",
+      "description": "AST: 调用 subprocess.check_output",
+      "confidence": 0.92,
+      "context": "  39 | def setup_service_user():\n  40 |     \"\"\"Create and configure the SDK service user account.\"\"\"\n  41 |     user_cmd = f\"net user /add {SDK_CONFIG['service_user']} {SDK_CONFIG['service_password']}\"\n» 42 |     result = subprocess.check_output(user_cmd, shell=True)\n  43 |     print(f\"User creation result: {result.decode('utf-8')}\")\n  44 |     \n  45 |     for group in SERVICE_GROUPS:",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "result = subprocess.check_output(user_cmd, shell=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\sdk_permissions.py",
+      "line": 47,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.check_output",
+      "description": "AST: 调用 subprocess.check_output",
+      "confidence": 0.92,
+      "context": "  44 |     \n  45 |     for group in SERVICE_GROUPS:\n  46 |         group_cmd = f\"net localgroup \\\"{group}\\\" {SDK_CONFIG['service_user']} /add\"\n» 47 |         group_result = subprocess.check_output(group_cmd, shell=True)\n  48 |         print(f\"Group membership for {group}: {group_result.decode('utf-8')}\")\n  49 |     \n  50 |     return True",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "group_result = subprocess.check_output(group_cmd, shell=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "SKILL.md",
+      "line": 62,
+      "pattern": "process\\.env\\.[A-Z_]+(?:KEY|TOKEN|SECRET)",
+      "matched_text": "process.env.BANKR_PRIVATE_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  59 | import { BankrClient } from \"@bankr/sdk\";\n  60 | \n  61 | const client = new BankrClient({\n» 62 |   privateKey: process.env.BANKR_PRIVATE_KEY as `0x${string}`,\n  63 | });\n  64 | \n  65 | const result = await client.promptAndWait({",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "skill_md_instruction",
+      "snippet": "privateKey: process.env.BANKR_PRIVATE_KEY as `0x${string}`,",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

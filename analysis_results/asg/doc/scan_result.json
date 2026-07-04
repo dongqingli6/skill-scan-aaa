@@ -1,0 +1,68 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\doc",
+  "skill_name": "doc",
+  "files_scanned": [
+    "agents\\openai.yaml",
+    "LICENSE.txt",
+    "scripts\\render_docx.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 4,
+  "total_findings": 2,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 1
+  },
+  "by_pattern": {
+    "SC1": 1,
+    "PE2": 1
+  },
+  "by_kill_chain_phase": {
+    "execution": 1,
+    "impact": 1
+  },
+  "rule_ids_hit": [
+    "PE2",
+    "SC1"
+  ],
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\render_docx.py",
+      "line": 101,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "   98 | \n   99 | \n  100 | def run_cmd_no_check(cmd: list[str]) -> None:\n» 101 |     subprocess.run(\n  102 |         cmd,\n  103 |         check=False,\n  104 |         stdout=subprocess.DEVNULL,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "PE2",
+      "severity": "LOW",
+      "kill_chain_phase": "impact",
+      "file": "SKILL.md",
+      "line": 46,
+      "pattern": "sudo\\s+",
+      "matched_text": "sudo ",
+      "description": "Elevating access without justification.",
+      "confidence": 0.85,
+      "context": "  43 | brew install libreoffice poppler\n  44 | \n  45 | # Ubuntu/Debian\n» 46 | sudo apt-get install -y libreoffice poppler-utils\n  47 | ```\n  48 | \n  49 | If installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.",
+      "original_severity": "MEDIUM",
+      "evidence_type": "persistence",
+      "context_type": "skill_md_instruction",
+      "snippet": "sudo apt-get install -y libreoffice poppler-utils",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

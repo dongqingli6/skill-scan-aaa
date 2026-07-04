@@ -1,0 +1,287 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:46.167375+00:00",
+  "skill_name": "notion",
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\tools\\notion",
+  "skill_contents": {
+    "file_count": 4,
+    "total_bytes": 10465,
+    "files": [
+      {
+        "path": "assets/notion-small.svg",
+        "size_bytes": 997,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "assets/notion.png",
+        "size_bytes": 2957,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE",
+        "size_bytes": 1095,
+        "kind": "binary",
+        "content_preview": "",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 5416,
+        "kind": "text",
+        "content_preview": "---\nname: notion\ndescription: Notion API for creating and managing pages, databases, and blocks.\nhomepage: https://developers.notion.com\n\n---\n\n# notion\n\nUse the Notion API to create/read/update pages, data sources (databases), and blocks.\n\n## Setup\n\n1. Create an integration at https://notion.so/my-integrations\n2. Copy the API key (starts with `ntn_` or `secret_`)\n3. Store it:\n\n```bash\nmkdir -p ~/.config/notion\necho \"ntn_your_key_here\" > ~/.config/notion/api_key\n```\n\n4. Share target pages/databases with your integration (click \"...\" → \"Connect to\" → your integration name)\n\n## API Basics\n\nAll requests need:\n\n```bash\nNOTION_KEY=$(cat ~/.config/notion/api_key)\ncurl -X GET \"https://api.notion.com/v1/...\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\"\n```\n\n> **Note:** The `Notion-Version` header is required. This skill uses `2025-09-03` (latest). In this version, databases are called \"data sources\" in the API.\n\n## Common Operations\n\n**Search for pages and data sources:**\n\n```bash\ncurl -X POST \"https://api.notion.com/v1/search\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"query\": \"page title\"}'\n```\n\n**Get page:**\n\n```bash\ncurl \"https://api.notion.com/v1/pages/{page_id}\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\"\n```\n\n**Get page content (blocks):**\n\n```bash\ncurl \"https://api.notion.com/v1/blocks/{page_id}/children\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\"\n```\n\n**Create page in a data source:**\n\n```bash\ncurl -X POST \"https://api.notion.com/v1/pages\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"parent\": {\"database_id\": \"xxx\"},\n    \"properties\": {\n      \"Name\": {\"title\": [{\"text\": {\"content\": \"New Item\"}}]},\n      \"Status\": {\"select\": {\"name\": \"Todo\"}}\n    }\n  }'\n```\n\n**Query a data source (database):**\n\n```bash\ncurl -X POST \"https://api.notion.com/v1/data_sources/{data_source_id}/query\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"filter\": {\"property\": \"Status\", \"select\": {\"equals\": \"Active\"}},\n    \"sorts\": [{\"property\": \"Date\", \"direction\": \"descending\"}]\n  }'\n```\n\n**Create a data source (database):**\n\n```bash\ncurl -X POST \"https://api.notion.com/v1/data_sources\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"parent\": {\"page_id\": \"xxx\"},\n    \"title\": [{\"text\": {\"content\": \"My Database\"}}],\n    \"properties\": {\n      \"Name\": {\"title\": {}},\n      \"Status\": {\"select\": {\"options\": [{\"name\": \"Todo\"}, {\"name\": \"Done\"}]}},\n      \"Date\": {\"date\": {}}\n    }\n  }'\n```\n\n**Update page properties:**\n\n```bash\ncurl -X PATCH \"https://api.notion.com/v1/pages/{page_id}\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"properties\": {\"Status\": {\"select\": {\"name\": \"Done\"}}}}'\n```\n\n**Add blocks to page:**\n\n```bash\ncurl -X PATCH \"https://api.notion.com/v1/blocks/{page_id}/children\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"children\": [\n      {\"object\": \"block\", \"type\": \"paragraph\", \"paragraph\": {\"rich_text\": [{\"text\": {\"content\": \"Hello\"}}]}}\n    ]\n  }'\n```\n\n## Property Types\n\nCommon property formats for database items:\n\n- **Title:** `{\"title\": [{\"text\": {\"content\": \"...\"}}]}`\n- **Rich text:** `{\"rich_text\": [{\"text\": {\"content\": \"...\"}}]}`\n- **Select:** `{\"select\": {\"name\": \"Option\"}}`\n- **Multi-select:** `{\"multi_select\": [{\"name\": \"A\"}, {\"name\": \"B\"}]}`\n- **Date:** `{\"date\": {\"start\": \"2024-01-15\", \"end\": \"2024-01-16\"}}`\n- **Checkbox:** `{\"checkbox\": true}`\n- **Number:** `{\"number\": 42}`\n- **URL:** `{\"u",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: notion\ndescription: Notion API for creating and managing pages, databases, and blocks.\nhomepage: https://developers.notion.com\n\n---\n\n# notion\n\nUse the Notion API to create/read/update pages, data sources (databases), and blocks.\n\n## Setup\n\n1. Create an integration at https://notion.so/my-integrations\n2. Copy the API key (starts with `ntn_` or `secret_`)\n3. Store it:\n\n```bash\nmkdir -p ~/.config/notion\necho \"ntn_your_key_here\" > ~/.config/notion/api_key\n```\n\n4. Share target pages/databases with your integration (click \"...\" → \"Connect to\" → your integration name)\n\n## API Basics\n\nAll requests need:\n\n```bash\nNOTION_KEY=$(cat ~/.config/notion/api_key)\ncurl -X GET \"https://api.notion.com/v1/...\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\"\n```\n\n> **Note:** The `Notion-Version` header is required. This skill uses `2025-09-03` (latest). In this version, databases are called \"data sources\" in the API.\n\n## Common Operations\n\n**Search for pages and data sources:**\n\n```bash\ncurl -X POST \"https://api.notion.com/v1/search\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"query\": \"page title\"}'\n```\n\n**Get page:**\n\n```bash\ncurl \"https://api.notion.com/v1/pages/{page_id}\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\"\n```\n\n**Get page content (blocks):**\n\n```bash\ncurl \"https://api.notion.com/v1/blocks/{page_id}/children\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\"\n```\n\n**Create page in a data source:**\n\n```bash\ncurl -X POST \"https://api.notion.com/v1/pages\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"parent\": {\"database_id\": \"xxx\"},\n    \"properties\": {\n      \"Name\": {\"title\": [{\"text\": {\"content\": \"New Item\"}}]},\n      \"Status\": {\"select\": {\"name\": \"Todo\"}}\n    }\n  }'\n```\n\n**Query a data source (database):**\n\n```bash\ncurl -X POST \"https://api.notion.com/v1/data_sources/{data_source_id}/query\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"filter\": {\"property\": \"Status\", \"select\": {\"equals\": \"Active\"}},\n    \"sorts\": [{\"property\": \"Date\", \"direction\": \"descending\"}]\n  }'\n```\n\n**Create a data source (database):**\n\n```bash\ncurl -X POST \"https://api.notion.com/v1/data_sources\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"parent\": {\"page_id\": \"xxx\"},\n    \"title\": [{\"text\": {\"content\": \"My Database\"}}],\n    \"properties\": {\n      \"Name\": {\"title\": {}},\n      \"Status\": {\"select\": {\"options\": [{\"name\": \"Todo\"}, {\"name\": \"Done\"}]}},\n      \"Date\": {\"date\": {}}\n    }\n  }'\n```\n\n**Update page properties:**\n\n```bash\ncurl -X PATCH \"https://api.notion.com/v1/pages/{page_id}\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"properties\": {\"Status\": {\"select\": {\"name\": \"Done\"}}}}'\n```\n\n**Add blocks to page:**\n\n```bash\ncurl -X PATCH \"https://api.notion.com/v1/blocks/{page_id}/children\" \\\n  -H \"Authorization: Bearer $NOTION_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"children\": [\n      {\"object\": \"block\", \"type\": \"paragraph\", \"paragraph\": {\"rich_text\": [{\"text\": {\"content\": \"Hello\"}}]}}\n    ]\n  }'\n```\n\n## Property Types\n\nCommon property formats for database items:\n\n- **Title:** `{\"title\": [{\"text\": {\"content\": \"...\"}}]}`\n- **Rich text:** `{\"rich_text\": [{\"text\": {\"content\": \"...\"}}]}`\n- **Select:** `{\"select\": {\"name\": \"Option\"}}`\n- **Multi-select:** `{\"multi_select\": [{\"name\": \"A\"}, {\"name\": \"B\"}]}`\n- **Date:** `{\"date\": {\"start\": \"2024-01-15\", \"end\": \"2024-01-16\"}}`\n- **Checkbox:** `{\"checkbox\": true}`\n- **Number:** `{\"number\": 42}`\n- **URL:** `{\"u"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 6,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "INFO": 6
+    },
+    "by_pattern": {
+      "E1": 6
+    },
+    "by_kill_chain_phase": {
+      "exfil": 6
+    },
+    "rule_ids_hit": [
+      "E1"
+    ],
+    "files_scanned_count": 1
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 2,
+      "label": "Intermediate",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 6
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "exfil"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 5.86,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.67,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 44,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  41 | **Search for pages and data sources:**\n  42 | \n  43 | ```bash\n» 44 | curl -X POST \"https://api.notion.com/v1/search\" \\\n  45 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  46 |   -H \"Notion-Version: 2025-09-03\" \\\n  47 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.notion.com/v1/search\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 70,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  67 | **Create page in a data source:**\n  68 | \n  69 | ```bash\n» 70 | curl -X POST \"https://api.notion.com/v1/pages\" \\\n  71 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  72 |   -H \"Notion-Version: 2025-09-03\" \\\n  73 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.notion.com/v1/pages\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 86,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  83 | **Query a data source (database):**\n  84 | \n  85 | ```bash\n» 86 | curl -X POST \"https://api.notion.com/v1/data_sources/{data_source_id}/query\" \\\n  87 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  88 |   -H \"Notion-Version: 2025-09-03\" \\\n  89 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.notion.com/v1/data_sources/{data_source_id}/query\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 99,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "   96 | **Create a data source (database):**\n   97 | \n   98 | ```bash\n»  99 | curl -X POST \"https://api.notion.com/v1/data_sources\" \\\n  100 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  101 |   -H \"Notion-Version: 2025-09-03\" \\\n  102 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.notion.com/v1/data_sources\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 117,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X PATCH",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  114 | **Update page properties:**\n  115 | \n  116 | ```bash\n» 117 | curl -X PATCH \"https://api.notion.com/v1/pages/{page_id}\" \\\n  118 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  119 |   -H \"Notion-Version: 2025-09-03\" \\\n  120 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X PATCH \"https://api.notion.com/v1/pages/{page_id}\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 127,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X PATCH",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  124 | **Add blocks to page:**\n  125 | \n  126 | ```bash\n» 127 | curl -X PATCH \"https://api.notion.com/v1/blocks/{page_id}/children\" \\\n  128 |   -H \"Authorization: Bearer $NOTION_KEY\" \\\n  129 |   -H \"Notion-Version: 2025-09-03\" \\\n  130 |   -H \"Content-Type: application/json\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X PATCH \"https://api.notion.com/v1/blocks/{page_id}/children\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    }
+  ]
+}

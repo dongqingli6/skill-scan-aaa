@@ -1,0 +1,103 @@
+{
+  "skill_name": "e8b9bd7cc23bb42b7a26dd45ec0c2d40974780e4_20260626_194153",
+  "total_dur_s": 14.42,
+  "stages": {
+    "stage0_static": {
+      "iocs": {
+        "hardcoded_urls": [
+          {
+            "file": "README.md",
+            "line": 42,
+            "host": "www.sun.com",
+            "snippet": "see: http://www.sun.com/msg/ZFS-8000-72"
+          },
+          {
+            "file": "README.md",
+            "line": 477,
+            "host": "sourceforge.net",
+            "snippet": "- https://sourceforge.net/projects/qosgpl/"
+          },
+          {
+            "file": "README.md",
+            "line": 578,
+            "host": "claude.ai",
+            "snippet": "本次救援全程由 [Claude Code](https://claude.ai) (Anthropic) 輔助完成，包括："
+          }
+        ],
+        "hardcoded_ips": [],
+        "shell_commands": [],
+        "network_calls": [],
+        "sensitive_paths_in_code": [],
+        "dangerous_eval": [],
+        "subprocess_calls": [],
+        "summary": {
+          "n_hardcoded_external_urls": 3,
+          "n_hardcoded_external_ips": 0,
+          "n_shell_commands": 0,
+          "n_benign_cli_uses": 0,
+          "n_network_calls": 0,
+          "n_sensitive_paths": 0,
+          "n_dangerous_eval": 0,
+          "n_pi_payloads": 0
+        },
+        "pi_payloads": [],
+        "risk_score": 0.24
+      },
+      "summary": "静态预扫风险分: 0.24/1.0\n\n硬编码外站 URL（3 处）:\n  README.md:42 → www.sun.com  | see: http://www.sun.com/msg/ZFS-8000-72\n  README.md:477 → sourceforge.net  | - https://sourceforge.net/projects/qosgpl/\n  README.md:578 → claude.ai  | 本次救援全程由 [Claude Code](https://claude.ai) (Anthropic) 輔助完成，包括：",
+      "risk_score": 0.24,
+      "dur_s": 0.1
+    },
+    "stage1_ds_prejudge": {
+      "verdict": "SAFE",
+      "confidence": 0.95,
+      "behavior": "QNAP QuTS Hero ZFS 数据救援技能，通过 QEMU 恢复损坏存储池",
+      "reason": "SKILL.md 内容均为常规系统管理 CLI 命令（apt、zpool、dd、scp、qemu-system 等），与声明的 QNAP ZFS 救援用途一致，无 PI 话术、无反向 shell 或恶意 URL，risk_score 仅 0.24",
+      "dur_s": 14.31,
+      "source": "ds_prejudge"
+    },
+    "stage2a_claude_api": null,
+    "stage2b_opencode_ds": null,
+    "stage3_claude_docker": null
+  },
+  "verdict": "SAFE",
+  "fusion": {
+    "verdict": "SAFE",
+    "risk_score": 2.5,
+    "score_band": "LOW",
+    "score_breakdown": [
+      {
+        "channel": "ds_prejudge",
+        "weight": 0.6,
+        "factor": -1.0,
+        "confidence": 0.95,
+        "contribution": -0.57
+      }
+    ],
+    "winning_channels": [
+      "ds_prejudge"
+    ],
+    "all_evidence": [
+      {
+        "channel": "ds_prejudge",
+        "verdict": "SAFE",
+        "confidence": 0.95,
+        "note": "SKILL.md 内容均为常规系统管理 CLI 命令（apt、zpool、dd、scp、qemu-system 等），与声明的 QNAP ZFS 救援用途一致，无 PI 话术、无反向 shell 或恶意 URL，risk_score 仅 0"
+      }
+    ],
+    "evidence_count": 1
+  },
+  "counter": {
+    "total_scans": 15,
+    "last_stage3_at": 14
+  },
+  "stage3_triggered": false,
+  "log": [
+    "Stage 0 静态 IOC ...",
+    "  → risk_score=0.24, dur=0.1s",
+    "Stage 1 DS 语义审计 ...",
+    "  → SAFE conf=0.95, dur=14.31s",
+    "Stage 2 跳过：DS conf 0.95 ≥ 0.9",
+    "Stage 3 跳过（未到抽样间隔 / 未启用 enable_stage3）",
+    "最终：SAFE，命中证据通道：['ds_prejudge']，总耗时 14.42s"
+  ]
+}

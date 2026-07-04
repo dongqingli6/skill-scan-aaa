@@ -1,0 +1,24 @@
+{
+  "skill_path": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\qax_10_run\\product-storer\\skill",
+  "skill_name": "skill",
+  "files_scanned": [
+    "agent_eval.json",
+    "chain_result.json",
+    "references\\schema.md",
+    "scan_result.json",
+    "SKILL.md",
+    "storer.py"
+  ],
+  "files_scanned_count": 6,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

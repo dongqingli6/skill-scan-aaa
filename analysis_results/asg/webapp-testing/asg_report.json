@@ -1,0 +1,228 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-12T07:30:37.198661+00:00",
+  "skill_name": "webapp-testing",
+  "skill_path": "C:\\Windows\\Temp\\benign_pool\\skills\\webapp-testing",
+  "skill_contents": {
+    "file_count": 6,
+    "total_bytes": 22900,
+    "files": [
+      {
+        "path": "examples/console_logging.py",
+        "size_bytes": 1061,
+        "kind": "text",
+        "content_preview": "from playwright.sync_api import sync_playwright\n\n# Example: Capturing console logs during browser automation\n\nurl = 'http://localhost:5173'  # Replace with your URL\n\nconsole_logs = []\n\nwith sync_playwright() as p:\n    browser = p.chromium.launch(headless=True)\n    page = browser.new_page(viewport={'width': 1920, 'height': 1080})\n\n    # Set up console log capture\n    def handle_console_message(msg):\n        console_logs.append(f\"[{msg.type}] {msg.text}\")\n        print(f\"Console: [{msg.type}] {msg.text}\")\n\n    page.on(\"console\", handle_console_message)\n\n    # Navigate to page\n    page.goto(url)\n    page.wait_for_load_state('networkidle')\n\n    # Interact with the page (triggers console logs)\n    page.click('text=Dashboard')\n    page.wait_for_timeout(1000)\n\n    browser.close()\n\n# Save console logs to file\nwith open('/mnt/user-data/outputs/console.log', 'w') as f:\n    f.write('\\n'.join(console_logs))\n\nprint(f\"\\nCaptured {len(console_logs)} console messages\")\nprint(f\"Logs saved to: /mnt/user-data/outputs/console.log\")",
+        "content_truncated": false
+      },
+      {
+        "path": "examples/element_discovery.py",
+        "size_bytes": 1502,
+        "kind": "text",
+        "content_preview": "from playwright.sync_api import sync_playwright\n\n# Example: Discovering buttons and other elements on a page\n\nwith sync_playwright() as p:\n    browser = p.chromium.launch(headless=True)\n    page = browser.new_page()\n\n    # Navigate to page and wait for it to fully load\n    page.goto('http://localhost:5173')\n    page.wait_for_load_state('networkidle')\n\n    # Discover all buttons on the page\n    buttons = page.locator('button').all()\n    print(f\"Found {len(buttons)} buttons:\")\n    for i, button in enumerate(buttons):\n        text = button.inner_text() if button.is_visible() else \"[hidden]\"\n        print(f\"  [{i}] {text}\")\n\n    # Discover links\n    links = page.locator('a[href]').all()\n    print(f\"\\nFound {len(links)} links:\")\n    for link in links[:5]:  # Show first 5\n        text = link.inner_text().strip()\n        href = link.get_attribute('href')\n        print(f\"  - {text} -> {href}\")\n\n    # Discover input fields\n    inputs = page.locator('input, textarea, select').all()\n    print(f\"\\nFound {len(inputs)} input fields:\")\n    for input_elem in inputs:\n        name = input_elem.get_attribute('name') or input_elem.get_attribute('id') or \"[unnamed]\"\n        input_type = input_elem.get_attribute('type') or 'text'\n        print(f\"  - {name} ({input_type})\")\n\n    # Take screenshot for visual reference\n    page.screenshot(path='/tmp/page_discovery.png', full_page=True)\n    print(\"\\nScreenshot saved to /tmp/page_discovery.png\")\n\n    browser.close()",
+        "content_truncated": false
+      },
+      {
+        "path": "examples/static_html_automation.py",
+        "size_bytes": 985,
+        "kind": "text",
+        "content_preview": "from playwright.sync_api import sync_playwright\nimport os\n\n# Example: Automating interaction with static HTML files using file:// URLs\n\nhtml_file_path = os.path.abspath('path/to/your/file.html')\nfile_url = f'file://{html_file_path}'\n\nwith sync_playwright() as p:\n    browser = p.chromium.launch(headless=True)\n    page = browser.new_page(viewport={'width': 1920, 'height': 1080})\n\n    # Navigate to local HTML file\n    page.goto(file_url)\n\n    # Take screenshot\n    page.screenshot(path='/mnt/user-data/outputs/static_page.png', full_page=True)\n\n    # Interact with elements\n    page.click('text=Click Me')\n    page.fill('#name', 'John Doe')\n    page.fill('#email', 'john@example.com')\n\n    # Submit form\n    page.click('button[type=\"submit\"]')\n    page.wait_for_timeout(500)\n\n    # Take final screenshot\n    page.screenshot(path='/mnt/user-data/outputs/after_submit.png', full_page=True)\n\n    browser.close()\n\nprint(\"Static HTML automation completed!\")",
+        "content_truncated": false
+      },
+      {
+        "path": "LICENSE.txt",
+        "size_bytes": 11546,
+        "kind": "text",
+        "content_preview": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this",
+        "content_truncated": true
+      },
+      {
+        "path": "scripts/with_server.py",
+        "size_bytes": 3798,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\n\"\"\"\nStart one or more servers, wait for them to be ready, run a command, then clean up.\n\nUsage:\n    # Single server\n    python scripts/with_server.py --server \"npm run dev\" --port 5173 -- python automation.py\n    python scripts/with_server.py --server \"npm start\" --port 3000 -- python test.py\n\n    # Multiple servers\n    python scripts/with_server.py \\\n      --server \"cd backend && python server.py\" --port 3000 \\\n      --server \"cd frontend && npm run dev\" --port 5173 \\\n      -- python test.py\n\"\"\"\n\nimport subprocess\nimport socket\nimport time\nimport sys\nimport argparse\n\ndef is_server_ready(port, timeout=30):\n    \"\"\"Wait for server to be ready by polling the port.\"\"\"\n    start_time = time.time()\n    while time.time() - start_time < timeout:\n        try:\n            with socket.create_connection(('localhost', port), timeout=1):\n                return True\n        except (socket.error, ConnectionRefusedError):\n            time.sleep(0.5)\n    return False\n\n\ndef main():\n    parser = argparse.ArgumentParser(description='Run command with one or more servers')\n    parser.add_argument('--server', action='append', dest='servers', required=True, help='Server command (can be repeated)')\n    parser.add_argument('--port', action='append', dest='ports', type=int, required=True, help='Port for each server (must match --server count)')\n    parser.add_argument('--timeout', type=int, default=30, help='Timeout in seconds per server (default: 30)')\n    parser.add_argument('command', nargs=argparse.REMAINDER, help='Command to run after server(s) ready')\n\n    args = parser.parse_args()\n\n    # Remove the '--' separator if present\n    if args.command and args.command[0] == '--':\n        args.command = args.command[1:]\n\n    if not args.command:\n        print(\"Error: No command specified to run\")\n        sys.exit(1)\n\n    # Parse server configurations\n    if len(args.servers) != len(args.ports):\n        print(\"Error: Number of --server and --port arguments must match\")\n        sys.exit(1)\n\n    servers = []\n    for cmd, port in zip(args.servers, args.ports):\n        servers.append({'cmd': cmd, 'port': port})\n\n    server_processes = []\n\n    try:\n        # Start all servers\n        for i, server in enumerate(servers):\n            print(f\"Starting server {i+1}/{len(servers)}: {server['cmd']}\")\n\n            # Use shell=True to support commands with cd and &&\n            process = subprocess.Popen(\n                server['cmd'],\n                shell=True,\n                stdout=subprocess.PIPE,\n                stderr=subprocess.PIPE\n            )\n            server_processes.append(process)\n\n            # Wait for this server to be ready\n            print(f\"Waiting for server on port {server['port']}...\")\n            if not is_server_ready(server['port'], timeout=args.timeout):\n                raise RuntimeError(f\"Server failed to start on port {server['port']} within {args.timeout}s\")\n\n            print(f\"Server ready on port {server['port']}\")\n\n        print(f\"\\nAll {len(servers)} server(s) ready\")\n\n        # Run the command\n        print(f\"Running: {' '.join(args.command)}\\n\")\n        result = subprocess.run(args.command)\n        sys.exit(result.returncode)\n\n    finally:\n        # Clean up all servers\n        print(f\"\\nStopping {len(server_processes)} server(s)...\")\n        for i, process in enumerate(server_processes):\n            try:\n                process.terminate()\n                process.wait(timeout=5)\n            except subprocess.TimeoutExpired:\n                process.kill()\n                process.wait()\n            print(f\"Server {i+1} stopped\")\n        print(\"All servers stopped\")\n\n\nif __name__ == '__main__':\n    main()",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 4008,
+        "kind": "text",
+        "content_preview": "---\nname: webapp-testing\ndescription: Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser logs.\nlicense: Complete terms in LICENSE.txt\n---\n\n# Web Application Testing\n\nTo test local web applications, write native Python Playwright scripts.\n\n**Helper Scripts Available**:\n- `scripts/with_server.py` - Manages server lifecycle (supports multiple servers)\n\n**Always run scripts with `--help` first** to see usage. DO NOT read the source until you try running the script first and find that a customized solution is abslutely necessary. These scripts can be very large and thus pollute your context window. They exist to be called directly as black-box scripts rather than ingested into your context window.\n\n## Decision Tree: Choosing Your Approach\n\n```\nUser task → Is it static HTML?\n    ├─ Yes → Read HTML file directly to identify selectors\n    │         ├─ Success → Write Playwright script using selectors\n    │         └─ Fails/Incomplete → Treat as dynamic (below)\n    │\n    └─ No (dynamic webapp) → Is the server already running?\n        ├─ No → Run: python scripts/with_server.py --help\n        │        Then use the helper + write simplified Playwright script\n        │\n        └─ Yes → Reconnaissance-then-action:\n            1. Navigate and wait for networkidle\n            2. Take screenshot or inspect DOM\n            3. Identify selectors from rendered state\n            4. Execute actions with discovered selectors\n```\n\n## Example: Using with_server.py\n\nTo start a server, run `--help` first, then use the helper:\n\n**Single server:**\n```bash\npython scripts/with_server.py --server \"npm run dev\" --port 5173 -- python your_automation.py\n```\n\n**Multiple servers (e.g., backend + frontend):**\n```bash\npython scripts/with_server.py \\\n  --server \"cd backend && python server.py\" --port 3000 \\\n  --server \"cd frontend && npm run dev\" --port 5173 \\\n  -- python your_automation.py\n```\n\nTo create an automation script, include only Playwright logic (servers are managed automatically):\n```python\nfrom playwright.sync_api import sync_playwright\n\nwith sync_playwright() as p:\n    browser = p.chromium.launch(headless=True) # Always launch chromium in headless mode\n    page = browser.new_page()\n    page.goto('http://localhost:5173') # Server already running and ready\n    page.wait_for_load_state('networkidle') # CRITICAL: Wait for JS to execute\n    # ... your automation logic\n    browser.close()\n```\n\n## Reconnaissance-Then-Action Pattern\n\n1. **Inspect rendered DOM**:\n   ```python\n   page.screenshot(path='/tmp/inspect.png', full_page=True)\n   content = page.content()\n   page.locator('button').all()\n   ```\n\n2. **Identify selectors** from inspection results\n\n3. **Execute actions** using discovered selectors\n\n## Common Pitfall\n\n❌ **Don't** inspect the DOM before waiting for `networkidle` on dynamic apps\n✅ **Do** wait for `page.wait_for_load_state('networkidle')` before inspection\n\n## Best Practices\n\n- **Use bundled scripts as black boxes** - To accomplish a task, consider whether one of the scripts available in `scripts/` can help. These scripts handle common, complex workflows reliably without cluttering the context window. Use `--help` to see usage, then invoke directly. \n- Use `sync_playwright()` for synchronous scripts\n- Always close the browser when done\n- Use descriptive selectors: `text=`, `role=`, CSS selectors, or IDs\n- Add appropriate waits: `page.wait_for_selector()` or `page.wait_for_timeout()`\n\n## Reference Files\n\n- **examples/** - Examples showing common patterns:\n  - `element_discovery.py` - Discovering buttons, links, and inputs on a page\n  - `static_html_automation.py` - Using file:// URLs for local HTML\n  - `console_logging.py` - Capturing console logs during automation",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: webapp-testing\ndescription: Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser logs.\nlicense: Complete terms in LICENSE.txt\n---\n\n# Web Application Testing\n\nTo test local web applications, write native Python Playwright scripts.\n\n**Helper Scripts Available**:\n- `scripts/with_server.py` - Manages server lifecycle (supports multiple servers)\n\n**Always run scripts with `--help` first** to see usage. DO NOT read the source until you try running the script first and find that a customized solution is abslutely necessary. These scripts can be very large and thus pollute your context window. They exist to be called directly as black-box scripts rather than ingested into your context window.\n\n## Decision Tree: Choosing Your Approach\n\n```\nUser task → Is it static HTML?\n    ├─ Yes → Read HTML file directly to identify selectors\n    │         ├─ Success → Write Playwright script using selectors\n    │         └─ Fails/Incomplete → Treat as dynamic (below)\n    │\n    └─ No (dynamic webapp) → Is the server already running?\n        ├─ No → Run: python scripts/with_server.py --help\n        │        Then use the helper + write simplified Playwright script\n        │\n        └─ Yes → Reconnaissance-then-action:\n            1. Navigate and wait for networkidle\n            2. Take screenshot or inspect DOM\n            3. Identify selectors from rendered state\n            4. Execute actions with discovered selectors\n```\n\n## Example: Using with_server.py\n\nTo start a server, run `--help` first, then use the helper:\n\n**Single server:**\n```bash\npython scripts/with_server.py --server \"npm run dev\" --port 5173 -- python your_automation.py\n```\n\n**Multiple servers (e.g., backend + frontend):**\n```bash\npython scripts/with_server.py \\\n  --server \"cd backend && python server.py\" --port 3000 \\\n  --server \"cd frontend && npm run dev\" --port 5173 \\\n  -- python your_automation.py\n```\n\nTo create an automation script, include only Playwright logic (servers are managed automatically):\n```python\nfrom playwright.sync_api import sync_playwright\n\nwith sync_playwright() as p:\n    browser = p.chromium.launch(headless=True) # Always launch chromium in headless mode\n    page = browser.new_page()\n    page.goto('http://localhost:5173') # Server already running and ready\n    page.wait_for_load_state('networkidle') # CRITICAL: Wait for JS to execute\n    # ... your automation logic\n    browser.close()\n```\n\n## Reconnaissance-Then-Action Pattern\n\n1. **Inspect rendered DOM**:\n   ```python\n   page.screenshot(path='/tmp/inspect.png', full_page=True)\n   content = page.content()\n   page.locator('button').all()\n   ```\n\n2. **Identify selectors** from inspection results\n\n3. **Execute actions** using discovered selectors\n\n## Common Pitfall\n\n❌ **Don't** inspect the DOM before waiting for `networkidle` on dynamic apps\n✅ **Do** wait for `page.wait_for_load_state('networkidle')` before inspection\n\n## Best Practices\n\n- **Use bundled scripts as black boxes** - To accomplish a task, consider whether one of the scripts available in `scripts/` can help. These scripts handle common, complex workflows reliably without cluttering the context window. Use `--help` to see usage, then invoke directly. \n- Use `sync_playwright()` for synchronous scripts\n- Always close the browser when done\n- Use descriptive selectors: `text=`, `role=`, CSS selectors, or IDs\n- Add appropriate waits: `page.wait_for_selector()` or `page.wait_for_timeout()`\n\n## Reference Files\n\n- **examples/** - Examples showing common patterns:\n  - `element_discovery.py` - Discovering buttons, links, and inputs on a page\n  - `static_html_automation.py` - Using file:// URLs for local HTML\n  - `console_logging.py` - Capturing console logs during automation"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 2,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 2,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {
+      "SC1": 2
+    },
+    "by_kill_chain_phase": {
+      "execution": 2
+    },
+    "rule_ids_hit": [
+      "SC1"
+    ],
+    "files_scanned_count": 6
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 2
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "execution"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 6.63,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.175,
+      "S_static_raw": 0.175,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\with_server.py",
+      "line": 69,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.Popen",
+      "description": "AST: 调用 subprocess.Popen",
+      "confidence": 0.92,
+      "context": "  66 |             print(f\"Starting server {i+1}/{len(servers)}: {server['cmd']}\")\n  67 | \n  68 |             # Use shell=True to support commands with cd and &&\n» 69 |             process = subprocess.Popen(\n  70 |                 server['cmd'],\n  71 |                 shell=True,\n  72 |                 stdout=subprocess.PIPE,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "process = subprocess.Popen(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\with_server.py",
+      "line": 88,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  85 | \n  86 |         # Run the command\n  87 |         print(f\"Running: {' '.join(args.command)}\\n\")\n» 88 |         result = subprocess.run(args.command)\n  89 |         sys.exit(result.returncode)\n  90 | \n  91 |     finally:",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "result = subprocess.run(args.command)",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

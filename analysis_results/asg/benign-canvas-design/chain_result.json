@@ -1,0 +1,23 @@
+{
+  "archetype": {
+    "archetype": "Agent Hijacker",
+    "confidence": 0.9,
+    "paper_archetype_share_percent": 10.2,
+    "has_SC2": false,
+    "has_P1": true,
+    "has_PE1": false
+  },
+  "sophistication": {
+    "level": 2,
+    "label": "Intermediate",
+    "criterion_evasion_present": false,
+    "criterion_shadow_features": false,
+    "criterion_pattern_count": 3
+  },
+  "chains_triggered": [],
+  "chain_count": 0,
+  "kill_chain_phases_covered": [
+    "impact"
+  ],
+  "kill_chain_phase_coverage_count": 1
+}

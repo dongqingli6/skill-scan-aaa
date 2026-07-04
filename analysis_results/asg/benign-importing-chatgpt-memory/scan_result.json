@@ -1,0 +1,53 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-importing-chatgpt-memory",
+  "skill_name": "benign-importing-chatgpt-memory",
+  "files_scanned": [
+    "references\\chatgpt-export-notes.md",
+    "references\\memory-import-workflow.md",
+    "scripts\\build-memory-preview.py",
+    "scripts\\export-transcripts.py",
+    "scripts\\extract-saved-memory.py",
+    "scripts\\list-conversations.py",
+    "scripts\\render-conversation.py",
+    "scripts\\render-range.py",
+    "scripts\\search-conversations.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 10,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "SC1": 1
+  },
+  "by_kill_chain_phase": {
+    "execution": 1
+  },
+  "rule_ids_hit": [
+    "SC1"
+  ],
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\export-transcripts.py",
+      "line": 119,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  116 |         if args.compact_nontext:\n  117 |             command.append(\"--compact-nontext\")\n  118 | \n» 119 |         result = subprocess.run(command, check=True, capture_output=True, text=True)\n  120 |         chunks = chunk_markdown(result.stdout, max_chars=args.max_chars)\n  121 |         title_slug = sanitize_title(title)\n  122 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "result = subprocess.run(command, check=True, capture_output=True, text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

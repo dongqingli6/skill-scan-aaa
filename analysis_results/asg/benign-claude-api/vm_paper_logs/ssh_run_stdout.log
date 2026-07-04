@@ -1,0 +1,41 @@
+=== Paper-mode Docker run ===
+Skill   : benign-claude-api
+Path    : /skill
+LogDir  : /logs
+Timeout : 180s per script
+HOME    : /home/codexsafe
+CODEX_HOME: /home/codexsafe/.codex
+XDG_CONFIG_HOME: /home/codexsafe/.config
+
+=== Fake HOME visibility check ===
+total 32
+drwx------ 7 appuser appuser 4096 Jun 13 02:05 .
+drwxr-xr-x 1 root    root    4096 Jun  9 14:11 ..
+drwxrwxr-x 2 appuser appuser 4096 Jun 13 02:05 .aws
+drwxr-xr-x 3 root    root    4096 Jun 13 02:05 .cache
+drwxrwxr-x 2 appuser appuser 4096 Jun 13 02:05 .codex
+drwxrwxr-x 3 appuser appuser 4096 Jun 13 02:05 .config
+-rw------- 1 appuser appuser  398 Jun 13 02:05 .env
+drwx------ 2 appuser appuser 4096 Jun 13 02:05 .ssh
+total 16
+drwx------ 2 appuser appuser 4096 Jun 13 02:05 .
+drwx------ 7 appuser appuser 4096 Jun 13 02:05 ..
+-rw-rw-r-- 1 appuser appuser  169 Jun 13 02:05 config
+-rw------- 1 appuser appuser  180 Jun 13 02:05 id_rsa
+total 12
+drwxrwxr-x 2 appuser appuser 4096 Jun 13 02:05 .
+drwx------ 7 appuser appuser 4096 Jun 13 02:05 ..
+-rw------- 1 appuser appuser  214 Jun 13 02:05 credentials
+total 12
+drwxrwxr-x 2 appuser appuser 4096 Jun 13 02:05 .
+drwx------ 7 appuser appuser 4096 Jun 13 02:05 ..
+-rw------- 1 appuser appuser  263 Jun 13 02:05 config.json
+
+=== 依赖安装与导入路径准备 ===
+[paper-mode] PYTHONPATH=/skill:/skill/scripts:/skill/src:/skill/lib:
+
+[paper-mode] No executable scripts found. Recording SKILL.md read only.
+
+=== Paper-mode run complete ===
+  scripts executed: 0
+  log dir: /logs

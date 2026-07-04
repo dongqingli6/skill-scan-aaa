@@ -1,0 +1,21 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_staged_prefixed\\benign-frontend-skill",
+  "skill_name": "benign-frontend-skill",
+  "files_scanned": [
+    "agents\\openai.yaml",
+    "LICENSE.txt",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

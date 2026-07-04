@@ -1,0 +1,155 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-13T14:52:03.769404+00:00",
+  "skill_name": "Argument Selfloop",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\argument-selfloop\\Argument Selfloop",
+  "skill_contents": {
+    "file_count": 2,
+    "total_bytes": 16482,
+    "files": [
+      {
+        "path": "scripts/run.py",
+        "size_bytes": 7619,
+        "kind": "text",
+        "content_preview": "from __future__ import annotations\n\nimport argparse\nimport json\nimport re\nimport sys\nfrom pathlib import Path\nfrom typing import Any\n\nALLOWED_MOVES = {\n    'setup',\n    'thesis',\n    'contrast',\n    'evidence',\n    'evaluation',\n    'limitation',\n    'synthesis',\n    'takeaway',\n}\n\n\ndef _slug_unit_id(unit_id: str) -> str:\n    raw = str(unit_id or '').strip()\n    out: list[str] = []\n    for ch in raw:\n        out.append(ch if ch.isalnum() else '_')\n    safe = ''.join(out).strip('_')\n    return f'S{safe}' if safe else 'S'\n\n\ndef _paragraphs(text: str) -> list[str]:\n    return [p.strip() for p in re.split(r'\\n\\s*\\n', text.strip()) if p.strip()]\n\n\ndef _moves(idx: int, total: int, paragraph: str) -> list[str]:\n    low = paragraph.lower()\n    moves: list[str] = []\n    if idx == 0:\n        moves.extend(['setup', 'thesis'])\n    if any(tok in low for tok in ['however', 'whereas', 'by contrast', 'while']):\n        moves.append('contrast')\n    if re.search(r'\\[@[^\\]]+\\]', paragraph):\n        moves.append('evidence')\n    if any(tok in low for tok in ['benchmark', 'metric', 'protocol', 'evaluation', 'latency', 'cost']):\n        moves.append('evaluation')\n    if any(tok in low for tok in ['limitation', 'risk', 'constraint', 'caveat']):\n        moves.append('limitation')\n    if idx >= max(1, total - 2):\n        moves.append('synthesis')\n    if idx == total - 1:\n        moves.append('takeaway')\n    return [m for m in ['setup', 'thesis', 'contrast', 'evidence', 'evaluation', 'limitation', 'synthesis', 'takeaway'] if m in set(moves)] or ['evidence']\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser()\n    parser.add_argument('--workspace', required=True)\n    parser.add_argument('--unit-id', default='')\n    parser.add_argument('--inputs', default='')\n    parser.add_argument('--outputs', default='')\n    parser.add_argument('--checkpoint', default='')\n    args = parser.parse_args()\n\n    repo_root = Path(__file__).resolve()\n    for _ in range(10):\n        if (repo_root / \"AGENTS.md\").exists():\n            break\n        parent = repo_root.parent\n        if parent == repo_root:\n            break\n        repo_root = parent\n    sys.path.insert(0, str(repo_root))\n\n    from tooling.common import atomic_write_text, ensure_dir, load_yaml, now_iso_seconds, parse_semicolon_list\n    from tooling.quality_gate import check_unit_outputs, write_quality_report\n\n    workspace = Path(args.workspace).resolve()\n    unit_id = str(args.unit_id or 'U1025').strip() or 'U1025'\n    inputs = parse_semicolon_list(args.inputs)\n    outputs = parse_semicolon_list(args.outputs) or [\n        'output/ARGUMENT_SELFLOOP_TODO.md',\n        'output/SECTION_ARGUMENT_SUMMARIES.jsonl',\n        'output/ARGUMENT_SKELETON.md',\n    ]\n\n    todo_rel = next((x for x in outputs if x.endswith('ARGUMENT_SELFLOOP_TODO.md')), 'output/ARGUMENT_SELFLOOP_TODO.md')\n    summaries_rel = next((x for x in outputs if x.endswith('SECTION_ARGUMENT_SUMMARIES.jsonl')), 'output/SECTION_ARGUMENT_SUMMARIES.jsonl')\n    skeleton_rel = next((x for x in outputs if x.endswith('ARGUMENT_SKELETON.md')), 'output/ARGUMENT_SKELETON.md')\n    todo_path = workspace / todo_rel\n    summaries_path = workspace / summaries_rel\n    skeleton_path = workspace / skeleton_rel\n    ensure_dir(todo_path.parent)\n\n    outline_rel = next((x for x in inputs if x.endswith('outline.yml')), 'outline/outline.yml')\n    outline = load_yaml(workspace / outline_rel) if (workspace / outline_rel).exists() else []\n\n    records: list[dict[str, Any]] = []\n    watchlist: list[str] = []\n    if isinstance(outline, list):\n        for sec in outline:\n            if not isinstance(sec, dict):\n                continue\n            sec_id = str(sec.get('id') or '').strip()\n            sec_title = str(sec.get('title') or '').strip()\n            subs = [sub for sub in (sec.get('subsections') or []) if isinstance(sub, dict)]\n            for sub in subs:\n                sub_id = str(sub.get('id') or '').strip()\n                title = str(sub.get('title') or '').str",
+        "content_truncated": true
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 8863,
+        "kind": "text",
+        "content_preview": "---\nname: argument-selfloop\ndescription: |\n  Argument self-loop: maintain an argument ledger + premise consistency report for drafted sections.\n  **Trigger**: argument self-loop, argument chain, premise consistency, section self-check, paragraph contract, 论证自循环, 论证链路, 前提一致性, 段落论证动作.\n  **Use when**: you are in C5 (PROSE allowed), `sections/*.md` exist, and you want to prevent “smooth but hollow” writing by enforcing argument moves + premise hygiene before merge.\n  **Skip if**: you are pre-C2 (NO PROSE), or evidence packs are scaffolded/thin (route upstream to `evidence-selfloop` first).\n  **Network**: none.\n  **Guardrail**: do not invent facts; do not add/remove/move citation keys; do not move citations across subsections; the argument ledger is an intermediate artifact and must never be inserted into the paper.\n---\n\n# Argument Self-loop (write -> self-check -> ledger -> revise)\n\nPurpose: upgrade C5 from “generate text” to “execute argument actions under explicit constraints”.\n\nThis skill operationalizes the mechanism you described as a reusable, pipeline-native component:\n- write section-by-section\n- self-check paragraph-by-paragraph\n- maintain a small argument ledger that makes dependencies explicit\n- revise only what fails until the chain is continuous\n\nIt complements (not replaces) the other self-loops:\n- `evidence-selfloop`: blocks writing when packs are not writeable (do not pad)\n- `writer-selfloop`: blocks template voice, missing sections/leads, scope/citation violations\n- `argument-selfloop` (this skill): blocks *argument discontinuity* and *premise drift* (even when prose is fluent)\n\n\n## Core idea: two intermediate artifacts (never in the paper)\n\nThis skill treats “argument structure” as a first-class intermediate artifact, like evidence packs.\n\nOutputs:\n- `output/SECTION_ARGUMENT_SUMMARIES.jsonl` (structured; per-section/per-paragraph argument moves)\n- `output/ARGUMENT_SKELETON.md` (compact narrative + dependency map; not a prose restatement)\n- `output/ARGUMENT_SELFLOOP_TODO.md` (PASS/FAIL + actionable edits)\n\nThese files are *not* reader-facing and must never be merged into `output/DRAFT.md`.\n\nDownstream:\n- `paragraph-curator` uses `output/SECTION_ARGUMENT_SUMMARIES.jsonl` (moves/outputs) + the `## Consistency Contract` to run a controlled select->evaluate->subset->fuse pass without changing citation keys.\n\n\n\n## What this self-loop enforces (your 3 invariants)\n\nAfter you complete a section (H3 or key front matter), the section must satisfy:\n\n1) **Correct narrative linkage (paragraph-to-paragraph)**\n- the relation between adjacent paragraphs is explicit (cause/contrast/refinement/boundary)\n- no silent topic-switch; no “jump cut”\n\n2) **Closed argument loop (section-level)**\nThe section answers, in its own text (not in a hidden outline):\n- what question is it resolving?\n- what argument path does it take?\n- what is the conclusion?\n- what premises does the conclusion rely on?\n\n3) **Premises + definitions are explicit and stable**\n- new terms / protocol assumptions are defined at first use\n- the definition matches global usage (no drift)\n- task/metric/constraint assumptions do not silently change across sections\n\nThe self-check must result in concrete edits: add a missing definition, add a bridge sentence, add an explicit contrast, add a scope boundary, delete/reorder a paragraph, or strengthen the local conclusion.\n\n\n## Paragraph contract (argument actions)\n\nEvery paragraph must execute at least one argument action and be locally self-consistent.\nUse this action set (can be combined, but never empty):\n\n- `Claim`: a testable judgement/conclusion (avoid generic background)\n- `Definition/Setup`: introduce a concept, assumption, task definition, protocol, comparison set\n- `Justification`: reasoning chain or evidence support (including citations)\n- `Contrast/Differentiation`: clarify differences, remove ambiguity\n- `Boundary/Failure`: applicability limits, failure modes, threats to validity\n- `Local Conclusion`: a reusable tak",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: argument-selfloop\ndescription: |\n  Argument self-loop: maintain an argument ledger + premise consistency report for drafted sections.\n  **Trigger**: argument self-loop, argument chain, premise consistency, section self-check, paragraph contract, 论证自循环, 论证链路, 前提一致性, 段落论证动作.\n  **Use when**: you are in C5 (PROSE allowed), `sections/*.md` exist, and you want to prevent “smooth but hollow” writing by enforcing argument moves + premise hygiene before merge.\n  **Skip if**: you are pre-C2 (NO PROSE), or evidence packs are scaffolded/thin (route upstream to `evidence-selfloop` first).\n  **Network**: none.\n  **Guardrail**: do not invent facts; do not add/remove/move citation keys; do not move citations across subsections; the argument ledger is an intermediate artifact and must never be inserted into the paper.\n---\n\n# Argument Self-loop (write -> self-check -> ledger -> revise)\n\nPurpose: upgrade C5 from “generate text” to “execute argument actions under explicit constraints”.\n\nThis skill operationalizes the mechanism you described as a reusable, pipeline-native component:\n- write section-by-section\n- self-check paragraph-by-paragraph\n- maintain a small argument ledger that makes dependencies explicit\n- revise only what fails until the chain is continuous\n\nIt complements (not replaces) the other self-loops:\n- `evidence-selfloop`: blocks writing when packs are not writeable (do not pad)\n- `writer-selfloop`: blocks template voice, missing sections/leads, scope/citation violations\n- `argument-selfloop` (this skill): blocks *argument discontinuity* and *premise drift* (even when prose is fluent)\n\n\n## Core idea: two intermediate artifacts (never in the paper)\n\nThis skill treats “argument structure” as a first-class intermediate artifact, like evidence packs.\n\nOutputs:\n- `output/SECTION_ARGUMENT_SUMMARIES.jsonl` (structured; per-section/per-paragraph argument moves)\n- `output/ARGUMENT_SKELETON.md` (compact narrative + dependency map; not a prose restatement)\n- `output/ARGUMENT_SELFLOOP_TODO.md` (PASS/FAIL + actionable edits)\n\nThese files are *not* reader-facing and must never be merged into `output/DRAFT.md`.\n\nDownstream:\n- `paragraph-curator` uses `output/SECTION_ARGUMENT_SUMMARIES.jsonl` (moves/outputs) + the `## Consistency Contract` to run a controlled select->evaluate->subset->fuse pass without changing citation keys.\n\n\n\n## What this self-loop enforces (your 3 invariants)\n\nAfter you complete a section (H3 or key front matter), the section must satisfy:\n\n1) **Correct narrative linkage (paragraph-to-paragraph)**\n- the relation between adjacent paragraphs is explicit (cause/contrast/refinement/boundary)\n- no silent topic-switch; no “jump cut”\n\n2) **Closed argument loop (section-level)**\nThe section answers, in its own text (not in a hidden outline):\n- what question is it resolving?\n- what argument path does it take?\n- what is the conclusion?\n- what premises does the conclusion rely on?\n\n3) **Premises + definitions are explicit and stable**\n- new terms / protocol assumptions are defined at first use\n- the definition matches global usage (no drift)\n- task/metric/constraint assumptions do not silently change across sections\n\nThe self-check must result in concrete edits: add a missing definition, add a bridge sentence, add an explicit contrast, add a scope boundary, delete/reorder a paragraph, or strengthen the local conclusion.\n\n\n## Paragraph contract (argument actions)\n\nEvery paragraph must execute at least one argument action and be locally self-consistent.\nUse this action set (can be combined, but never empty):\n\n- `Claim`: a testable judgement/conclusion (avoid generic background)\n- `Definition/Setup`: introduce a concept, assumption, task definition, protocol, comparison set\n- `Justification`: reasoning chain or evidence support (including citations)\n- `Contrast/Differentiation`: clarify differences, remove ambiguity\n- `Boundary/Failure`: applicability limits, failure modes, threats to validity\n- `Local Conclusion`: a reusable tak"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {},
+    "by_kill_chain_phase": {},
+    "rule_ids_hit": [],
+    "files_scanned_count": 2
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 0,
+      "label": "None",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 0
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [],
+    "kill_chain_phase_coverage_count": 0
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 0.0,
+    "verdict": "SAFE",
+    "sub_scores": {
+      "S_static": 0.0,
+      "S_static_raw": 0.0,
+      "S_chain": 0.0,
+      "S_soph": 0.0,
+      "S_phases": 0.0,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": []
+}

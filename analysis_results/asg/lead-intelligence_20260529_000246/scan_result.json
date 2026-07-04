@@ -1,0 +1,23 @@
+{
+  "skill_path": "C:\\Users\\captivating\\Pictures\\MaliciousAgentSkillsBench-Codex\\analysis_results\\web_ui_jobs\\job_20260528_160246_97f9e4eb\\uploaded_skill\\lead-intelligence_20260529_000246",
+  "skill_name": "lead-intelligence_20260529_000246",
+  "files_scanned": [
+    "agents\\enrichment-agent.md",
+    "agents\\mutual-mapper.md",
+    "agents\\outreach-drafter.md",
+    "agents\\signal-scorer.md",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 5,
+  "total_findings": 0,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {},
+  "by_kill_chain_phase": {},
+  "rule_ids_hit": [],
+  "findings": []
+}

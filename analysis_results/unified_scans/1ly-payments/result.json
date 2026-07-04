@@ -1,0 +1,96 @@
+{
+  "skill_name": "1ly-payments",
+  "total_dur_s": 7.98,
+  "stages": {
+    "stage0_static": {
+      "iocs": {
+        "hardcoded_urls": [
+          {
+            "file": "SKILL.md",
+            "line": 4,
+            "host": "1ly.store",
+            "snippet": "metadata: {\"openclaw\":{\"emoji\":\"💸\",\"homepage\":\"https://1ly.store\",\"requires\":{\"bins\":[\"mcporter\",\"npx\"],\"env\":[\"ONELY_WA"
+          }
+        ],
+        "hardcoded_ips": [],
+        "shell_commands": [],
+        "network_calls": [],
+        "sensitive_paths_in_code": [],
+        "dangerous_eval": [],
+        "subprocess_calls": [],
+        "summary": {
+          "n_hardcoded_external_urls": 1,
+          "n_hardcoded_external_ips": 0,
+          "n_shell_commands": 0,
+          "n_benign_cli_uses": 0,
+          "n_network_calls": 0,
+          "n_sensitive_paths": 0,
+          "n_dangerous_eval": 0,
+          "n_pi_payloads": 0
+        },
+        "pi_payloads": [],
+        "risk_score": 0.08
+      },
+      "summary": "静态预扫风险分: 0.08/1.0\n\n硬编码外站 URL（1 处）:\n  SKILL.md:4 → 1ly.store  | metadata: {\"openclaw\":{\"emoji\":\"💸\",\"homepage\":\"https://1ly.store\",\"requires\":{\"b",
+      "risk_score": 0.08,
+      "dur_s": 0.02
+    },
+    "stage1_ds_prejudge": {
+      "verdict": "SAFE",
+      "confidence": 0.95,
+      "behavior": "正常的支付集成 MCP 技能，通过 mcporter 管理 x402 付款，无恶意行为",
+      "reason": "SKILL.md 仅描述通过 1ly MCP 进行 USDC 支付/收款，无绕过限制话术、无硬编码恶意 URL，静态风险分极低 (0.08)，IOC 仅项目主页，无危害证据",
+      "dur_s": 7.95,
+      "source": "ds_prejudge"
+    },
+    "stage2a_claude_api": null,
+    "stage2b_opencode_ds": null,
+    "stage3_claude_docker": null
+  },
+  "verdict": "SAFE",
+  "fusion": {
+    "verdict": "SAFE",
+    "risk_score": 2.5,
+    "score_band": "LOW",
+    "score_breakdown": [
+      {
+        "channel": "ds_prejudge",
+        "weight": 0.6,
+        "factor": -1.0,
+        "confidence": 0.95,
+        "contribution": -0.57
+      }
+    ],
+    "winning_channels": [
+      "ds_prejudge"
+    ],
+    "all_evidence": [
+      {
+        "channel": "ds_prejudge",
+        "verdict": "SAFE",
+        "confidence": 0.95,
+        "note": "SKILL.md 仅描述通过 1ly MCP 进行 USDC 支付/收款，无绕过限制话术、无硬编码恶意 URL，静态风险分极低 (0.08)，IOC 仅项目主页，无危害证据"
+      }
+    ],
+    "evidence_count": 1
+  },
+  "counter": {
+    "total_scans": 8,
+    "last_stage3_at": 0
+  },
+  "stage3_triggered": false,
+  "log": [
+    "Stage 0 静态 IOC ...",
+    "  → risk_score=0.08, dur=0.02s",
+    "Stage 1 DS 语义审计 ...",
+    "  → SAFE conf=0.95, dur=7.95s",
+    "Stage 2 跳过：DS conf 0.95 ≥ 0.9",
+    "Stage 3 跳过（未到抽样间隔 / 未启用 enable_stage3）",
+    "最终：SAFE，命中证据通道：['ds_prejudge']，总耗时 7.98s"
+  ],
+  "original_name": "1ly-payments",
+  "ground_truth": {
+    "vector": "BENIGN",
+    "behavior": "B0"
+  }
+}

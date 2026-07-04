@@ -1,0 +1,329 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-13T14:51:59.285621+00:00",
+  "skill_name": "Ds9 Prod Debug",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\ds9-prod-debug\\Ds9 Prod Debug",
+  "skill_contents": {
+    "file_count": 5,
+    "total_bytes": 13488,
+    "files": [
+      {
+        "path": "scripts/debug_allowed_bot.py",
+        "size_bytes": 1789,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\nimport json\nimport subprocess\nimport sys\n\nBASE = \"/home/sunil/.local/share/linus/ds9-prod-debug/scripts\"\n\n\ndef run(cmd):\n    return subprocess.run(cmd, check=False, capture_output=True, text=True)\n\n\ndef main() -> int:\n    if len(sys.argv) not in (1, 2, 3):\n        print(\"usage: debug_allowed_bot.py [slack_user_id] [slack_team_id]\", file=sys.stderr)\n        return 2\n\n    slack_user_id = sys.argv[1] if len(sys.argv) >= 2 else \"\"\n    slack_team_id = sys.argv[2] if len(sys.argv) >= 3 else \"\"\n\n    where = []\n    if slack_user_id:\n        where.append(f\"slack_user_id = '{slack_user_id}'\")\n    if slack_team_id:\n        where.append(f\"slack_team_id = '{slack_team_id}'\")\n\n    sql = (\n        \"select id, tribble_user_id, tribble_client_id, slack_bot_id, \"\n        \"slack_user_id, slack_team_id, created_at from tribble.allowed_bot\"\n    )\n    if where:\n        sql += \" where \" + \" and \".join(where)\n    sql += \" order by created_at desc limit 20;\"\n\n    db = run([f\"{BASE}/query_prod_read_db.py\", sql])\n    ai = run(\n        [\n            f\"{BASE}/query_prod_app_insights.py\",\n            \"traces | where timestamp > ago(2h) and message has 'findAllowedBot' | order by timestamp desc | take 20\",\n        ]\n    )\n\n    print(json.dumps({\"db_rc\": db.returncode, \"ai_rc\": ai.returncode}, indent=2))\n    print(\"\\n== allowed_bot rows ==\\n\")\n    if db.stdout:\n        print(db.stdout.strip())\n    if db.stderr:\n        print(db.stderr.strip(), file=sys.stderr)\n\n    print(\"\\n== recent App Insights traces for findAllowedBot ==\\n\")\n    if ai.stdout:\n        print(ai.stdout.strip())\n    if ai.stderr:\n        print(ai.stderr.strip(), file=sys.stderr)\n\n    return 0 if db.returncode == 0 and ai.returncode == 0 else 1\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/query_prod_app_insights.py",
+        "size_bytes": 1177,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\nimport json\nimport subprocess\nimport sys\n\nSUBSCRIPTION_ID = \"30fa7a54-784e-4b28-9b96-84c4aa004d45\"\nAPP_ID = \"1fe2887e-c793-4533-b458-e6063bd394cb\"\n\n\ndef main() -> int:\n    if len(sys.argv) != 2:\n        print(\"usage: query_prod_app_insights.py '<kql query>'\", file=sys.stderr)\n        return 2\n\n    query = sys.argv[1]\n    subprocess.run(\n        [\"az\", \"account\", \"set\", \"--subscription\", SUBSCRIPTION_ID],\n        check=True,\n        stdout=subprocess.DEVNULL,\n    )\n\n    body = json.dumps({\"query\": query})\n    res = subprocess.run(\n        [\n            \"az\",\n            \"rest\",\n            \"--method\",\n            \"POST\",\n            \"--url\",\n            f\"https://api.applicationinsights.io/v1/apps/{APP_ID}/query\",\n            \"--headers\",\n            \"Content-Type=application/json\",\n            \"--body\",\n            body,\n            \"--output\",\n            \"json\",\n        ],\n        check=False,\n        capture_output=True,\n        text=True,\n    )\n    if res.stdout:\n        print(res.stdout)\n    if res.stderr:\n        print(res.stderr, file=sys.stderr)\n    return res.returncode\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/query_prod_read_db.py",
+        "size_bytes": 3161,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\nimport json\nimport subprocess\nimport sys\nfrom typing import Tuple\n\nSUBSCRIPTION_ID = \"30fa7a54-784e-4b28-9b96-84c4aa004d45\"\nRESOURCE_GROUP = \"RG-prod\"\nKEY_VAULT = \"KV-tribble-prod\"\nSECRET_NAME = \"DATABASEURL-READONLY\"\nVM_NAME = \"vm-prod-pg-tunnel\"\n\n\ndef get_readonly_url() -> str:\n    return subprocess.check_output(\n        [\n            \"az\",\n            \"keyvault\",\n            \"secret\",\n            \"show\",\n            \"--vault-name\",\n            KEY_VAULT,\n            \"--name\",\n            SECRET_NAME,\n            \"--query\",\n            \"value\",\n            \"-o\",\n            \"tsv\",\n        ],\n        text=True,\n    ).strip()\n\n\ndef extract_message_sections(payload: dict) -> Tuple[str, str]:\n    value = payload.get(\"value\") or []\n    if not value:\n        return \"\", \"\"\n\n    message = value[0].get(\"message\") or \"\"\n    if \"[stdout]\" not in message:\n        return message.strip(), \"\"\n\n    _, _, after_stdout = message.partition(\"[stdout]\")\n    stdout_part, sep, after_stderr = after_stdout.partition(\"[stderr]\")\n    stdout_text = stdout_part.strip()\n    stderr_text = after_stderr.strip() if sep else \"\"\n    return stdout_text, stderr_text\n\n\ndef main() -> int:\n    if len(sys.argv) != 2:\n        print(\"usage: query_prod_read_db.py '<readonly sql>'\", file=sys.stderr)\n        return 2\n\n    sql = sys.argv[1].strip()\n    if not sql:\n        print(\"sql must be non-empty\", file=sys.stderr)\n        return 2\n\n    banned = (\"insert \", \"update \", \"delete \", \"alter \", \"drop \", \"truncate \", \"grant \", \"revoke \")\n    lowered = sql.lower()\n    if any(token in lowered for token in banned):\n        print(\"refusing non-readonly sql\", file=sys.stderr)\n        return 2\n\n    subprocess.run(\n        [\"az\", \"account\", \"set\", \"--subscription\", SUBSCRIPTION_ID],\n        check=True,\n        stdout=subprocess.DEVNULL,\n    )\n\n    readonly_url = get_readonly_url()\n    script_lines = [\n        \"set -e\",\n        f\"psql {json.dumps(readonly_url)} -v ON_ERROR_STOP=1 -P pager=off -c {json.dumps(sql)}\",\n    ]\n    cmd = [\n        \"az\",\n        \"vm\",\n        \"run-command\",\n        \"invoke\",\n        \"-g\",\n        RESOURCE_GROUP,\n        \"-n\",\n        VM_NAME,\n        \"--command-id\",\n        \"RunShellScript\",\n    ]\n    for line in script_lines:\n        cmd.extend([\"--scripts\", line])\n    cmd.extend([\"--output\", \"json\"])\n\n    res = subprocess.run(cmd, check=False, capture_output=True, text=True)\n    if res.returncode != 0:\n        if res.stdout:\n            print(res.stdout)\n        if res.stderr:\n            print(res.stderr, file=sys.stderr)\n        return res.returncode\n\n    try:\n        payload = json.loads(res.stdout)\n    except json.JSONDecodeError:\n        if res.stdout:\n            print(res.stdout)\n        if res.stderr:\n            print(res.stderr, file=sys.stderr)\n        return 1\n\n    stdout_text, stderr_text = extract_message_sections(payload)\n    if stdout_text:\n        print(stdout_text)\n    if stderr_text:\n        print(stderr_text, file=sys.stderr)\n        return 1\n    if res.stderr:\n        print(res.stderr, file=sys.stderr)\n        return 1\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+        "content_truncated": false
+      },
+      {
+        "path": "scripts/verify_prod_debug_access.py",
+        "size_bytes": 2052,
+        "kind": "text",
+        "content_preview": "#!/usr/bin/env python3\nimport json\nimport subprocess\nimport sys\n\nSUBSCRIPTION_ID = \"30fa7a54-784e-4b28-9b96-84c4aa004d45\"\nAPP_ID = \"1fe2887e-c793-4533-b458-e6063bd394cb\"\nKEY_VAULT = \"KV-tribble-prod\"\nREADONLY_SECRET = \"DATABASEURL-READONLY\"\nRESOURCE_GROUP = \"RG-prod\"\nVM_NAME = \"vm-prod-pg-tunnel\"\n\n\ndef run(cmd):\n    return subprocess.run(cmd, check=False, capture_output=True, text=True)\n\n\ndef main() -> int:\n    subprocess.run(\n        [\"az\", \"account\", \"set\", \"--subscription\", SUBSCRIPTION_ID],\n        check=True,\n        stdout=subprocess.DEVNULL,\n    )\n\n    checks = {}\n\n    ai = run(\n        [\n            \"az\",\n            \"rest\",\n            \"--method\",\n            \"POST\",\n            \"--url\",\n            f\"https://api.applicationinsights.io/v1/apps/{APP_ID}/query\",\n            \"--headers\",\n            \"Content-Type=application/json\",\n            \"--body\",\n            json.dumps({\"query\": \"requests | where timestamp > ago(30m) | summarize count()\"}),\n            \"--output\",\n            \"json\",\n        ]\n    )\n    checks[\"app_insights\"] = ai.returncode == 0\n\n    kv = run(\n        [\n            \"az\",\n            \"keyvault\",\n            \"secret\",\n            \"show\",\n            \"--vault-name\",\n            KEY_VAULT,\n            \"--name\",\n            READONLY_SECRET,\n            \"--query\",\n            \"id\",\n            \"-o\",\n            \"tsv\",\n        ]\n    )\n    checks[\"key_vault\"] = kv.returncode == 0\n\n    db = run(\n        [\n            sys.executable,\n            \"/home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_read_db.py\",\n            \"select count(*) from tribble.allowed_bot;\",\n        ]\n    )\n    checks[\"read_db\"] = db.returncode == 0\n\n    print(json.dumps(checks, indent=2))\n    if not all(checks.values()):\n        if ai.stderr:\n            print(ai.stderr, file=sys.stderr)\n        if kv.stderr:\n            print(kv.stderr, file=sys.stderr)\n        if db.stderr:\n            print(db.stderr, file=sys.stderr)\n        return 1\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+        "content_truncated": false
+      },
+      {
+        "path": "SKILL.md",
+        "size_bytes": 5309,
+        "kind": "text",
+        "content_preview": "---\nname: ds9-prod-debug\ndescription: Inspect DS9 production safely from raoDesktop using Azure, App Insights, Key Vault, and the readonly Postgres lane. Use when Sunil asks Linus to investigate a production Tribble / DS9 issue without making product changes.\nallowed-tools: Bash, Read, Write\n---\n\n# DS9 Production Debug\n\nUse this skill for production debugging on `raoDesktop`.\n\nGoals:\n- inspect Azure App Service / Function / App Insights state\n- run readonly SQL against production through the sanctioned tunnel VM\n- keep the lane diagnostic and low-risk\n\nDo not use this skill to:\n- edit production app settings\n- mutate production data\n- apply schema changes\n- rotate secrets\n- change network rules beyond the minimum already established for `raoDesktop`\n- deploy code or build artifacts to production\n- patch production runtime files with source changes\n\n## Environment assumptions\n\nRun this skill from `raoDesktop` WSL, not the droplet.\n\nExpected prerequisites:\n- `az` is installed\n- Azure login is active for `sunil@tribble.ai`\n- production subscription and resource group are reachable\n- Key Vault `KV-tribble-prod` is reachable from the current workstation IP\n\nCurrent known production context:\n- subscription: `SUBSCRIPTION_ID_PROD` from `/home/sunil/ds9/scripts/.env`\n- resource group: `RG-prod`\n- App Insights component: `AI-tribble-prod`\n- Key Vault: `KV-tribble-prod`\n- readonly DB secret: `DATABASEURL-READONLY`\n- admin DB secret: `DATABASEURL`\n- tunnel VM: `vm-prod-pg-tunnel`\n\n## Safety rules\n\nDefault to readonly operations.\n\nAllowed:\n- `az resource show`\n- `az webapp config appsettings list`\n- `az functionapp config appsettings list`\n- `az rest` against App Insights query API\n- `az keyvault secret show` for readonly connection discovery\n- `az vm run-command invoke` only for readonly `psql` queries via `DATABASEURL-READONLY`\n\nNot allowed unless Sunil explicitly asks:\n- using the admin DB URL for arbitrary queries\n- `INSERT`, `UPDATE`, `DELETE`, `ALTER`, `DROP`, `TRUNCATE`\n- changing Azure resource config\n\nNever allowed through this skill:\n- `az webapp deploy`\n- direct OneDeploy / zip deploy / artifact upload to production\n- copying a locally built package into production to hotfix behavior\n\nIf production diagnosis reveals a code bug:\n- stop at diagnosis\n- prepare the fix in a branch / PR outside production\n- report the evidence and recommended deploy path\n\nImportant current state:\n- do not assume readonly access to every production table exists\n- verify the current prod-debug lane in the current session before claiming a specific table is readable\n\n## Fast verification\n\nFrom `raoDesktop`:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/verify_prod_debug_access.py\n```\n\nThat should confirm:\n- Azure account is set\n- App Insights query works\n- Key Vault readonly secret resolves\n- readonly SQL path through the tunnel VM works\n\n## App Insights querying\n\nUse:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_app_insights.py \\\n  \"requests | where timestamp > ago(30m) | summarize count()\"\n```\n\nExamples:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_app_insights.py \\\n  \"exceptions | where timestamp > ago(24h) | order by timestamp desc | take 50\"\n```\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_app_insights.py \\\n  \"traces | where timestamp > ago(2h) and message has 'findAllowedBot' | order by timestamp desc | take 100\"\n```\n\n## Readonly SQL querying\n\nUse:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_read_db.py \\\n  \"select current_user, current_database();\"\n```\n\nThis runs the query through Azure Run Command on `vm-prod-pg-tunnel` using `DATABASEURL-READONLY`.\n\nExamples:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_read_db.py \\\n  \"select * from tribble.allowed_bot limit 20;\"\n```\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/",
+        "content_truncated": true
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: ds9-prod-debug\ndescription: Inspect DS9 production safely from raoDesktop using Azure, App Insights, Key Vault, and the readonly Postgres lane. Use when Sunil asks Linus to investigate a production Tribble / DS9 issue without making product changes.\nallowed-tools: Bash, Read, Write\n---\n\n# DS9 Production Debug\n\nUse this skill for production debugging on `raoDesktop`.\n\nGoals:\n- inspect Azure App Service / Function / App Insights state\n- run readonly SQL against production through the sanctioned tunnel VM\n- keep the lane diagnostic and low-risk\n\nDo not use this skill to:\n- edit production app settings\n- mutate production data\n- apply schema changes\n- rotate secrets\n- change network rules beyond the minimum already established for `raoDesktop`\n- deploy code or build artifacts to production\n- patch production runtime files with source changes\n\n## Environment assumptions\n\nRun this skill from `raoDesktop` WSL, not the droplet.\n\nExpected prerequisites:\n- `az` is installed\n- Azure login is active for `sunil@tribble.ai`\n- production subscription and resource group are reachable\n- Key Vault `KV-tribble-prod` is reachable from the current workstation IP\n\nCurrent known production context:\n- subscription: `SUBSCRIPTION_ID_PROD` from `/home/sunil/ds9/scripts/.env`\n- resource group: `RG-prod`\n- App Insights component: `AI-tribble-prod`\n- Key Vault: `KV-tribble-prod`\n- readonly DB secret: `DATABASEURL-READONLY`\n- admin DB secret: `DATABASEURL`\n- tunnel VM: `vm-prod-pg-tunnel`\n\n## Safety rules\n\nDefault to readonly operations.\n\nAllowed:\n- `az resource show`\n- `az webapp config appsettings list`\n- `az functionapp config appsettings list`\n- `az rest` against App Insights query API\n- `az keyvault secret show` for readonly connection discovery\n- `az vm run-command invoke` only for readonly `psql` queries via `DATABASEURL-READONLY`\n\nNot allowed unless Sunil explicitly asks:\n- using the admin DB URL for arbitrary queries\n- `INSERT`, `UPDATE`, `DELETE`, `ALTER`, `DROP`, `TRUNCATE`\n- changing Azure resource config\n\nNever allowed through this skill:\n- `az webapp deploy`\n- direct OneDeploy / zip deploy / artifact upload to production\n- copying a locally built package into production to hotfix behavior\n\nIf production diagnosis reveals a code bug:\n- stop at diagnosis\n- prepare the fix in a branch / PR outside production\n- report the evidence and recommended deploy path\n\nImportant current state:\n- do not assume readonly access to every production table exists\n- verify the current prod-debug lane in the current session before claiming a specific table is readable\n\n## Fast verification\n\nFrom `raoDesktop`:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/verify_prod_debug_access.py\n```\n\nThat should confirm:\n- Azure account is set\n- App Insights query works\n- Key Vault readonly secret resolves\n- readonly SQL path through the tunnel VM works\n\n## App Insights querying\n\nUse:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_app_insights.py \\\n  \"requests | where timestamp > ago(30m) | summarize count()\"\n```\n\nExamples:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_app_insights.py \\\n  \"exceptions | where timestamp > ago(24h) | order by timestamp desc | take 50\"\n```\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_app_insights.py \\\n  \"traces | where timestamp > ago(2h) and message has 'findAllowedBot' | order by timestamp desc | take 100\"\n```\n\n## Readonly SQL querying\n\nUse:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_read_db.py \\\n  \"select current_user, current_database();\"\n```\n\nThis runs the query through Azure Run Command on `vm-prod-pg-tunnel` using `DATABASEURL-READONLY`.\n\nExamples:\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/query_prod_read_db.py \\\n  \"select * from tribble.allowed_bot limit 20;\"\n```\n\n```bash\npython3 /home/sunil/.local/share/linus/ds9-prod-debug/scripts/"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 8,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 8,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {
+      "SC1": 8
+    },
+    "by_kill_chain_phase": {
+      "execution": 8
+    },
+    "rule_ids_hit": [
+      "SC1"
+    ],
+    "files_scanned_count": 5
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Data Thief",
+      "confidence": 0.7,
+      "paper_archetype_share_percent": 70.5,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 2,
+      "label": "Intermediate",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 8
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "execution"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 18.46,
+    "verdict": "SUSPICIOUS",
+    "sub_scores": {
+      "S_static": 0.7,
+      "S_static_raw": 0.7,
+      "S_chain": 0.0,
+      "S_soph": 0.67,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\debug_allowed_bot.py",
+      "line": 10,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "   7 | \n   8 | \n   9 | def run(cmd):\n» 10 |     return subprocess.run(cmd, check=False, capture_output=True, text=True)\n  11 | \n  12 | \n  13 | def main() -> int:",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "return subprocess.run(cmd, check=False, capture_output=True, text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\query_prod_app_insights.py",
+      "line": 16,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  13 |         return 2\n  14 | \n  15 |     query = sys.argv[1]\n» 16 |     subprocess.run(\n  17 |         [\"az\", \"account\", \"set\", \"--subscription\", SUBSCRIPTION_ID],\n  18 |         check=True,\n  19 |         stdout=subprocess.DEVNULL,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\query_prod_app_insights.py",
+      "line": 23,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  20 |     )\n  21 | \n  22 |     body = json.dumps({\"query\": query})\n» 23 |     res = subprocess.run(\n  24 |         [\n  25 |             \"az\",\n  26 |             \"rest\",",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "res = subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\query_prod_read_db.py",
+      "line": 15,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.check_output",
+      "description": "AST: 调用 subprocess.check_output",
+      "confidence": 0.92,
+      "context": "  12 | \n  13 | \n  14 | def get_readonly_url() -> str:\n» 15 |     return subprocess.check_output(\n  16 |         [\n  17 |             \"az\",\n  18 |             \"keyvault\",",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "return subprocess.check_output(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\query_prod_read_db.py",
+      "line": 66,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  63 |         print(\"refusing non-readonly sql\", file=sys.stderr)\n  64 |         return 2\n  65 | \n» 66 |     subprocess.run(\n  67 |         [\"az\", \"account\", \"set\", \"--subscription\", SUBSCRIPTION_ID],\n  68 |         check=True,\n  69 |         stdout=subprocess.DEVNULL,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\query_prod_read_db.py",
+      "line": 93,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  90 |         cmd.extend([\"--scripts\", line])\n  91 |     cmd.extend([\"--output\", \"json\"])\n  92 | \n» 93 |     res = subprocess.run(cmd, check=False, capture_output=True, text=True)\n  94 |     if res.returncode != 0:\n  95 |         if res.stdout:\n  96 |             print(res.stdout)",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "res = subprocess.run(cmd, check=False, capture_output=True, text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\verify_prod_debug_access.py",
+      "line": 15,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  12 | \n  13 | \n  14 | def run(cmd):\n» 15 |     return subprocess.run(cmd, check=False, capture_output=True, text=True)\n  16 | \n  17 | \n  18 | def main() -> int:",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "return subprocess.run(cmd, check=False, capture_output=True, text=True)",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\verify_prod_debug_access.py",
+      "line": 19,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.run",
+      "description": "AST: 调用 subprocess.run",
+      "confidence": 0.92,
+      "context": "  16 | \n  17 | \n  18 | def main() -> int:\n» 19 |     subprocess.run(\n  20 |         [\"az\", \"account\", \"set\", \"--subscription\", SUBSCRIPTION_ID],\n  21 |         check=True,\n  22 |         stdout=subprocess.DEVNULL,",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.run(",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

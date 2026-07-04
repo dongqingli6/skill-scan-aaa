@@ -1,0 +1,140 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\benign_letta\\letta\\conversations",
+  "skill_name": "conversations",
+  "files_scanned": [
+    "scripts\\conversations_cli.py",
+    "scripts\\conversations_demo.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 3,
+  "total_findings": 6,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 4,
+    "LOW": 0,
+    "INFO": 2
+  },
+  "by_pattern": {
+    "E2": 4,
+    "E1": 2
+  },
+  "by_kill_chain_phase": {
+    "cred_access": 4,
+    "exfil": 2
+  },
+  "rule_ids_hit": [
+    "E1",
+    "E2"
+  ],
+  "findings": [
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\conversations_cli.py",
+      "line": 385,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.getenv(\"LETTA_BASE_URL\", \"https://api",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  382 | def main():\n  383 |     parser = argparse.ArgumentParser(description=\"Letta Conversations CLI\")\n  384 |     parser.add_argument(\"--agent\", \"-a\", help=\"Agent ID to use\")\n» 385 |     parser.add_argument(\"--base-url\", \"-u\", default=os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\"))\n  386 |     args = parser.parse_args()\n  387 |     \n  388 |     # Create client",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "parser.add_argument(\"--base-url\", \"-u\", default=os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\"))",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\conversations_cli.py",
+      "line": 389,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.getenv(\"LETTA_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  386 |     args = parser.parse_args()\n  387 |     \n  388 |     # Create client\n» 389 |     api_key = os.getenv(\"LETTA_API_KEY\")\n  390 |     if api_key:\n  391 |         client = Letta(base_url=args.base_url, api_key=api_key)\n  392 |     else:",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "api_key = os.getenv(\"LETTA_API_KEY\")",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\conversations_demo.py",
+      "line": 29,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.getenv(\"LETTA_BASE_URL\", \"https://api",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  26 | \n  27 | def create_client() -> Letta:\n  28 |     \"\"\"Create a Letta client using environment variables or defaults.\"\"\"\n» 29 |     base_url = os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\")\n  30 |     api_key = os.getenv(\"LETTA_API_KEY\")\n  31 |     \n  32 |     if api_key:",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "base_url = os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\")",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E2",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "cred_access",
+      "file": "scripts\\conversations_demo.py",
+      "line": 30,
+      "pattern": "os\\.(?:environ|getenv).*(?:key|secret|token|password|api)",
+      "matched_text": "os.getenv(\"LETTA_API_KEY",
+      "description": "Collecting API keys, tokens, or passwords from environment.",
+      "confidence": 0.85,
+      "context": "  27 | def create_client() -> Letta:\n  28 |     \"\"\"Create a Letta client using environment variables or defaults.\"\"\"\n  29 |     base_url = os.getenv(\"LETTA_BASE_URL\", \"https://api.letta.com\")\n» 30 |     api_key = os.getenv(\"LETTA_API_KEY\")\n  31 |     \n  32 |     if api_key:\n  33 |         return Letta(base_url=base_url, api_key=api_key)",
+      "original_severity": "MEDIUM",
+      "evidence_type": "sensitive_access",
+      "context_type": "called_runtime_code",
+      "snippet": "api_key = os.getenv(\"LETTA_API_KEY\")",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 99,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "   96 | \n   97 | ```bash\n   98 | # Create conversation\n»  99 | curl -X POST \"https://api.letta.com/v1/conversations?agent_id=agent-xxx\" \\\n  100 |   -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  101 |   -H \"Content-Type: application/json\"\n  102 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.letta.com/v1/conversations?agent_id=agent-xxx\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    },
+    {
+      "rule_id": "E1",
+      "severity": "INFO",
+      "kill_chain_phase": "exfil",
+      "file": "SKILL.md",
+      "line": 104,
+      "pattern": "curl\\b[^|;\\n]{0,80}?-X\\s*(?:POST|PUT|DELETE|PATCH)",
+      "matched_text": "curl -X POST",
+      "description": "Data transmission to external (typically attacker-controlled) endpoints.",
+      "confidence": 0.85,
+      "context": "  101 |   -H \"Content-Type: application/json\"\n  102 | \n  103 | # Send message (streaming response)\n» 104 | curl -X POST \"https://api.letta.com/v1/conversations/conv-xxx/messages\" \\\n  105 |   -H \"Authorization: Bearer $LETTA_API_KEY\" \\\n  106 |   -H \"Content-Type: application/json\" \\\n  107 |   -H \"Accept: text/event-stream\" \\",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "skill_md_instruction",
+      "snippet": "curl -X POST \"https://api.letta.com/v1/conversations/conv-xxx/messages\" \\",
+      "downgraded": true,
+      "downgrade_reason": "Allowlisted official API endpoint"
+    }
+  ]
+}

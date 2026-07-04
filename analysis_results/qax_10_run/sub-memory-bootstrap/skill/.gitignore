@@ -1,0 +1,13 @@
+.venv/
+.codex/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+.env
+memory.db
+memory.db-shm
+memory.db-wal
+*.egg-info/
+build/
+dist/

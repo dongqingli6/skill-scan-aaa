@@ -1,0 +1,230 @@
+{
+  "asg_version": "1.0.0",
+  "generated_at_utc": "2026-06-13T14:52:03.339442+00:00",
+  "skill_name": "Kk X402",
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\kk-x402\\Kk X402",
+  "skill_contents": {
+    "file_count": 1,
+    "total_bytes": 2992,
+    "files": [
+      {
+        "path": "SKILL.md",
+        "size_bytes": 2992,
+        "kind": "text",
+        "content_preview": "---\nname: kk-x402\ndescription: Sign EIP-3009 USDC payment authorizations for the x402 HTTP payment protocol on Base mainnet.\nmetadata:\n  openclaw:\n    requires:\n      bins: [\"python3\"]\n      env: [\"KK_AGENT_NAME\"]\n---\n\n# kk-x402\n\nx402 payment signing for KarmaCadabra agents. Produces EIP-3009 `transferWithAuthorization` signatures that the x402 facilitator executes on-chain. This is the core payment mechanism that enables agents to buy and sell data without holding ETH for gas.\n\n## Constants\n\n| Constant | Value |\n|----------|-------|\n| USDC Contract (Base) | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |\n| Chain ID | `8453` (Base mainnet) |\n| Facilitator URL | `https://facilitator.ultravioletadao.xyz` |\n| USDC Decimals | `6` |\n\n## Script\n\n### sign_payment.py\n\nLocated at `scripts/kk/sign_payment.py`. Signs an EIP-3009 `transferWithAuthorization` for USDC on Base.\n\n```bash\npython3 scripts/kk/sign_payment.py --agent kk-karma-hello --to 0xRecipientAddress --amount 0.01\n```\n\nArguments:\n- `--agent` (required): Agent name. Used to look up wallet address in `data/config/wallets.json` and private key from env var or AWS Secrets Manager.\n- `--to` (required): Recipient wallet address (the seller's address)\n- `--amount` (required): Amount in USDC (float, e.g., `0.01` = 1 cent)\n\nOutput:\n```json\n{\n  \"from\": \"0xBuyerAddress\",\n  \"to\": \"0xSellerAddress\",\n  \"value\": \"10000\",\n  \"amount_usdc\": \"0.010000\",\n  \"validAfter\": 0,\n  \"validBefore\": 1740600000,\n  \"nonce\": \"0xrandom32bytes...\",\n  \"v\": 27,\n  \"r\": \"0x...\",\n  \"s\": \"0x...\",\n  \"signature\": \"full_hex_signature\",\n  \"network\": \"base\",\n  \"token\": \"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913\"\n}\n```\n\n## Payment Flow\n\nThe x402 protocol works as follows:\n\n1. **Buyer agent** discovers a seller's HTTP endpoint (via IRC or EM)\n2. Buyer makes an HTTP request to the seller's endpoint\n3. Seller responds with `HTTP 402 Payment Required` and includes pricing info\n4. Buyer signs an EIP-3009 authorization using `sign_payment.py`\n5. Buyer re-sends the request with the signed authorization in the `X-PAYMENT` header\n6. Seller's middleware forwards the authorization to the facilitator\n7. **Facilitator** calls `transferWithAuthorization()` on the USDC contract on Base\n8. Funds transfer from buyer to seller on-chain\n9. Seller returns the requested data\n\n## EIP-3009 Details\n\nThe signature authorizes a single USDC transfer with:\n- **validAfter**: 0 (immediately valid)\n- **validBefore**: current time + 1 hour\n- **nonce**: random 32-byte value (prevents replay attacks)\n\nThe authorization is gasless for the signer. The facilitator pays the gas to execute the transfer on-chain.\n\n## Dependencies\n\n- `web3`, `eth_account` (signing)\n- `shared.contracts_config` (network and token config)\n- Private key from `PRIVATE_KEY` env var or AWS Secrets Manager\n\n## Error Handling\n\nExit code 1 on failure with JSON error to stderr:\n```json\n{\"error\": \"No private key available for kk-karma-hello. Set PRIVATE_KEY env var or configure AWS credentials.\"}\n```\n",
+        "content_truncated": false
+      }
+    ],
+    "files_truncated": false,
+    "skill_md_preview": "---\nname: kk-x402\ndescription: Sign EIP-3009 USDC payment authorizations for the x402 HTTP payment protocol on Base mainnet.\nmetadata:\n  openclaw:\n    requires:\n      bins: [\"python3\"]\n      env: [\"KK_AGENT_NAME\"]\n---\n\n# kk-x402\n\nx402 payment signing for KarmaCadabra agents. Produces EIP-3009 `transferWithAuthorization` signatures that the x402 facilitator executes on-chain. This is the core payment mechanism that enables agents to buy and sell data without holding ETH for gas.\n\n## Constants\n\n| Constant | Value |\n|----------|-------|\n| USDC Contract (Base) | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |\n| Chain ID | `8453` (Base mainnet) |\n| Facilitator URL | `https://facilitator.ultravioletadao.xyz` |\n| USDC Decimals | `6` |\n\n## Script\n\n### sign_payment.py\n\nLocated at `scripts/kk/sign_payment.py`. Signs an EIP-3009 `transferWithAuthorization` for USDC on Base.\n\n```bash\npython3 scripts/kk/sign_payment.py --agent kk-karma-hello --to 0xRecipientAddress --amount 0.01\n```\n\nArguments:\n- `--agent` (required): Agent name. Used to look up wallet address in `data/config/wallets.json` and private key from env var or AWS Secrets Manager.\n- `--to` (required): Recipient wallet address (the seller's address)\n- `--amount` (required): Amount in USDC (float, e.g., `0.01` = 1 cent)\n\nOutput:\n```json\n{\n  \"from\": \"0xBuyerAddress\",\n  \"to\": \"0xSellerAddress\",\n  \"value\": \"10000\",\n  \"amount_usdc\": \"0.010000\",\n  \"validAfter\": 0,\n  \"validBefore\": 1740600000,\n  \"nonce\": \"0xrandom32bytes...\",\n  \"v\": 27,\n  \"r\": \"0x...\",\n  \"s\": \"0x...\",\n  \"signature\": \"full_hex_signature\",\n  \"network\": \"base\",\n  \"token\": \"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913\"\n}\n```\n\n## Payment Flow\n\nThe x402 protocol works as follows:\n\n1. **Buyer agent** discovers a seller's HTTP endpoint (via IRC or EM)\n2. Buyer makes an HTTP request to the seller's endpoint\n3. Seller responds with `HTTP 402 Payment Required` and includes pricing info\n4. Buyer signs an EIP-3009 authorization using `sign_payment.py`\n5. Buyer re-sends the request with the signed authorization in the `X-PAYMENT` header\n6. Seller's middleware forwards the authorization to the facilitator\n7. **Facilitator** calls `transferWithAuthorization()` on the USDC contract on Base\n8. Funds transfer from buyer to seller on-chain\n9. Seller returns the requested data\n\n## EIP-3009 Details\n\nThe signature authorizes a single USDC transfer with:\n- **validAfter**: 0 (immediately valid)\n- **validBefore**: current time + 1 hour\n- **nonce**: random 32-byte value (prevents replay attacks)\n\nThe authorization is gasless for the signer. The facilitator pays the gas to execute the transfer on-chain.\n\n## Dependencies\n\n- `web3`, `eth_account` (signing)\n- `shared.contracts_config` (network and token config)\n- Private key from `PRIVATE_KEY` env var or AWS Secrets Manager\n\n## Error Handling\n\nExit code 1 on failure with JSON error to stderr:\n```json\n{\"error\": \"No private key available for kk-karma-hello. Set PRIVATE_KEY env var or configure AWS credentials.\"}\n```\n"
+  },
+  "layer_1_static_scan": {
+    "total_findings": 1,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "by_pattern": {
+      "P9": 1
+    },
+    "by_kill_chain_phase": {
+      "cred_access": 1
+    },
+    "rule_ids_hit": [
+      "P9"
+    ],
+    "files_scanned_count": 1
+  },
+  "layer_2_attack_chain": {
+    "archetype": {
+      "archetype": "Benign",
+      "confidence": 0.5,
+      "paper_archetype_share_percent": null,
+      "has_SC2": false,
+      "has_P1": false,
+      "has_PE1": false
+    },
+    "sophistication": {
+      "level": 1,
+      "label": "Basic",
+      "criterion_evasion_present": false,
+      "criterion_shadow_features": false,
+      "criterion_pattern_count": 1
+    },
+    "chains_triggered": [],
+    "chain_count": 0,
+    "kill_chain_phases_covered": [
+      "cred_access"
+    ],
+    "kill_chain_phase_coverage_count": 1
+  },
+  "layer_3_agent_eval": {
+    "tested": false,
+    "skipped_reason": "--enable-claude not set and no VM evidence provided",
+    "refusal_score": 1.0,
+    "disclosure_score": 0.0,
+    "compliance_signal": 0.0,
+    "raw_response_preview": "",
+    "model": "claude-opus-4-7"
+  },
+  "layer_4_honeypot": {
+    "enabled": false,
+    "bundle": null,
+    "any_honeypot_leaked": false,
+    "deployed": false,
+    "honeypot_deployed": false,
+    "deployment_mode": null,
+    "honeypot_deployment_mode": null,
+    "files_created": [],
+    "honeypot_files_created": [],
+    "marker_count": 0,
+    "honeypot_marker_count": 0,
+    "redacted_preview": {},
+    "honeypot_markers_redacted_preview": {},
+    "touched": false,
+    "honeypot_touched": false,
+    "touched_files": [],
+    "leak_sources": [],
+    "honeypot_leak_sources": [],
+    "matches": []
+  },
+  "layer_5_runtime": {
+    "present": false
+  },
+  "composite_risk": {
+    "composite_score": 16,
+    "verdict": "SUSPICIOUS",
+    "sub_scores": {
+      "S_static": 0.0875,
+      "S_static_raw": 0.0875,
+      "S_chain": 0.0,
+      "S_soph": 0.33,
+      "S_phases": 0.1667,
+      "S_resilience": 1.0,
+      "S_llm_verdict": 0.0,
+      "S_honeypot": 0.0,
+      "S_runtime": 0.0
+    },
+    "score_notes": [
+      "verdict floor #2: P9 硬编码凭据 ×1 处未降级 — OpenAI/JWT/AWS/DB-URL/自定义 token 字面",
+      "分数与判定对齐: SUSPICIOUS 区间下限 15, composite_score 5.05 -> 16"
+    ],
+    "S_runtime": 0.0,
+    "runtime_score_reasons": [
+      "no runtime evidence ingested"
+    ],
+    "runtime_score_delta": 0.0,
+    "runtime_signals": {
+      "sensitive_file_access_count": 0,
+      "outbound_connect_count": 0,
+      "unique_outbound_ips": 0,
+      "fs_change_present": false,
+      "pcap_present": false,
+      "honeypot_leaked": false,
+      "honeypot_touched": false
+    },
+    "weights": {
+      "w_static": 0.18,
+      "w_chain": 0.15,
+      "w_soph": 0.07,
+      "w_phases": 0.07,
+      "w_agent": 0.1,
+      "w_llm_verdict": 0.25,
+      "w_honeypot": 0.08,
+      "w_runtime": 0.1
+    },
+    "formula": "R = 100 * (w_static * S_static + w_chain * S_chain + w_soph * S_soph + w_phases * S_phases + w_agent * (1 - S_resilience) + w_llm_verdict * S_llm_verdict + w_honeypot * S_honeypot + w_runtime * S_runtime)",
+    "thresholds": {
+      "SAFE": [
+        0,
+        15
+      ],
+      "SUSPICIOUS": [
+        15,
+        40
+      ],
+      "MALICIOUS": [
+        40,
+        75
+      ],
+      "CRITICAL_MALICIOUS": [
+        75,
+        100.01
+      ]
+    },
+    "composite_score_pre_align": 5.05
+  },
+  "findings": [
+    {
+      "rule_id": "P9",
+      "severity": "HIGH",
+      "kill_chain_phase": "cred_access",
+      "file": "SKILL.md",
+      "line": 54,
+      "pattern": "(?i)[\\\"'](?:secret|token|api[_-]?key|access[_-]?key|client[_-]?secret)[\\\"']\\s*[:=]\\s*[\\\"'][A-Za-z0-9+/=_-]{16,}[\\\"']",
+      "matched_text": "\"token\": \"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913\"",
+      "description": "Hardcoded credential literal found in skill source or SKILL.md — matches OpenAI / Anthropic / GitHub PAT / AWS / JWT / private key / DB connection-string-with-password / hardcoded password field. Aligns with Snyk audit and QAX commercial-scanner SECRET_* taxonomy. Distinct from E2 which catches reading env vars: P9 catches literal credentials baked into the package.",
+      "confidence": 0.92,
+      "context": "  51 |   \"s\": \"0x...\",\n  52 |   \"signature\": \"full_hex_signature\",\n  53 |   \"network\": \"base\",\n» 54 |   \"token\": \"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913\"\n  55 | }\n  56 | ```\n  57 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "sensitive_access",
+      "context_type": "skill_md_instruction",
+      "snippet": "\"token\": \"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913\"",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ],
+  "layer_2_ssd": {
+    "tested": true,
+    "model": "deepseek-v4-pro",
+    "llm_provider": "DeepSeek V4-Pro",
+    "R2": 0.0,
+    "verdict": "SAFE",
+    "subtasks": {
+      "A": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [
+          "Sign EIP-3009 USDC payment authorizations for the x402 HTTP payment protocol on Base mainnet.",
+          "Produces EIP-3009 transferWithAuthorization signatures that the x402 facilitator executes on-chain.",
+          "python3 scripts/kk/sign_payment.py --agent kk-karma-hello --to 0xRecipientAddress --amount 0.01"
+        ],
+        "reasoning": "The skill's declared purpose of signing USDC payment authorizations for the x402 protocol is exactly what its instructions implement; there is no scope creep, hidden exfiltration, or discrepancy between the description and the actual behavior.",
+        "task_name": "intent_alignment"
+      },
+      "D": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [
+          "\"token\": \"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913\"",
+          "USDC Contract (Base) | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`"
+        ],
+        "reasoning": "The skill package consists only of SKILL.md; no scripts or auxiliary files are present, so there is no possibility of code doing more than described. The flagged token address is a well-known public USDC contract on Base, not a credential or suspicious endpoint.",
+        "task_name": "cross_file_consistency"
+      },
+      "C": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [],
+        "reasoning": "No covert behavior detected. The skill transparently documents payment signing, error handling, and makes no attempt to hide actions, suppress output, or obfuscate payloads.",
+        "task_name": "covert_behavior"
+      },
+      "B": {
+        "risk_score": 0.0,
+        "rating": "SAFE",
+        "evidence": [],
+        "reasoning": "(parse fallback: no JSON found)",
+        "task_name": "permission_justification"
+      }
+    },
+    "weights": {
+      "A": 0.35,
+      "B": 0.25,
+      "C": 0.25,
+      "D": 0.15
+    },
+    "api_calls": 4
+  }
+}

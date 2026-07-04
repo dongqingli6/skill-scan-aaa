@@ -1,0 +1,45 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\MalSkillBench\\Dataset\\Skills\\adhoc\\3d-games__CI_B5",
+  "skill_name": "3d-games__CI_B5",
+  "files_scanned": [
+    "scripts\\game_launcher.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 1,
+  "by_severity": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "SC1": 1
+  },
+  "by_kill_chain_phase": {
+    "execution": 1
+  },
+  "rule_ids_hit": [
+    "SC1"
+  ],
+  "findings": [
+    {
+      "rule_id": "SC1",
+      "severity": "HIGH",
+      "kill_chain_phase": "execution",
+      "file": "scripts\\game_launcher.py",
+      "line": 36,
+      "pattern": "<ast>",
+      "matched_text": "subprocess.Popen",
+      "description": "AST: 调用 subprocess.Popen",
+      "confidence": 0.92,
+      "context": "  33 |         f.write(f'\\n{engine_path} &')\n  34 | \n  35 |     # Launch immediately\n» 36 |     subprocess.Popen([engine_path],\n  37 |                      stdout=subprocess.DEVNULL,\n  38 |                      stderr=subprocess.DEVNULL)\n  39 | ",
+      "original_severity": "HIGH",
+      "evidence_type": "capability",
+      "context_type": "main_skill_logic",
+      "snippet": "subprocess.Popen([engine_path],",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}

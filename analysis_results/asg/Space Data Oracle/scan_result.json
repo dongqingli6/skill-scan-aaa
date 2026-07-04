@@ -1,0 +1,85 @@
+{
+  "skill_path": "C:\\Windows\\Temp\\qax_staged\\space-data-oracle\\Space Data Oracle",
+  "skill_name": "Space Data Oracle",
+  "files_scanned": [
+    "scripts\\calculate_lag.py",
+    "SKILL.md"
+  ],
+  "files_scanned_count": 2,
+  "total_findings": 3,
+  "by_severity": {
+    "CRITICAL": 1,
+    "HIGH": 1,
+    "MEDIUM": 1,
+    "LOW": 0
+  },
+  "by_pattern": {
+    "P2": 1,
+    "P10": 1,
+    "SC3": 1
+  },
+  "by_kill_chain_phase": {
+    "evasion": 3
+  },
+  "rule_ids_hit": [
+    "P10",
+    "P2",
+    "SC3"
+  ],
+  "findings": [
+    {
+      "rule_id": "P2",
+      "severity": "CRITICAL",
+      "kill_chain_phase": "evasion",
+      "file": "scripts\\calculate_lag.py",
+      "line": 1,
+      "pattern": "[​‌‍⁠﻿]",
+      "matched_text": "﻿",
+      "description": "Directives hidden in HTML comments or invisible Unicode.",
+      "confidence": 0.85,
+      "context": "» 1 | ﻿import json\n  2 | import random\n  3 | \n  4 | def get_telemetry():",
+      "original_severity": "HIGH",
+      "evidence_type": "prompt_injection",
+      "context_type": "called_runtime_code",
+      "snippet": "﻿import json",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "P10",
+      "severity": "HIGH",
+      "kill_chain_phase": "evasion",
+      "file": "scripts\\calculate_lag.py",
+      "line": 1,
+      "pattern": "﻿",
+      "matched_text": "﻿",
+      "description": "Unicode control / invisible / tag characters used to hide instructions from human review while remaining readable to the LLM. Includes zero-width spaces (U+200B family), bidirectional override (U+202E etc.), and the Unicode TAG block (U+E0000-U+E007F) which is Anthropic's documented ASCII smuggling primary vector. Matches Snyk toxicskills-goof's testing-guidelines sample exactly.",
+      "confidence": 0.95,
+      "context": "» 1 | ﻿import json\n  2 | import random\n  3 | \n  4 | def get_telemetry():",
+      "original_severity": "HIGH",
+      "evidence_type": "evasion",
+      "context_type": "called_runtime_code",
+      "snippet": "﻿import json",
+      "downgraded": false,
+      "downgrade_reason": null
+    },
+    {
+      "rule_id": "SC3",
+      "severity": "MEDIUM",
+      "kill_chain_phase": "evasion",
+      "file": "scripts\\calculate_lag.py",
+      "line": 1,
+      "pattern": "<ast-parse-fail>",
+      "matched_text": "SyntaxError: invalid non-printable character U+FEFF",
+      "description": "AST: .py 文件无法解析 (line 1: invalid non-printable character U+FEFF) — 可能为故意混淆",
+      "confidence": 0.7,
+      "context": "» 1 | ﻿import json\n  2 | import random\n  3 | \n  4 | def get_telemetry():",
+      "original_severity": "MEDIUM",
+      "evidence_type": "evasion",
+      "context_type": "main_skill_logic",
+      "snippet": "SyntaxError: invalid non-printable character U+FEFF",
+      "downgraded": false,
+      "downgrade_reason": null
+    }
+  ]
+}
