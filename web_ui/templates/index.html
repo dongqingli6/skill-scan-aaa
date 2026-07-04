@@ -72,7 +72,7 @@
 
       <!-- ============ 模式三 ============ -->
       <h3 style="font-size:16px;margin-top:30px;color:#a855f7;border-left:4px solid #a855f7;padding-left:10px;">模式三 · Docker 里跑 Claude（验证 Agent 抗诱导）</h3>
-      <p style="font-size:13px;color:#94a3b8;">在 VM 的 Docker 容器里启动 <strong>Claude CLI</strong>，把 skill 装到 <code>~/.claude/skills/</code>，给 Claude 一个用户 prompt 让它"读这个 skill 并使用"——然后 <code>strace</code> 录下 Claude 实际做了什么。回答的核心问题：<strong>真 Claude 会不会被这个 SKILL.md 骗着干坏事</strong>。这才是论文真正关心的攻击面。约 ¥1.2/次。</p>
+      <p style="font-size:13px;color:#94a3b8;">在 VM 的 Docker 容器里启动 <strong>Claude CLI</strong>，把 skill 装到 <code>~/.claude/skills/</code>，给 Claude 一个用户 prompt 让它"读这个 skill 并使用"——然后 <code>strace</code> 录下 Claude 实际做了什么。回答的核心问题：<strong>真 Claude 会不会被这个 SKILL.md 骗着干坏事</strong>。这才是参考文献真正关心的攻击面。约 ¥1.2/次。</p>
 
       <form method="post" action="/asg/vm_ssh_run" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:8px;max-width:640px;">
         <label style="font-size:13px;">Skill zip / 单文件 <input type="file" name="archive" required style="padding:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:4px;"></label>

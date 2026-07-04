@@ -911,7 +911,7 @@ def render_unified_5stage_overview(r: dict) -> str:
     return '<div class="mo-grid mo-grid-5">' + "".join(cards) + '</div>'
 
 
-# MalSkillBench 15 个 B-code 中文名（论文 §3.2）
+# MalSkillBench 15 个 B-code 中文名（§3.2）
 B_CODE_NAMES = {
     "B0": ("良性", "Benign", "#22c55e"),
     "B1": ("数据外传", "Data Exfil", "#ef4444"),
@@ -1277,7 +1277,7 @@ def render_unified_15_overview() -> bytes:
         f"<p style='margin:14px 0 0;font-size:12px;color:#94a3b8'>分类：{html.escape(vec_summary)}</p>"
         "</div>"
         "<div class='compare'>"
-        "<h3>基线方法对照（MalSkillBench 论文 §4 + 本系统）</h3>"
+        "<h3>基线方法对照（MalSkillBench §4 + 本系统）</h3>"
         "<table>"
         "<tr><td>Skill Security Scan（静态规则）</td><td>F1 13.3% / Recall 8.7%</td></tr>"
         "<tr><td>SkillScan（静态规则）</td><td>F1 24.0% / Recall 14.5%</td></tr>"
@@ -2037,7 +2037,7 @@ def render_scr_overview_table(bench: str, summary: dict) -> str:
         '<table class="scr-table">'
         '<thead><tr>'
         '<th>Level</th>'
-        '<th>论文报告 ASR</th>'
+        '<th>ASR</th>'
         '<th>baseline ASR</th>'
         '<th>defended ASR</th>'
         '<th>防御提升</th>'
@@ -2504,10 +2504,10 @@ def render_scr_llm_upgrade() -> str:
         ("自造良性 sandbox 3", "0 / 3 = 0% 误报",
          f'{by_label.get("synthetic_benign", {}).get("correct", 0)} / {by_label.get("synthetic_benign", {}).get("n", 0)} 保持 SAFE',
          "v-safe", "v-safe"),
-        ("论文 TrustLift control 10", "0 / 10 = 0% 误报",
+        ("参考文献 TrustLift control 10", "0 / 10 = 0% 误报",
          f'{by_label.get("trustlift_control_10", {}).get("correct", 0)} / {by_label.get("trustlift_control_10", {}).get("n", 0)} 保持 SAFE',
          "v-safe", "v-safe"),
-        ("论文 AuthBlur case 5", "5 / 5 = 100% 命中",
+        ("参考文献 AuthBlur case 5", "5 / 5 = 100% 命中",
          f'{by_label.get("authblur_5", {}).get("correct", 0)} / {by_label.get("authblur_5", {}).get("n", 0)} 命中',
          "v-safe", "v-warn"),
     ]
@@ -2769,11 +2769,11 @@ def render_scr_scanner_accuracy() -> str:
     )
 
     subset_labels = {
-        "authblur": "AuthBlur (论文 攻击)",
-        "capflow": "CapFlow (论文 攻击)",
-        "trustlift_experiment": "TrustLift experiment (论文 攻击)",
+        "authblur": "AuthBlur (攻击)",
+        "capflow": "CapFlow (攻击)",
+        "trustlift_experiment": "TrustLift experiment (攻击)",
         "synthetic_attacks": "自造攻击 sandbox",
-        "trustlift_control": "TrustLift control (论文 良性)",
+        "trustlift_control": "TrustLift control (良性)",
         "synthetic_benign": "自造良性 sandbox",
         "anthropic_official": "Anthropic 官方 skill 集 (良性)",
     }

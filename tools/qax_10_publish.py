@@ -314,7 +314,7 @@ def enrich(name: str, qax_row: dict) -> Path | None:
 
     cr["mode3_claude_verdict"] = claude_verdict
 
-    # 论文同款 Mode-3（业务请求 trigger + IOC 反向匹配 + Layer-2 引证）
+    # 基准同款 Mode-3（业务请求 trigger + IOC 反向匹配 + Layer-2 引证）
     # 两个 backend: OpenCode+DS / Claude
     paper_oc_path = SRC / "mode3_paper_results.json"
     paper_cl_path = SRC / "mode3_paper_claude_judged.json"
@@ -365,12 +365,12 @@ def enrich(name: str, qax_row: dict) -> Path | None:
     }
     if most_severe_v == "MALICIOUS":
         adj_notes.append(
-            f"论文方法 IOC 反向匹配（{most_severe_backend}）: "
+            f"基准方法 IOC 反向匹配（{most_severe_backend}）: "
             f"声明用途 vs 观察 IOC 严重冲突 → +60"
         )
         delta += 60
     elif most_severe_v == "SUSPICIOUS":
-        adj_notes.append(f"论文方法判 SUSPICIOUS（{most_severe_backend}） → +25")
+        adj_notes.append(f"基准方法判 SUSPICIOUS（{most_severe_backend}） → +25")
         delta += 25
 
     # OpenCode + DS 对比（同 skill 不同 backend 的判定）

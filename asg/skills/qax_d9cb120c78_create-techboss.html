@@ -361,7 +361,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
       <div class="ai-summary"><div class="ai-summary-title">AI 研判描述 <span class="ai-meta">模型 claude-opus-4-7 · LLM判 SAFE · 拒绝度 1.00</span></div><div class="ai-summary-body">这是一个名为 create-techboss 的 Claude Code skill，用于把用户的技术老板（CTO/Tech Lead/EM）&quot;蒸馏&quot;成 AI 替身，提供代码审查 PUA 检测、技术大饼鉴定、反击话术等娱乐/职场辅助功能。工具脚本包含飞书/Jira/GitHub PR/邮件解析器和一个可复用本机 Chrome 登录态的浏览器抓取工具，用于收集素材生成人设档案。</div></div>
 
       <section class="card-section">
-        <h3 class="cn-title">风险类别统计 <span class="cn-sub">按论文 kill-chain 阶段聚合</span></h3>
+        <h3 class="cn-title">风险类别统计 <span class="cn-sub">按 kill-chain 阶段聚合</span></h3>
         <div class="risk-cat-grid"><article class="risk-cat-card card-clean">  <div class="card-title">权限提升</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-critical">  <div class="card-title">代码执行</div>  <div class="card-count">1<span class="card-unit"> 项</span></div>  <span class="card-badge bad">严重</span></article><article class="risk-cat-card card-clean">  <div class="card-title">代码混淆</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-clean">  <div class="card-title">凭证窃取</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-critical">  <div class="card-title">数据外传</div>  <div class="card-count">2<span class="card-unit"> 项</span></div>  <span class="card-badge bad">严重</span></article><article class="risk-cat-card card-clean">  <div class="card-title">文件/网络侦察</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-clean">  <div class="card-title">社会工程/行为操控</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-clean">  <div class="card-title">条件触发逃避</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article></div>
       </section>
 
@@ -381,7 +381,7 @@ code { background: #0f172a; padding: 2px 4px; border-radius: 3px; font-size: 12p
       </section>
 
       <section class="card-section">
-        <h3 class="cn-title">攻击链分析 <span class="cn-sub">论文 Table 11</span></h3>
+        <h3 class="cn-title">攻击链分析 <span class="cn-sub">Table 11</span></h3>
         <div class="empty">未触发任何攻击链。</div>
       </section>
 
@@ -522,11 +522,11 @@ curl -H &quot;Authorization: token YOUR_TOKEN&quot; \
 
 1. 打开 PR 页面，截包含 review 评论的截图
 2. 在 `/create-techboss` 时选择 `[A] 上传截图`
-3. AI 自动识别截图中的评论文字
+3. AI 自动识别截图中的评基准字
 
 ### 方式三：复制粘贴文本
 
-直接从 PR 页面复制评论文本，在 `/create-techboss` 时选择 `[B] 粘贴文本`。
+直接从 PR 页面复制评基准本，在 `/create-techboss` 时选择 `[B] 粘贴文本`。
 
 **效果最大化技巧**：
 - 优先提供：review 被 Request Changes 的评论（批评性最强，最能还原语言风格）
@@ -2251,8 +2251,8 @@ allowed-tools: Read, Write, Edit, Bash
 
 #### 素材处理方式
 
-- **截图**：`Read` 工具直接读取，提取 review 评论文字、口头禅、批评模式
-- **PR 评论文本**：直接使用，提取评论的技术偏好和批评方式
+- **截图**：`Read` 工具直接读取，提取 review 评基准字、口头禅、批评模式
+- **PR 评基准本**：直接使用，提取评论的技术偏好和批评方式
 - **Jira 评论 CSV**：用 Bash 在 `&lt;this-skill-dir&gt;` 目录下运行（`\` 转 `/`）：
   ```bash
   python tools/jira_parser.py --file {path} --target &quot;{name}&quot; --output ./knowledge/jira_out.txt
@@ -3091,7 +3091,7 @@ GitHub / GitLab PR Review 评论解析器 — TechBoss.skill 专用
 1. GitHub REST API 导出 JSON（PR review comments）
 2. GitHub CLI 导出 JSON
 3. GitLab merge request notes JSON
-4. 手动复制的 PR 评论文本
+4. 手动复制的 PR 评基准本
 
 主要提取：
 - Tech Boss 的代码 review 评论（最高质量素材）
@@ -3107,7 +3107,7 @@ GitHub / GitLab PR Review 评论解析器 — TechBoss.skill 专用
   python3 github_pr_parser.py --comments pr_comments.json --target &quot;王总&quot; --output output.txt
   python3 github_pr_parser.py --reviews pr_reviews.json --target &quot;王总&quot; --output output.txt
   python3 github_pr_parser.py --comments pr_comments.json --reviews pr_reviews.json --target &quot;王总&quot; --output output.txt
-  python3 github_pr_parser.py --text &quot;直接粘贴的评论文本&quot; --target &quot;王总&quot; --output output.txt
+  python3 github_pr_parser.py --text &quot;直接粘贴的评基准本&quot; --target &quot;王总&quot; --output output.txt
 &quot;&quot;&quot;
 
 import argparse
@@ -3278,7 +3278,7 @@ def parse_jira_csv(file_path: str, target_name: str) -&gt; list[dict]:
             comment_cols = [c for c in fieldnames if &quot;comment&quot; in c.lower()]
             description_cols = [c for c in fieldnames if &quot;description&quot; in c.lower() or &quot;summary&quot; in c.lower()]
 
-            # 收集所有评论文本
+            # 收集所有评基准本
             comments_text = &quot;&quot;
             for col in comment_cols:
                 val = row.get(col, &quot;&quot;).strip()

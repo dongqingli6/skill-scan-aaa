@@ -2,7 +2,7 @@
 
 面向 Claude Code / OpenCode / Gemini CLI 等 AI 编码 Agent 生态中传播的第三方 `SKILL.md` 包，实现"**声明—实现—运行行为**"三域一致性验证的多层安全审计系统。
 
-参考论文：**MalSkillBench: A Runtime-Verified Benchmark of Malicious Agent Skills** (arXiv:2606.07131)
+参考文献：**MalSkillBench: A Runtime-Verified Benchmark of Malicious Agent Skills** (arXiv:2606.07131)
 
 ---
 
@@ -60,7 +60,7 @@ python -m asg.asg_cli scan path/to/skill/ --enable-ssd --enable-claude
 # VM Docker 动态执行（strace/tcpdump/canary）
 python -m asg.asg_cli vm-ssh-run path/to/skill/ --enable-honeypot
 
-# 论文 §3.3 模式（不依赖 Claude API，只用 DS）
+# §3.3 模式（不依赖 Claude API，只用 DS）
 python -m asg.asg_cli vm-paper-run path/to/skill/ --enable-honeypot
 ```
 
@@ -119,7 +119,7 @@ Stage 3  Claude CLI Docker     ~10%        30s     ¥1.2
 - Python 3.12 · asyncio · concurrent.futures
 - **DeepSeek V4-Pro** 语义研判（中文推理）
 - **Anthropic Claude Sonnet** 跨模型复检
-- **OpenCode CLI** Agent-in-the-Loop（论文 §3.3 复现）
+- **OpenCode CLI** Agent-in-the-Loop（§3.3 复现）
 - **Docker 24** 气隙沙箱 · `--network none` + `cap-drop=ALL`
 - `strace -f` · `inotifywait -m -e access,open,create` · `tcpdump`
 - `paramiko 3.x` SSH → Ubuntu VM

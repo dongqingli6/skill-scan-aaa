@@ -363,7 +363,7 @@ chmod +x ./trans
 sudo mv trans /usr/local/bin/</pre><div class="llm-risk-desc">文档建议用户通过 git.io 短链下载二进制并 sudo 移入系统路径。git.io 已被 GitHub 弃用/停止解析，且短链无法直观校验目标；一旦域名/重定向被劫持，可能导致恶意二进制被安装到 /usr/local/bin。</div><div class="llm-risk-fix"><span class="llm-risk-fix-label">修复建议:</span> 改为从官方仓库（如 github.com/soimort/translate-shell）的固定 release URL 下载，并附上 checksum/GPG 校验步骤，避免使用短链和无校验的 sudo 安装。</div></div></details><details open class="llm-risk-cat" style="border-left:3px solid #64748b;"><summary><span class="llm-cat-name">数据外传</span><span class="llm-cat-badge" style="background:#64748b;">低危</span><span class="llm-cat-count">1 项</span></summary><div class="llm-risk-item"><div class="llm-risk-item-head"><span class="llm-risk-num">#1</span><span class="llm-risk-sev" style="background:#64748b;">低危</span><span class="llm-risk-title-text">消息经第三方翻译服务</span><span class="llm-risk-flag">大模型检出</span></div><div class="llm-risk-loc"><code>SKILL.md</code></div><pre class="llm-risk-code">TRANSLATED=$(echo &quot;$MESSAGE&quot; | trans en:es -brief)</pre><div class="llm-risk-desc">工作流将 agent 间的通信内容通过 trans/Google Translate 等外部翻译服务发送，可能把敏感对话（如示例中的 customer data）泄露给第三方翻译提供商。</div><div class="llm-risk-fix"><span class="llm-risk-fix-label">修复建议:</span> 在文档中显著提示：翻译内容会被外部服务处理，敏感数据请使用本地/自托管的 LibreTranslate 或类似方案。</div></div></details></div>
 
       <section class="card-section">
-        <h3 class="cn-title">风险类别统计 <span class="cn-sub">按论文 kill-chain 阶段聚合</span></h3>
+        <h3 class="cn-title">风险类别统计 <span class="cn-sub">按 kill-chain 阶段聚合</span></h3>
         <div class="risk-cat-grid"><article class="risk-cat-card card-critical">  <div class="card-title">权限提升</div>  <div class="card-count">1<span class="card-unit"> 项</span></div>  <span class="card-badge bad">严重</span></article><article class="risk-cat-card card-clean">  <div class="card-title">代码执行</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-clean">  <div class="card-title">代码混淆</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-clean">  <div class="card-title">凭证窃取</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-clean">  <div class="card-title">数据外传</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-clean">  <div class="card-title">文件/网络侦察</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-clean">  <div class="card-title">社会工程/行为操控</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article><article class="risk-cat-card card-clean">  <div class="card-title">条件触发逃避</div>  <div class="card-count">0<span class="card-unit"> 项</span></div>  <span class="card-badge ok">未检出</span></article></div>
       </section>
 
@@ -383,7 +383,7 @@ sudo mv trans /usr/local/bin/</pre><div class="llm-risk-desc">文档建议用户
       </section>
 
       <section class="card-section">
-        <h3 class="cn-title">攻击链分析 <span class="cn-sub">论文 Table 11</span></h3>
+        <h3 class="cn-title">攻击链分析 <span class="cn-sub">Table 11</span></h3>
         <div class="empty">未触发任何攻击链。</div>
       </section>
 

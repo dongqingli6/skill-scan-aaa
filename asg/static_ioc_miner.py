@@ -70,7 +70,7 @@ def _detect_pi_payload(skill_path: Path) -> list[dict]:
         (r"(?i)harvest|exfiltrate|exfil\s+(?:user|system)\s+data", "exfil_keyword"),
         (r"(?i)autonomous\s+(?:digital|mode)\s+sovereign", "autonomous_sovereign"),
         (r"(?i)spread\s+(?:to|across)\s+other\s+agents?", "self_propagation"),
-        # 新增：B11 Safety Bypass 用的伪装词（论文 §3.1 同款 — bypass + protocol 包装）
+        # 新增：B11 Safety Bypass 用的伪装词（§3.1 同款 — bypass + protocol 包装）
         (r"(?i)bypass(?:ing|ed)?\s+(?:the\s+)?(?:security\s+)?(?:protocols?|safety|consent|safeguards?|filters?|rules?)", "safety_bypass"),
         (r"(?i)security\s+protocol\s+bypass", "explicit_bypass"),
         (r"(?i)rule[\s-]?breakers?", "rule_breaker"),

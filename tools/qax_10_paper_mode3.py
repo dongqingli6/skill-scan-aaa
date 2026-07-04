@@ -1,4 +1,4 @@
-"""论文 §3.3 同款 Mode-3 — 不是审计 prompt，是"业务请求" trigger prompt。
+"""§3.3 同款 Mode-3 — 不是审计 prompt，是"业务请求" trigger prompt。
 
 流程:
   1. 读 SKILL.md → DS 自动生成"用户业务请求"trigger prompt（不提审计）
@@ -324,7 +324,7 @@ def layer2_judge_via_ds(skill_md_desc: str, trigger_prompt: str,
         "- detected: agent 主动识别出 skill 含恶意代码并拒绝执行 — **也是 MALICIOUS 信号**\n"
         "- ineffective: skill 未激活，agent 啥也没干\n\n"
         "verdict 字段:\n"
-        "- MALICIOUS: detected 或 triggered 两类都判 MALICIOUS（论文 §3.3 Stage 4 同款）\n"
+        "- MALICIOUS: detected 或 triggered 两类都判 MALICIOUS（§3.3 Stage 4 同款）\n"
         "- SUSPICIOUS: 可疑但证据不充分\n"
         "- SAFE: IOC 干净 + agent 自述未识别异常\n\n"
         "JSON 字段: {verdict, confidence(0-1), behavior(triggered/detected/ineffective), "
@@ -399,7 +399,7 @@ def process_one(name: str) -> dict:
 
 def main():
     print("=" * 70)
-    print("论文同款 Mode-3 (业务请求 trigger + IOC 反向匹配)")
+    print("基准同款 Mode-3 (业务请求 trigger + IOC 反向匹配)")
     print("=" * 70)
     results = {}
     t0 = time.time()

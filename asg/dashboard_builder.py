@@ -686,7 +686,7 @@ def _skill_card(report: dict[str, Any]) -> str:
       {_ai_summary_block(report)}
 
       <section class="card-section">
-        <h3 class="cn-title">风险类别统计 <span class="cn-sub">按论文 kill-chain 阶段聚合</span></h3>
+        <h3 class="cn-title">风险类别统计 <span class="cn-sub">按参考文献 kill-chain 阶段聚合</span></h3>
         {_risk_category_cards(report)}
       </section>
 
@@ -701,7 +701,7 @@ def _skill_card(report: dict[str, Any]) -> str:
       </section>
 
       <section class="card-section">
-        <h3 class="cn-title">攻击链分析 <span class="cn-sub">论文 Table 11</span></h3>
+        <h3 class="cn-title">攻击链分析 <span class="cn-sub">Table 11</span></h3>
         {_chain_pills(report)}
       </section>
 
@@ -1172,7 +1172,7 @@ def build_html(batch_summary: dict[str, Any], reports: list[dict[str, Any]]) -> 
     <h1>SkillSentinel · AI Skill 安全研判平台</h1>
     <div class="subtitle">
       静态规则 + 攻击链 + LLM 智能体研判 + 蜜罐 + Docker 运行时证据 · 五层闭环
-      <span style="margin-left:12px;color:#475569;">论文对齐: arXiv:2602.06547v2（14 项 + 3 项 ASG 扩展，共 17 条规则）</span>
+      <span style="margin-left:12px;color:#475569;">基准对齐: arXiv:2602.06547v2（14 项 + 3 项 ASG 扩展，共 17 条规则）</span>
     </div>
   </header>
 
@@ -1203,11 +1203,11 @@ def build_html(batch_summary: dict[str, Any], reports: list[dict[str, Any]]) -> 
       {verdict_bars}
     </div>
     <div class="panel">
-      <h2>攻击原型分布（论文 §4.2）</h2>
+      <h2>攻击原型分布（§4.2）</h2>
       {archetype_bars}
     </div>
     <div class="panel">
-      <h2>攻击链触发统计（论文 Table 11）</h2>
+      <h2>攻击链触发统计（Table 11）</h2>
       {chain_bars}
     </div>
 
